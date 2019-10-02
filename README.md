@@ -9,7 +9,7 @@
         <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"/>
     </a>
     <a href="https://github.com/utsurius/django-actionable-messages/releases">
-        <img src="https://img.shields.io/badge/version-0.1.0-blue.svg" alt="version"/>
+        <img src="https://img.shields.io/badge/version-0.1.1-blue.svg" alt="version"/>
     </a>
 </p>
 
@@ -85,6 +85,8 @@
 ## Installation
 
 `pip install git+https://github.com/utsurius/django-actionable-messages`
+
+`pip install django-actionable-messages`
 
 Add "django_actionable_messages" to INSTALLED_APPS:
 
