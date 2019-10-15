@@ -7,7 +7,7 @@ setup(
     name="django_actionable_messages",
     packages=find_packages(exclude=["examples", "examples.*", "tests", "tests.*"]),
     include_package_data=True,
-    version="0.1.1",
+    version="0.1.2",
     license="MIT",
     description="Actionable messages",
     long_description=long_description,
@@ -38,7 +38,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
     project_urls={
-        "Documentation": "https://github.com/utsurius/django-actionable-messages/README.md",
+        "Documentation": "https://github.com/utsurius/django-actionable-messages/blob/master/README.md",
         "Source": "https://github.com/utsurius/django-actionable-messages",
         "Tracker": "https://github.com/utsurius/django-actionable-messages/issues",
     }

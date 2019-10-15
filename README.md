@@ -6,10 +6,13 @@
 
 <p align="center">
     <a href="https://github.com/utsurius/django-actionable-messages/blob/master/LICENSE">
-        <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"/>
+        <img src="https://img.shields.io/github/license/utsurius/django-actionable-messages" alt="license"/>
     </a>
     <a href="https://github.com/utsurius/django-actionable-messages/releases">
-        <img src="https://img.shields.io/badge/version-0.1.1-blue.svg" alt="version"/>
+        <img src="https://img.shields.io/github/release/utsurius/django-actionable-messages" alt="github"/>
+    </a>
+    <a href="https://pypi.python.org/pypi/django-actionable-messages">
+        <img src="https://badge.fury.io/py/django-actionable-messages.svg" alt="pypi"/>
     </a>
 </p>
 
@@ -18,62 +21,62 @@
 3. [Requirements](#requirements)
 4. [Usage](#usage)
 5. [AdaptiveCard](#adaptivecard)
-    * [Elements](#elements)
-        * [TextBlock](#textblock-docs)
-        * [Image](#image-docs)
-        * [MediaSource](#mediasource-docs)
-        * [Media](#media-docs)
-        * [TextRun](#textrun-docs)
-        * [RichTextBlock](#richtextblock-docs)
-    * [Inputs](#inputs)
-        * [TextInput](#textinput-docs)
-        * [NumberInput](#numberinput-docs)
-        * [DateInput](#dateinput-docs)
-        * [TimeInput](#timeinput-docs)
-        * [ToggleInput](#toggleinput-docs)
-        * [InputChoice](#inputchoice-docs)
-        * [ChoiceSetInput](#choicesetinput-docs)
-    * [Actions](#actions)
-        * [OpenUrl](#openurl-docs)
-        * [Submit](#submit-docs)
-        * [ShowCard](#showcard-docs)
-        * [TargetElement](#targetelement-docs)
-        * [ToggleVisibility](#togglevisibility-docs)
-    * [Containers](#containers)
-        * [ActionSet](#actionset-docs)
-        * [Container](#container-docs)
-        * [Column](#column-docs)
-        * [ColumnSet](#columnset-docs)
-        * [Fact](#fact-docs)
-        * [FactSet](#factset-docs)
-        * [ImageSet](#imageset-docs)
-    * [Types](#types)
-        * [BackgroundImage](#backgroundimage-docs)
-    * [Cards](#cards)
-        * [AdaptiveCard](#adaptivecard-docs)
+    * [Elements](#adaptivecard-elements)
+        * [TextBlock](#adaptivecard-textblock)
+        * [Image](#adaptivecard-image)
+        * [MediaSource](#adaptivecard-mediasource)
+        * [Media](#adaptivecard-media)
+        * [TextRun](#adaptivecard-textrun)
+        * [RichTextBlock](#adaptivecard-richtextblock)
+    * [Inputs](#adaptivecard-inputs)
+        * [TextInput](#adaptivecard-textinput)
+        * [NumberInput](#adaptivecard-numberinput)
+        * [DateInput](#adaptivecard-dateinput)
+        * [TimeInput](#adaptivecard-timeinput)
+        * [ToggleInput](#adaptivecard-toggleinput)
+        * [InputChoice](#adaptivecard-inputchoice)
+        * [ChoiceSetInput](#adaptivecard-choicesetinput)
+    * [Actions](#adaptivecard-actions)
+        * [OpenUrl](#adaptivecard-openurl)
+        * [Submit](#adaptivecard-submit)
+        * [ShowCard](#adaptivecard-showcard)
+        * [TargetElement](#adaptivecard-targetelement)
+        * [ToggleVisibility](#adaptivecard-togglevisibility)
+    * [Containers](#adaptivecard-containers)
+        * [ActionSet](#adaptivecard-actionset)
+        * [Container](#adaptivecard-container)
+        * [Column](#adaptivecard-column)
+        * [ColumnSet](#adaptivecard-columnset)
+        * [Fact](#adaptivecard-fact)
+        * [FactSet](#adaptivecard-factset)
+        * [ImageSet](#adaptivecard-imageset)
+    * [Types](#adaptivecard-types)
+        * [BackgroundImage](#adaptivecard-backgroundimage)
+    * [Cards](#adaptivecard-cards)
+        * [AdaptiveCard](#adaptivecard-adaptivecard)
 6. [MessageCard](#messagecard)
-    * [Elements](#elements-1)
-        * [Header](#header-docs)
-        * [Fact](#fact)
-        * [HeroImage](#heroimage-docs)
-        * [InputChoice](#inputchoice)
-        * [ActionTarget](#actiontarget)
-    * [Inputs](#inputs-1)
-        * [TextInput](#textinput-docs-1)
-        * [DateInput](#dateinput-docs-1)
-        * [MultiChoiceInput](#multichoiceinput-docs)
-    * [Actions](#actions-1)
-        * [OpenUri](#openuri-docs)
-        * [HttpPOST](#httppost-docs)
-        * [InvokeAddInCommand](#invokeaddincommand-docs)
-        * [ActionCard](#actioncard-docs)
-    * [Sections](#sections)
-        * [Section](#section-docs)
-    * [Cards](#cards-1)
-        * [MessageCard](#messagecard-1)
+    * [Elements](#messagecard-elements)
+        * [Header](#messagecard-header)
+        * [Fact](#messagecard-fact)
+        * [HeroImage](#messagecard-heroimage)
+        * [InputChoice](#messagecard-inputchoice)
+        * [ActionTarget](#messagecard-actiontarget)
+    * [Inputs](#messagecard-inputs)
+        * [TextInput](#messagecard-textinput)
+        * [DateInput](#messagecard-dateinput)
+        * [MultiChoiceInput](#messagecard-multichoiceinput)
+    * [Actions](#messagecard-actions)
+        * [OpenUri](#messagecard-openuri)
+        * [HttpPOST](#messagecard-httppost)
+        * [InvokeAddInCommand](#messagecard-invokeaddincommand)
+        * [ActionCard](#messagecard-actioncard)
+    * [Sections](#messagecard-sections)
+        * [Section](#messagecard-section)
+    * [Cards](#messagecard-cards)
+        * [MessageCard](#messagecard-messagecard)
 
 
-## Base informations
+<h2 id="base-informations">Base informations</h2>
 
 [Playground V2](https://messagecardplayground.azurewebsites.net/)
 
@@ -82,7 +85,7 @@
 [Outlook version requirements for actionable messages](https://docs.microsoft.com/en-us/outlook/actionable-messages/#outlook-version-requirements-for-actionable-messages)
 
 
-## Installation
+<h2 id="installation">Installation</h2>
 
 `pip install git+https://github.com/utsurius/django-actionable-messages`
 
@@ -108,7 +111,7 @@ ACTIONABLE_MESSAGES = {
 "JSON_ENCODER" is a doted path to custom json encoder.
 
 
-## Requirements
+<h2 id="requirements">Requirements</h2>
 
 |Name|Version|
 |---|---|
@@ -116,7 +119,7 @@ ACTIONABLE_MESSAGES = {
 |django|1.11.0+|
 
 
-## Usage
+<h2 id="usage">Usage</h2>
 
 **`examples/message_card/github.py`**
 
@@ -246,18 +249,18 @@ requests.post(
 
 To get/add `webhook_url` see here: [Get the Microsoft Teams webhook URL](https://learning.getpostman.com/docs/postman_pro/integrations/microsoft_teams/#get-the-microsoft-teams-webhook-url), [Create and add an outgoing webhook in Teams](https://support.office.com/en-ie/article/create-and-add-an-outgoing-webhook-in-teams-8e1a1648-982f-4511-b342-6d8492437207)
 
-## AdaptiveCard
+<h2 id="adaptivecard">AdaptiveCard</h2>
 
 Supported versions: **1.0**, **1.1**, **1.2**
 
 [Schema Explorer](https://adaptivecards.io/explorer/)
 
 
-### Elements
+<h3 id="adaptivecard-elements">Elements</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.elements import ...`
 
-#### **TextBlock** ([docs](https://adaptivecards.io/explorer/TextBlock.html))
+<h4 id="adaptivecard-textblock">**TextBlock** ([docs](https://adaptivecards.io/explorer/TextBlock.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -288,7 +291,7 @@ Supported versions: **1.0**, **1.1**, **1.2**
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **Image** ([docs](https://adaptivecards.io/explorer/Image.html))
+<h4 id="adaptivecard-image">**Image** ([docs](https://adaptivecards.io/explorer/Image.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -319,14 +322,14 @@ Supported versions: **1.0**, **1.1**, **1.2**
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **MediaSource** ([docs](https://adaptivecards.io/explorer/MediaSource.html))
+<h4 id="adaptivecard-mediasource">**MediaSource** ([docs](https://adaptivecards.io/explorer/MediaSource.html))</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
 |**mime_type**|mimeType|*str*|
 |**url**|url|*str*|
 
-#### **Media** ([docs](https://adaptivecards.io/explorer/Media.html))
+<h4 id="adaptivecard-media">**Media** ([docs](https://adaptivecards.io/explorer/Media.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -359,7 +362,7 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **TextRun** ([docs](https://adaptivecards.io/explorer/TextRun.html))
+<h4 id="adaptivecard-textrun">**TextRun** ([docs](https://adaptivecards.io/explorer/TextRun.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -376,7 +379,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-#### **RichTextBlock** ([docs](https://adaptivecards.io/explorer/RichTextBlock.html))
+<h4 id="adaptivecard-richtextblock">**RichTextBlock** ([docs](https://adaptivecards.io/explorer/RichTextBlock.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -402,11 +405,11 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-### Inputs
+<h3 id="adaptivecard-inputs">Inputs</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.inputs import ...`
 
-#### **TextInput** ([docs](https://adaptivecards.io/explorer/Input.Text.html))
+<h4 id="adaptivecard-textinput">**TextInput** ([docs](https://adaptivecards.io/explorer/Input.Text.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -434,7 +437,7 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **NumberInput** ([docs](https://adaptivecards.io/explorer/Input.Number.html))
+<h4 id="adaptivecard-numberinput">**NumberInput** ([docs](https://adaptivecards.io/explorer/Input.Number.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -460,7 +463,7 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **DateInput** ([docs](https://adaptivecards.io/explorer/Input.Date.html))
+<h4 id="adaptivecard-dateinput">**DateInput** ([docs](https://adaptivecards.io/explorer/Input.Date.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -486,7 +489,7 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **TimeInput** ([docs](https://adaptivecards.io/explorer/Input.Time.html))
+<h4 id="adaptivecard-timeinput">**TimeInput** ([docs](https://adaptivecards.io/explorer/Input.Time.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -512,7 +515,7 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **ToggleInput** ([docs](https://adaptivecards.io/explorer/Input.Toggle.html))
+<h4 id="adaptivecard-toggleinput">**ToggleInput** ([docs](https://adaptivecards.io/explorer/Input.Toggle.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -539,14 +542,14 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **InputChoice** ([docs](https://adaptivecards.io/explorer/Input.Choice.html))
+<h4 id="adaptivecard-inputchoice">**InputChoice** ([docs](https://adaptivecards.io/explorer/Input.Choice.html))</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
 |**title**|title|*str*|
 |**value**|value|*str*, *int*|
 
-#### **ChoiceSetInput** ([docs](https://adaptivecards.io/explorer/Input.ChoiceSet.html))
+<h4 id="adaptivecard-choicesetinput">**ChoiceSetInput** ([docs](https://adaptivecards.io/explorer/Input.ChoiceSet.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -576,11 +579,11 @@ Other functions
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
 
-### Actions
+<h3 id="adaptivecard-actions">Actions</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.actions import ...`
 
-#### **OpenUrl** ([docs](https://adaptivecards.io/explorer/Action.OpenUrl.html))
+<h4 id="adaptivecard-openurl">**OpenUrl** ([docs](https://adaptivecards.io/explorer/Action.OpenUrl.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -596,7 +599,7 @@ Other functions
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-#### **Submit** ([docs](https://adaptivecards.io/explorer/Action.Submit.html))
+<h4 id="adaptivecard-submit">**Submit** ([docs](https://adaptivecards.io/explorer/Action.Submit.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -612,7 +615,7 @@ Other functions
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-#### **ShowCard** ([docs](https://adaptivecards.io/explorer/Action.ShowCard.html))
+<h4 id="adaptivecard-showcard">**ShowCard** ([docs](https://adaptivecards.io/explorer/Action.ShowCard.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -630,14 +633,14 @@ Other functions
 
 \[3\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-#### **TargetElement** ([docs](https://adaptivecards.io/explorer/TargetElement.html))
+<h4 id="adaptivecard-targetelement">**TargetElement** ([docs](https://adaptivecards.io/explorer/TargetElement.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |**element_id**|set_element_id()|elementId|*str*|
 |is_visible|set_is_visible()|isVisible|*bool*|
 
-#### **ToggleVisibility** ([docs](https://adaptivecards.io/explorer/Action.ToggleVisibility.html))
+<h4 id="adaptivecard-togglevisibility">**ToggleVisibility** ([docs](https://adaptivecards.io/explorer/Action.ToggleVisibility.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -654,11 +657,11 @@ Other functions
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
 
-### Containers
+<h3 id="adaptivecard-containers">Containers</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.containers import ...`
 
-#### **ActionSet** ([docs](https://adaptivecards.io/explorer/ActionSet.html))
+<h4 id="adaptivecard-actionset">**ActionSet** ([docs](https://adaptivecards.io/explorer/ActionSet.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -687,7 +690,7 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **Container** ([docs](https://adaptivecards.io/explorer/Container.html))
+<h4 id="adaptivecard-container">**Container** ([docs](https://adaptivecards.io/explorer/Container.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -724,7 +727,7 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **Column** ([docs](https://adaptivecards.io/explorer/Column.html))
+<h4 id="adaptivecard-column">**Column** ([docs](https://adaptivecards.io/explorer/Column.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -749,7 +752,7 @@ Other functions
 
 \[3\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-#### **ColumnSet** ([docs](https://adaptivecards.io/explorer/ColumnSet.html))
+<h4 id="adaptivecard-columnset">**ColumnSet** ([docs](https://adaptivecards.io/explorer/ColumnSet.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -784,14 +787,14 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **Fact** ([docs](https://adaptivecards.io/explorer/Fact.html))
+<h4 id="adaptivecard-fact">**Fact** ([docs](https://adaptivecards.io/explorer/Fact.html))</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
 |**title**|title|*str*|
 |**value**|value|*str*|
 
-#### **FactSet** ([docs](https://adaptivecards.io/explorer/FactSet.html))
+<h4 id="adaptivecard-factset">**FactSet** ([docs](https://adaptivecards.io/explorer/FactSet.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -822,7 +825,7 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
-#### **ImageSet** ([docs](https://adaptivecards.io/explorer/ImageSet.html))
+<h4 id="adaptivecard-imageset">**ImageSet** ([docs](https://adaptivecards.io/explorer/ImageSet.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -855,11 +858,11 @@ Other functions
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
 
-### Types
+<h3 id="adaptivecard-types">Types</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.types import ...`
 
-#### **BackgroundImage** ([docs](https://adaptivecards.io/explorer/BackgroundImage.html))
+<h4 id="adaptivecard-backgroundimage">**BackgroundImage** ([docs](https://adaptivecards.io/explorer/BackgroundImage.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -870,11 +873,11 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-### Cards
+<h3 id="adaptivecard-cards">Cards</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.cards import ...`
 
-#### **AdaptiveCard** ([docs](https://adaptivecards.io/explorer/AdaptiveCard.html))
+<h4 id="adaptivecard-adaptivecard">**AdaptiveCard** ([docs](https://adaptivecards.io/explorer/AdaptiveCard.html))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -903,43 +906,43 @@ AdaptiveCard also have other functions:
 
 \[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
-## MessageCard
+<h2 id="messagecard">MessageCard</h2>
 
 [Legacy actionable message card reference](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference)
 
-### Elements
+<h3 id="messagecard-elements">Elements</h3>
 
 **src**: `from django_actionable_messages.message_card.elements import ...`
 
-#### **Header** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#header))
+<h4 id="messagecard-header">**Header** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#header))</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
 |**name**|name|*str*|
 |value|value|*str*, *int*|
 
-#### **Fact**
+<h4 id="messagecard-fact">**Fact**</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
 |**name**|name|*str*|
 |**value**|value|*str*|
 
-#### **HeroImage** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#image-object))
+<h4 id="messagecard-heroimage">**HeroImage** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#image-object))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |**url**|set_url()|image|*str*|
 |title|set_title()|title|*str*|
 
-#### **InputChoice**
+<h4 id="messagecard-inputchoice">**InputChoice**</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
 |**name**|display|*str*|
 |**value**|value|*str*, *int*|
 
-#### **ActionTarget**
+<h4 id="messagecard-actiontarget">**ActionTarget**</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
@@ -948,11 +951,11 @@ AdaptiveCard also have other functions:
 
 \[1\] `from django_actionable_messages.message_cards.utils import ...`
 
-### Inputs
+<h3 id="messagecard-inputs">Inputs</h3>
 
 **src**: `from django_actionable_messages.message_card.inputs import ...`
 
-#### **TextInput** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#textinput))
+<h4 id="messagecard-textinput">**TextInput** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#textinput))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -963,7 +966,7 @@ AdaptiveCard also have other functions:
 |value|set_value()|value|*str*|
 |is_required|set_is_required()|isRequired|*bool*|
 
-#### **DateInput** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#dateinput))
+<h4 id="messagecard-dateinput">**DateInput** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#dateinput))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -973,7 +976,7 @@ AdaptiveCard also have other functions:
 |value|set_value()|value|*str*|
 |is_required|set_is_required()|isRequired|*bool*|
 
-#### **MultiChoiceInput** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#multichoiceinput))
+<h4 id="messagecard-multichoiceinput">**MultiChoiceInput** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#multichoiceinput))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -995,11 +998,11 @@ Other functions
 
 \[2\] `from django_actionable_messages.message_cards.utils import ...`
 
-### Actions
+<h3 id="messagecard-actions">Actions</h3>
 
 **src**: `from django_actionable_messages.message_card.actions import ...`
 
-#### **OpenUri** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#openuri-action))
+<h4 id="messagecard-openuri">**OpenUri** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#openuri-action))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -1015,7 +1018,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.message_cards.elements import ...`
 
-#### **HttpPOST** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#httppost-action))
+<h4 id="messagecard-httppost">**HttpPOST** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#httppost-action))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -1033,7 +1036,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.message_cards.elements import ...`
 
-#### **InvokeAddInCommand** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#invokeaddincommand-action))
+<h4 id="messagecard-invokeaddincommand">**InvokeAddInCommand** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#invokeaddincommand-action))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -1042,7 +1045,7 @@ Other functions
 |**desktop_command_id**|set_desktop_command_id()|desktopCommandId|*str*|
 |initialization_context|set_set_initialization_context()|initializationContext|*dict*|
 
-#### **ActionCard** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#actioncard-action))
+<h4 id="messagecard-actioncard">**ActionCard** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#actioncard-action))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -1058,11 +1061,11 @@ Other functions
 |add_action()|actions|see docs|
 
 
-### Sections
+<h3 id="messagecard-sections">Sections</h3>
 
 **src**: `from django_actionable_messages.message_card.sections import ...`
 
-#### **Section** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#section-fields))
+<h4 id="messagecard-section">**Section** ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#section-fields))</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
@@ -1087,11 +1090,11 @@ Other functions:
 
 \[1\] `from django_actionable_messages.message_cards.elements import ...`
 
-### Cards
+<h3 id="messagecard-cards">Cards</h3>
 
 **src**: `from django_actionable_messages.message_card.cards import ...`
 
-#### **MessageCard**
+<h4 id="messagecard-messagecard">**MessageCard**</h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
