@@ -2,7 +2,8 @@ from typing import Union
 
 from django_actionable_messages.adaptive_card.elements import Image
 from django_actionable_messages.adaptive_card.utils import VERSIONS, Style, VerticalAlignment
-from django_actionable_messages.utils import ADAPTIVE_CARD, Card, CardException
+from django_actionable_messages.exceptions import CardException
+from django_actionable_messages.utils import ADAPTIVE_CARD, Card
 
 
 class AdaptiveCard(Card):
@@ -11,10 +12,11 @@ class AdaptiveCard(Card):
     def __init__(self, version: str = None, schema: str = None, inputs: list = None, actions: list = None,
                  select_action=None, style: Style = None, hide_original_body: bool = None, fallback_text: str = None,
                  background_image: Union[str, Image] = None, min_height: str = None, speak: str = None,
-                 lang: str = None, vertical_content_alignment: VerticalAlignment = None):
+                 lang: str = None, vertical_content_alignment: VerticalAlignment = None, **kwargs):
         self._payload = {
             "type": "AdaptiveCard"
         }
+        super().__init__(**kwargs)
         if version is not None:
             self.set_version(version)
         if schema is not None:
@@ -41,7 +43,6 @@ class AdaptiveCard(Card):
             self.set_lang(lang)
         if vertical_content_alignment is not None:
             self.set_vertical_content_alignment(vertical_content_alignment)
-        super().__init__()
 
     def set_version(self, version: str):
         if version not in VERSIONS:
@@ -55,7 +56,7 @@ class AdaptiveCard(Card):
         self._payload["selectAction"] = action.as_data()
 
     def set_style(self, style: Style):
-        self._payload["style"] = style.value
+        self._payload["style"] = style
 
     def set_hide_original_body(self, value=True):
         self._payload["hideOriginalBody"] = value
@@ -81,20 +82,18 @@ class AdaptiveCard(Card):
         self._payload["lang"] = lang
 
     def set_vertical_content_alignment(self, alignment: VerticalAlignment):
-        self._payload["verticalContentAlignment"] = alignment.value
+        self._payload["verticalContentAlignment"] = alignment
 
-    def add_element(self, element):
+    def add_elements(self, elements):
         self._payload.setdefault("body", [])
-        self._payload["body"].append(element.as_data())
+        if isinstance(elements, (list, set, tuple)):
+            self._payload["body"].extend(self._get_items_list(elements))
+        else:
+            self._payload["body"].append(elements.as_data())
 
-    def add_elements(self, elements: list):
-        self._payload.setdefault("body", [])
-        self._payload["body"].extend(self._get_items_list(elements))
-
-    def add_action(self, action):
+    def add_actions(self, actions):
         self._payload.setdefault("actions", [])
-        self._payload["actions"].append(action.as_data())
-
-    def add_actions(self, actions: list):
-        self._payload.setdefault("actions", [])
-        self._payload["actions"].extend(self._get_items_list(actions))
+        if isinstance(actions, (list, set, tuple)):
+            self._payload["actions"].extend(self._get_items_list(actions))
+        else:
+            self._payload["actions"].append(actions.as_data())

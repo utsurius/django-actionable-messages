@@ -13,7 +13,7 @@ https://messagecardplayground.azurewebsites.net/
 
 issue_opened = MessageCard(title="Issue opened: \"Push notifications not working\"", summary="Issue 176715375",
                            theme_color="0078D7")
-issue_opened.add_section(
+issue_opened.add_sections(
     Section(
         activity_title="Miguel Garcie",
         activity_subtitle="9/13/2016, 11:46am",

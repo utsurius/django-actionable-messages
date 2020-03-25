@@ -5,8 +5,10 @@ from django_actionable_messages.adaptive_card.elements import Image
 from django_actionable_messages.adaptive_card.inputs import (
     TextInput, NumberInput, DateInput, TimeInput, ToggleInput, InputChoice, ChoiceSetInput
 )
-from django_actionable_messages.adaptive_card.utils import ChoiceInputStyle, FallbackOption, SpacingStyle, TextInputStyle
-from django_actionable_messages.utils import CardException
+from django_actionable_messages.adaptive_card.utils import (
+    ChoiceInputStyle, FallbackOption, SpacingStyle, TextInputStyle
+)
+from django_actionable_messages.exceptions import CardException
 
 URL = "https://www.example.com/"
 

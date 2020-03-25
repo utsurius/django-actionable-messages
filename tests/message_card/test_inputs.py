@@ -1,8 +1,9 @@
 from django.test import TestCase
 
-from django_actionable_messages.message_card.inputs import TextInput, DateInput, InputChoice, MultiChoiceInput
+from django_actionable_messages.exceptions import CardException
+from django_actionable_messages.message_card.elements import InputChoice
+from django_actionable_messages.message_card.inputs import TextInput, DateInput, MultiChoiceInput
 from django_actionable_messages.message_card.utils import ChoiceStyle
-from django_actionable_messages.utils import CardException
 
 
 class InputsTestCase(TestCase):

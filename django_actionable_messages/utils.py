@@ -9,21 +9,26 @@ MESSAGE_CARD = 1
 ADAPTIVE_CARD = 2
 
 
-def get_items_list(items):
-    return list([item.as_data() for item in items])
+class BaseMixin:
+    def __init__(self, *args, **kwargs):
+        self.language_code = kwargs.pop("lang_code", card_settings.LANGUAGE_CODE)
+        super().__init__()
+
+    def get_language_code(self):
+        return self.language_code
+
+    def _get_items_list(self, items):
+        return list([item.as_data() for item in items])
 
 
-class CardElement:
+class CardElement(BaseMixin):
     _data = None
 
     def as_data(self):
         return self._data
 
-    def _get_items_list(self, items):
-        return get_items_list(items)
 
-
-class Card:
+class Card(BaseMixin):
     json_encoder = card_settings.JSON_ENCODER
 
     _payload = None
@@ -54,7 +59,7 @@ class Card:
         return payload
 
     def _get_json_payload(self, payload):
-        return json.dumps(payload, default=self.json_encoder)
+        return json.dumps(payload, cls=self.json_encoder, lang_code=self.get_language_code())
 
     def _get_html_payload(self, payload):
         context = {
@@ -62,10 +67,3 @@ class Card:
             "payload": self._get_json_payload(payload)
         }
         return render_to_string("django_actionable_messages/email.html", context=context)
-
-    def _get_items_list(self, items):
-        return get_items_list(items)
-
-
-class CardException(Exception):
-    pass

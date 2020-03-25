@@ -3,11 +3,10 @@ import uuid
 
 from django.test import TestCase
 
-from django_actionable_messages.message_card.actions import (
-    OpenUri, ActionTarget, HttpPOST, Header, InvokeAddInCommand, ActionCard
-)
+from django_actionable_messages.exceptions import CardException
+from django_actionable_messages.message_card.actions import OpenUri, HttpPOST, InvokeAddInCommand, ActionCard
 from django_actionable_messages.message_card.cards import MessageCard
-from django_actionable_messages.message_card.elements import HeroImage, Fact
+from django_actionable_messages.message_card.elements import Header, Fact, HeroImage, ActionTarget
 from django_actionable_messages.message_card.inputs import TextInput
 from django_actionable_messages.message_card.sections import Section
 from django_actionable_messages.message_card.utils import OSType
@@ -218,6 +217,56 @@ class MessageCardTestCase(TestCase):
             "expectedActors": ["foo@example.com", "bar@example.com"]
         })
 
+    def test_message_card_add_expected_actors_str(self):
+        message_card = MessageCard(auto_correlation_id=False)
+        message_card.add_expected_actors("foo@example.com")
+        self.assertDictEqual(message_card.payload, {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "expectedActors": ["foo@example.com", ]
+        })
+        message_card.add_expected_actors("bar@example.com")
+        self.assertDictEqual(message_card.payload, {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "expectedActors": ["foo@example.com", "bar@example.com"]
+        })
+
+    def test_message_card_add_expected_actors_list(self):
+        message_card = MessageCard(auto_correlation_id=False)
+        message_card.add_expected_actors(["foo@example.com", "bar@example.com"])
+        self.assertDictEqual(message_card.payload, {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "expectedActors": ["foo@example.com", "bar@example.com"]
+        })
+        message_card.add_expected_actors(["foo2@example.com", "bar2@example.com"])
+        self.assertDictEqual(message_card.payload, {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "expectedActors": ["foo@example.com", "bar@example.com", "foo2@example.com", "bar2@example.com"]
+        })
+
+    def test_message_card_add_expected_actors_mixed(self):
+        message_card = MessageCard(auto_correlation_id=False)
+        message_card.add_expected_actors("foo@example.com")
+        self.assertDictEqual(message_card.payload, {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "expectedActors": ["foo@example.com", ]
+        })
+        message_card.add_expected_actors(["bar@example.com", "foo2@example.com"])
+        self.assertDictEqual(message_card.payload, {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "expectedActors": ["foo@example.com", "bar@example.com", "foo2@example.com"]
+        })
+
+    def test_message_card_add_expected_actors_invalid_type(self):
+        message_card = MessageCard(auto_correlation_id=False)
+        with self.assertRaisesMessage(CardException, "Invalid expected_actors type"):
+            message_card.add_expected_actors(1)
+
     def test_message_card_set_hide_original_body(self):
         message_card = MessageCard(auto_correlation_id=False)
         message_card.set_hide_original_body()
@@ -225,53 +274,6 @@ class MessageCardTestCase(TestCase):
             "@type": "MessageCard",
             "@context": "https://schema.org/extensions",
             "hideOriginalBody": True
-        })
-
-    def test_message_card_add_section(self):
-        hero_image = HeroImage("www.zxcv.com", title="image2")
-        fact1, fact2 = Fact("Value", "normal"), Fact("Lorem", "ipsum")
-        action1 = OpenUri("View", targets=[ActionTarget(OSType.ANDROID, "http://www.android.com/"), ])
-        action2 = HttpPOST("Send", URL, headers=[Header("Content-Length", 16), ], body="post body",
-                           body_content_type="content type")
-        section = Section(title="Sample section", activity_image="www.example.com", activity_title="Activity title",
-                          activity_subtitle="activity subtitle", activity_text="zxcv", hero_image=hero_image,
-                          facts=[fact1, fact2], actions=[action1, action2])
-        message_card = MessageCard(auto_correlation_id=False)
-        message_card.add_section(section)
-        self.assertDictEqual(message_card.payload, {
-            "@type": "MessageCard",
-            "@context": "https://schema.org/extensions",
-            "sections": [{
-                "title": "Sample section",
-                "activityImage": "www.example.com",
-                "activityTitle": "Activity title",
-                "activitySubtitle": "activity subtitle",
-                "activityText": "zxcv",
-                "heroImage": {
-                    "image": "www.zxcv.com",
-                    "title": "image2"
-                },
-                "facts": [
-                    {"name": "Value", "value": "normal"},
-                    {"name": "Lorem", "value": "ipsum"}
-                ],
-                "potentialAction": [{
-                    "@type": "OpenUri",
-                    "name": "View",
-                    "targets": [
-                        {"os": "android", "uri": "http://www.android.com/"}
-                    ]
-                }, {
-                    "@type": "HttpPOST",
-                    "name": "Send",
-                    "target": URL,
-                    "headers": [
-                        {"name": "Content-Length", "value": 16}
-                    ],
-                    "body": "post body",
-                    "bodyContentType": "content type"
-                }]
-            }]
         })
 
     def test_message_card_add_sections(self):
@@ -287,6 +289,9 @@ class MessageCardTestCase(TestCase):
         section2 = Section(title="Section 9", activity_image="www.section.com", activity_title="Activity",
                            activity_subtitle="activity qwer", activity_text="asdf", hero_image=hero_image,
                            facts=[fact1, ], actions=[action3, ])
+        section3 = Section(title="Section 3", activity_image="www.section3.com", activity_title="Activity",
+                           activity_subtitle="activity zxcv", activity_text="zxcv", hero_image=hero_image,
+                           facts=[fact2, ], actions=[action1, ])
         message_card = MessageCard(auto_correlation_id=False)
         message_card.add_sections([section1, section2])
         self.assertDictEqual(message_card.payload, {
@@ -344,42 +349,80 @@ class MessageCardTestCase(TestCase):
                 }]
             }]
         })
-
-    def test_message_card_add_action(self):
-        message_card = MessageCard(auto_correlation_id=False)
-        message_card.add_action(OpenUri("Click", targets=[ActionTarget(OSType.ANDROID, URL), ]))
+        message_card.add_sections(section3)
         self.assertDictEqual(message_card.payload, {
             "@type": "MessageCard",
             "@context": "https://schema.org/extensions",
-            "potentialAction": [{
-                "@type": "OpenUri",
-                "name": "Click",
-                "targets": [
-                    {"os": "android", "uri": URL}
-                ]
-            }]
-        })
-        message_card.add_action(HttpPOST("Send", URL, headers=[Header("Content-Length", 32), ],
-                                         body="Duis aute irure dolor in reprehenderit",
-                                         body_content_type="content_type"))
-        self.assertDictEqual(message_card.payload, {
-            "@type": "MessageCard",
-            "@context": "https://schema.org/extensions",
-            "potentialAction": [{
-                "@type": "OpenUri",
-                "name": "Click",
-                "targets": [
-                    {"os": "android", "uri": URL}
-                ]
-            }, {
-                "@type": "HttpPOST",
-                "name": "Send",
-                "target": URL,
-                "headers": [
-                    {"name": "Content-Length", "value": 32}
+            "sections": [{
+                "title": "Sample section",
+                "activityImage": "www.example.com",
+                "activityTitle": "Activity title",
+                "activitySubtitle": "activity subtitle",
+                "activityText": "zxcv",
+                "heroImage": {
+                    "image": "www.zxcv.com",
+                    "title": "image2"
+                },
+                "facts": [
+                    {"name": "Value", "value": "normal"},
+                    {"name": "Lorem", "value": "ipsum"}
                 ],
-                "body": "Duis aute irure dolor in reprehenderit",
-                "bodyContentType": "content_type"
+                "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "View",
+                    "targets": [
+                        {"os": "android", "uri": "http://www.android.com/"}
+                    ]
+                }, {
+                    "@type": "HttpPOST",
+                    "name": "Send",
+                    "target": URL,
+                    "headers": [
+                        {"name": "Content-Length", "value": 16}
+                    ],
+                    "body": "post body",
+                    "bodyContentType": "content type"
+                }]
+            }, {
+                "title": "Section 9",
+                "activityImage": "www.section.com",
+                "activityTitle": "Activity",
+                "activitySubtitle": "activity qwer",
+                "activityText": "asdf",
+                "heroImage": {
+                    "image": "www.zxcv.com",
+                    "title": "image2"
+                },
+                "facts": [
+                    {"name": "Value", "value": "normal"}
+                ],
+                "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "Click",
+                    "targets": [
+                        {"os": "default", "uri": "http://www.example.com/"}
+                    ]
+                }]
+            }, {
+                "title": "Section 3",
+                "activityImage": "www.section3.com",
+                "activityTitle": "Activity",
+                "activitySubtitle": "activity zxcv",
+                "activityText": "zxcv",
+                "heroImage": {
+                    "image": "www.zxcv.com",
+                    "title": "image2"
+                },
+                "facts": [
+                    {"name": "Lorem", "value": "ipsum"}
+                ],
+                "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "View",
+                    "targets": [
+                        {"os": "android", "uri": "http://www.android.com/"}
+                    ]
+                }]
             }]
         })
 
@@ -408,6 +451,33 @@ class MessageCardTestCase(TestCase):
                 ],
                 "body": "quis nostrud exercitation ullamco",
                 "bodyContentType": "content_type"
+            }]
+        })
+        message_card.add_actions(OpenUri("View", targets=[ActionTarget(OSType.DEFAULT, URL), ]))
+        self.assertDictEqual(message_card.payload, {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "potentialAction": [{
+                "@type": "OpenUri",
+                "name": "Click",
+                "targets": [
+                    {"os": "default", "uri": URL}
+                ]
+            }, {
+                "@type": "HttpPOST",
+                "name": "Post",
+                "target": URL,
+                "headers": [
+                    {"name": "Content-Length", "value": 11}
+                ],
+                "body": "quis nostrud exercitation ullamco",
+                "bodyContentType": "content_type"
+            }, {
+                "@type": "OpenUri",
+                "name": "View",
+                "targets": [
+                    {"os": "default", "uri": URL}
+                ]
             }]
         })
 

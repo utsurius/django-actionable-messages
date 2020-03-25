@@ -5,8 +5,10 @@ from django.test import TestCase
 from django_actionable_messages.adaptive_card.actions import OpenUrl, Submit
 from django_actionable_messages.adaptive_card.cards import AdaptiveCard
 from django_actionable_messages.adaptive_card.elements import Image, TextRun
-from django_actionable_messages.adaptive_card.utils import VERSIONS, SCHEMA, Style, VerticalAlignment, Color, ActionStyle
-from django_actionable_messages.utils import CardException
+from django_actionable_messages.adaptive_card.utils import (
+    VERSIONS, SCHEMA, Style, VerticalAlignment, Color, ActionStyle
+)
+from django_actionable_messages.exceptions import CardException
 
 URL = "https://www.example.com/"
 
@@ -183,48 +185,6 @@ class CardsTestCase(TestCase):
             "verticalContentAlignment": "top"
         })
 
-    def test_adaptive_card_add_element(self):
-        adaptive_card = AdaptiveCard()
-        adaptive_card.add_element(Image(URL, alternate_text="asdf"))
-        self.assertDictEqual(adaptive_card.payload, {
-            "type": "AdaptiveCard",
-            "body": [{
-                "type": "Image",
-                "url": URL,
-                "altText": "asdf"
-            }]
-        })
-        adaptive_card.add_element(TextRun(text="Mauris massa. Vestibulum lacinia arcu eget nulla.", color=Color.ACCENT))
-        self.assertDictEqual(adaptive_card.payload, {
-            "type": "AdaptiveCard",
-            "body": [{
-                "type": "Image",
-                "url": URL,
-                "altText": "asdf"
-            }, {
-                "type": "TextRun",
-                "text": "Mauris massa. Vestibulum lacinia arcu eget nulla.",
-                "color": "accent"
-            }]
-        })
-        adaptive_card.add_element(Image("www.image.com", height="24px"))
-        self.assertDictEqual(adaptive_card.payload, {
-            "type": "AdaptiveCard",
-            "body": [{
-                "type": "Image",
-                "url": URL,
-                "altText": "asdf"
-            }, {
-                "type": "TextRun",
-                "text": "Mauris massa. Vestibulum lacinia arcu eget nulla.",
-                "color": "accent"
-            }, {
-                "type": "Image",
-                "url": "www.image.com",
-                "height": "24px"
-            }]
-        })
-
     def test_adaptive_card_add_elements(self):
         adaptive_card = AdaptiveCard()
         adaptive_card.add_elements([
@@ -248,47 +208,25 @@ class CardsTestCase(TestCase):
                 "height": "50px"
             }]
         })
-
-    def test_adaptive_card_add_action(self):
-        adaptive_card = AdaptiveCard()
-        adaptive_card.add_action(Submit(title="Submit", style=ActionStyle.DESTRUCTIVE))
+        adaptive_card.add_elements(Image("www.image.com", height="24px"))
         self.assertDictEqual(adaptive_card.payload, {
             "type": "AdaptiveCard",
-            "actions": [{
-                "type": "Action.Submit",
-                "style": "destructive",
-                "title": "Submit"
-            }]
-        })
-        adaptive_card.add_action(OpenUrl(URL, title="Open me please"))
-        self.assertDictEqual(adaptive_card.payload, {
-            "type": "AdaptiveCard",
-            "actions": [{
-                "type": "Action.Submit",
-                "style": "destructive",
-                "title": "Submit"
-            }, {
-                "type": "Action.OpenUrl",
+            "body": [{
+                "type": "Image",
                 "url": URL,
-                "title": "Open me please"
-            }]
-        })
-        adaptive_card.add_action(Submit(title="Post", style=ActionStyle.DEFAULT, icon_url="www.icons.com/1.png"))
-        self.assertDictEqual(adaptive_card.payload, {
-            "type": "AdaptiveCard",
-            "actions": [{
-                "type": "Action.Submit",
-                "style": "destructive",
-                "title": "Submit"
+                "altText": "elementum"
             }, {
-                "type": "Action.OpenUrl",
-                "url": URL,
-                "title": "Open me please"
+                "type": "TextRun",
+                "text": "Mauris vel commodo lorem. Mauris eu ex id sapien viverra elementum",
+                "color": "default"
             }, {
-                "type": "Action.Submit",
-                "style": "default",
-                "title": "Post",
-                "iconUrl": "www.icons.com/1.png"
+                "type": "Image",
+                "url": "www.image.com/image1.jpeg",
+                "height": "50px"
+            }, {
+                "type": "Image",
+                "url": "www.image.com",
+                "height": "24px"
             }]
         })
 
@@ -314,5 +252,27 @@ class CardsTestCase(TestCase):
                 "style": "default",
                 "title": "Post",
                 "iconUrl": "www.icons.com/1.png"
+            }]
+        })
+        adaptive_card.add_actions(OpenUrl(URL, title="Open me please"))
+        self.assertDictEqual(adaptive_card.payload, {
+            "type": "AdaptiveCard",
+            "actions": [{
+                "type": "Action.Submit",
+                "style": "positive",
+                "title": "Submit"
+            }, {
+                "type": "Action.OpenUrl",
+                "url": URL,
+                "title": "Click"
+            }, {
+                "type": "Action.Submit",
+                "style": "default",
+                "title": "Post",
+                "iconUrl": "www.icons.com/1.png"
+            }, {
+                "type": "Action.OpenUrl",
+                "url": URL,
+                "title": "Open me please"
             }]
         })

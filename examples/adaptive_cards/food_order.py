@@ -23,7 +23,7 @@ adaptive_card1.add_elements([
     ),
     TextInput(item_id="SteakOther", is_multiline=True, placeholder="Any other preparation requests?")
 ])
-adaptive_card1.add_action(Submit(title="OK", data={"FoodChoice": "Steak"}))
+adaptive_card1.add_actions(Submit(title="OK", data={"FoodChoice": "Steak"}))
 adaptive_card2 = AdaptiveCard()
 adaptive_card2.add_elements([
     TextBlock("Do you have any allergies?", size=FontSize.MEDIUM, wrap=True),
@@ -35,14 +35,14 @@ adaptive_card2.add_elements([
     ),
     TextInput(item_id="ChickenOther", is_multiline=True, placeholder="Any other preparation requests?")
 ])
-adaptive_card2.add_action(Submit(title="OK", data={"FoodChoice": "Chicken"}))
+adaptive_card2.add_actions(Submit(title="OK", data={"FoodChoice": "Chicken"}))
 adaptive_card3 = AdaptiveCard()
 adaptive_card3.add_elements([
     TextBlock("Would you like it prepared vegan?", size=FontSize.MEDIUM, wrap=True),
     ToggleInput(item_id="Vegetarian", title="Please prepare it vegan", value_on="vegan", value_off="notVegan"),
     TextInput(item_id="VegOther", is_multiline=True, placeholder="Any other preparation requests?")
 ])
-adaptive_card3.add_action(Submit(title="OK", data={"FoodChoice": "Chicken"}))
+adaptive_card3.add_actions(Submit(title="OK", data={"FoodChoice": "Chicken"}))
 
 food_order = AdaptiveCard(version="1.0", schema=SCHEMA)
 food_order.add_elements([

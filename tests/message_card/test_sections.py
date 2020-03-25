@@ -119,29 +119,12 @@ class SectionTestCase(TestCase):
                 {"name": "second", "value": "2nd"}
             ]
         })
-        section.add_facts([Fact("third", "3rd"), Fact("fourth", "4th")])
+        section.add_facts(Fact("third", "3rd"))
         self.assertDictEqual(section.as_data(), {
             "facts": [
                 {"name": "first", "value": "1st"},
                 {"name": "second", "value": "2nd"},
-                {"name": "third", "value": "3rd"},
-                {"name": "fourth", "value": "4th"}
-            ]
-        })
-
-    def test_section_add_fact(self):
-        section = Section()
-        section.add_fact(Fact("Test", 5))
-        self.assertDictEqual(section.as_data(), {
-            "facts": [
-                {"name": "Test", "value": 5}
-            ]
-        })
-        section.add_fact(Fact("lorem", "ipsum"))
-        self.assertDictEqual(section.as_data(), {
-            "facts": [
-                {"name": "Test", "value": 5},
-                {"name": "lorem", "value": "ipsum"}
+                {"name": "third", "value": "3rd"}
             ]
         })
 
@@ -162,7 +145,7 @@ class SectionTestCase(TestCase):
             }]
         })
         action = OpenUri("View", targets=[ActionTarget(OSType.IOS, "http://www.example.com/"), ])
-        section.add_potential_actions([action, ])
+        section.add_potential_actions(action)
         self.assertDictEqual(section.as_data(), {
             "potentialAction": [{
                 "@type": "HttpPOST",
@@ -178,32 +161,6 @@ class SectionTestCase(TestCase):
                 "name": "View",
                 "targets": [
                     {"os": "iOS", "uri": "http://www.example.com/"}
-                ]
-            }]
-        })
-
-    def test_section_add_potential_action(self):
-        section = Section()
-        section.add_potential_action(HttpPOST("Post", target="www.asdf.com"))
-        self.assertDictEqual(section.as_data(), {
-            "potentialAction": [{
-                "@type": "HttpPOST",
-                "name": "Post",
-                "target": "www.asdf.com"
-            }]
-        })
-        action = OpenUri("Test", targets=[ActionTarget(OSType.ANDROID, "/file/open.txt"), ])
-        section.add_potential_action(action)
-        self.assertDictEqual(section.as_data(), {
-            "potentialAction": [{
-                "@type": "HttpPOST",
-                "name": "Post",
-                "target": "www.asdf.com"
-            }, {
-                "@type": "OpenUri",
-                "name": "Test",
-                "targets": [
-                    {"os": "android", "uri": "/file/open.txt"}
                 ]
             }]
         })

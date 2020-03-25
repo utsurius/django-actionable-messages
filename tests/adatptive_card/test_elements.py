@@ -1,12 +1,14 @@
 from django.test import TestCase
 
 from django_actionable_messages.adaptive_card.actions import OpenUrl
-from django_actionable_messages.adaptive_card.elements import TextBlock, Image, MediaSource, Media, TextRun, RichTextBlock
+from django_actionable_messages.adaptive_card.elements import (
+    TextBlock, Image, MediaSource, Media, TextRun, RichTextBlock
+)
 from django_actionable_messages.adaptive_card.utils import (
     Color, FontType, HorizontalAlignment, FontSize, FallbackOption, FontWeight, SpacingStyle, ImageSize, ImageStyle,
     BlockElementHeight
 )
-from django_actionable_messages.utils import CardException
+from django_actionable_messages.exceptions import CardException
 
 URL = "https://www.example.com/"
 
@@ -852,8 +854,6 @@ class ElementsTestCase(TestCase):
                 "Eos saepe phaedrum"
             ]
         })
-        with self.assertRaisesMessage(CardException, "Invalid inline type"):
-            rich_text_block.set_inlines([1234, ])
 
     def test_rich_text_block_set_horizontal_alignment(self):
         rich_text_block = RichTextBlock(inlines=["lorem ipsum", ])

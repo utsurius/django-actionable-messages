@@ -1,21 +1,21 @@
 import uuid
-from typing import List
+from typing import List, Union
 
+from django_actionable_messages.exceptions import CardException
 from django_actionable_messages.utils import MESSAGE_CARD, Card
 
 
 class MessageCard(Card):
     card_type = MESSAGE_CARD
 
-    def __init__(self, title: str = None, text: str = None, originator: str = None, summary: str = None,
-                 theme_color: str = None, correlation_id: str = None, auto_correlation_id=True,
-                 expected_actors: List[str] = None, hide_original_body: bool = None, sections: list = None,
-                 actions: list = None):
+    def __init__(self, title=None, text=None, originator: str = None, summary=None, theme_color: str = None,
+                 correlation_id: str = None, auto_correlation_id=True, expected_actors: List[str] = None,
+                 hide_original_body: bool = None, sections: list = None, actions: list = None, **kwargs):
         self._payload = {
             "@type": "MessageCard",
             "@context": "https://schema.org/extensions"
         }
-
+        super().__init__(**kwargs)
         if title is not None:
             self.set_title(title)
         if text is not None:
@@ -36,18 +36,17 @@ class MessageCard(Card):
             self.add_sections(sections)
         if actions:
             self.add_actions(actions)
-        super().__init__()
 
-    def set_title(self, title: str):
+    def set_title(self, title):
         self._payload["title"] = title
 
-    def set_text(self, text: str):
+    def set_text(self, text):
         self._payload["text"] = text
 
     def set_originator(self, originator: str):
         self._payload["originator"] = originator
 
-    def set_summary(self, summary: str):
+    def set_summary(self, summary):
         self._payload["summary"] = summary
 
     def set_theme_color(self, theme_color: str):
@@ -59,21 +58,28 @@ class MessageCard(Card):
     def set_expected_actors(self, expected_actors: List[str]):
         self._payload["expectedActors"] = expected_actors
 
+    def add_expected_actors(self, expected_actors: Union[str, List[str]]):
+        self._payload.setdefault("expectedActors", [])
+        if isinstance(expected_actors, (list, set, tuple)):
+            self._payload["expectedActors"].extend(list(expected_actors))
+        elif isinstance(expected_actors, str):
+            self._payload["expectedActors"].append(expected_actors)
+        else:
+            raise CardException("Invalid expected_actors type")
+
     def set_hide_original_body(self, hide_original_body=True):
         self._payload["hideOriginalBody"] = hide_original_body
 
-    def add_sections(self, sections: list):
+    def add_sections(self, sections):
         self._payload.setdefault("sections", [])
-        self._payload["sections"].extend(self._get_items_list(sections))
+        if isinstance(sections, (list, set, tuple)):
+            self._payload["sections"].extend(self._get_items_list(sections))
+        else:
+            self._payload["sections"].append(sections.as_data())
 
-    def add_section(self, section):
-        self._payload.setdefault("sections", [])
-        self._payload["sections"].append(section.as_data())
-
-    def add_actions(self, actions: list):
+    def add_actions(self, actions):
         self._payload.setdefault("potentialAction", [])
-        self._payload["potentialAction"].extend(self._get_items_list(actions))
-
-    def add_action(self, action):
-        self._payload.setdefault("potentialAction", [])
-        self._payload["potentialAction"].append(action.as_data())
+        if isinstance(actions, (list, set, tuple)):
+            self._payload["potentialAction"].extend(self._get_items_list(actions))
+        else:
+            self._payload["potentialAction"].append(actions.as_data())

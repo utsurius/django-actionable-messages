@@ -13,8 +13,8 @@ https://adaptivecards.io/samples/ActivityUpdate.html
 
 
 activity_update = AdaptiveCard(version="1.0", schema=SCHEMA)
-activity_update.add_element(TextBlock("Publish Adaptive Card schema", size=FontSize.MEDIUM, weight=FontWeight.BOLDER))
-activity_update.add_element(ColumnSet([
+activity_update.add_elements(TextBlock("Publish Adaptive Card schema", size=FontSize.MEDIUM, weight=FontWeight.BOLDER))
+activity_update.add_elements(ColumnSet([
     Column(
         width=Width.AUTO,
         items=[
@@ -31,18 +31,18 @@ activity_update.add_element(ColumnSet([
         ]
     )
 ]))
-activity_update.add_element(TextBlock(
+activity_update.add_elements(TextBlock(
     "Now that we have defined the main rules and features of the format, we need to produce a schema and publish it "
     "to GitHub. The schema will be the starting point of our reference documentation.",
     wrap=True
 ))
-activity_update.add_element(FactSet([
+activity_update.add_elements(FactSet([
     Fact("Board:", "Adaptive card"),
     Fact("List:", "Backing"),
     Fact("Assigned to:",  "Matt Hidinger"),
     Fact("Due date:", "Not set")
 ]))
-activity_update.add_action(ShowCard(
+activity_update.add_actions(ShowCard(
     title="Set due date",
     card=AdaptiveCard(
         inputs=[
@@ -53,7 +53,7 @@ activity_update.add_action(ShowCard(
         ]
     )
 ))
-activity_update.add_action(ShowCard(
+activity_update.add_actions(ShowCard(
     title="Comment",
     card=AdaptiveCard(
         inputs=[

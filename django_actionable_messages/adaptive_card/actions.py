@@ -1,12 +1,19 @@
 from typing import Union
 
 from django_actionable_messages.adaptive_card.utils import FallbackOption, ActionStyle
-from django_actionable_messages.utils import CardElement, CardException
+from django_actionable_messages.exceptions import CardException
+from django_actionable_messages.utils import CardElement
 
 
 class ActionMixin(CardElement):
-    def __init__(self, title: str = None, icon_url: str = None, style: ActionStyle = None, fallback=None,
+    action_type = ""
+
+    def __init__(self, title=None, icon_url: str = None, style: ActionStyle = None, fallback=None,
                  requires: dict = None, **kwargs):
+        self._data = {
+            "type": self.action_type
+        }
+        super().__init__(**kwargs)
         if title is not None:
             self.set_title(title)
         if icon_url is not None:
@@ -17,20 +24,19 @@ class ActionMixin(CardElement):
             self.set_fallback(fallback)
         if requires is not None:
             self.set_requires(requires)
-        super().__init__()
 
-    def set_title(self, title: str):
+    def set_title(self, title):
         self._data["title"] = title
 
     def set_icon_url(self, url: str):
         self._data["iconUrl"] = url
 
     def set_style(self, style: ActionStyle):
-        self._data["style"] = style.value
+        self._data["style"] = style
 
     def set_fallback(self, fallback):
         if isinstance(fallback, FallbackOption):
-            self._data["fallback"] = fallback.value
+            self._data["fallback"] = fallback
         elif isinstance(fallback, ActionMixin):
             self._data["fallback"] = fallback.as_data()
         else:
@@ -41,51 +47,48 @@ class ActionMixin(CardElement):
 
 
 class OpenUrl(ActionMixin):
+    action_type = "Action.OpenUrl"
+
     def __init__(self, url: str, **kwargs):
-        self._data = {
-            "type": "Action.OpenUrl",
-            "url": url
-        }
         super().__init__(**kwargs)
+        self.set_url(url)
 
     def set_url(self, url: str):
         self._data["url"] = url
 
 
 class Submit(ActionMixin):
+    action_type = "Action.Submit"
+
     def __init__(self, data: Union[str, dict] = None, **kwargs):
-        self._data = {
-            "type": "Action.Submit"
-        }
+        super().__init__(**kwargs)
         if data is not None:
             self.set_data(data)
-        super().__init__(**kwargs)
 
     def set_data(self, data: Union[str, dict]):
         self._data["data"] = data
 
 
 class ShowCard(ActionMixin):
+    action_type = "Action.ShowCard"
+
     def __init__(self, card=None, **kwargs):
-        self._data = {
-            "type": "Action.ShowCard"
-        }
+        super().__init__(**kwargs)
         if card is not None:
             self.set_card(card)
-        super().__init__(**kwargs)
 
     def set_card(self, card):
         self._data["card"] = card.payload
 
 
 class TargetElement(CardElement):
-    def __init__(self, element_id: str, is_visible: bool = None):
+    def __init__(self, element_id: str, is_visible: bool = None, **kwargs):
         self._data = {
             "elementId": element_id
         }
+        super().__init__(**kwargs)
         if is_visible is not None:
             self.set_is_visible(is_visible)
-        super().__init__()
 
     def set_element_id(self, element_id: str):
         self._data["elementId"] = element_id
@@ -95,20 +98,17 @@ class TargetElement(CardElement):
 
 
 class ToggleVisibility(ActionMixin):
+    action_type = "Action.ToggleVisibility"
+
     def __init__(self, target_elements: list = None, **kwargs):
-        self._data = {
-            "type": "Action.ToggleVisibility"
-        }
+        super().__init__(**kwargs)
         if target_elements:
             self.set_target_elements(target_elements)
-        super().__init__(**kwargs)
 
     def set_target_elements(self, elements: list):
         self._data["targetElements"] = []
         for element in elements:
             if isinstance(element, TargetElement):
                 self._data["targetElements"].append(element.as_data())
-            elif isinstance(element, str):
-                self._data["targetElements"].append(element)
             else:
-                raise CardException("Invalid target element type")
+                self._data["targetElements"].append(element)

@@ -8,9 +8,9 @@ from django_actionable_messages.adaptive_card.elements import Image, TextBlock
 from django_actionable_messages.adaptive_card.types import BackgroundImage
 from django_actionable_messages.adaptive_card.utils import (
     SpacingStyle, FallbackOption, ImageSize, Style, VerticalAlignment, Width, BlockElementHeight, ActionStyle,
-    ImageStyle, Color, FontType, FillMode, HorizontalAlignment
+    Color, FontType, FillMode, HorizontalAlignment
 )
-from django_actionable_messages.utils import CardException
+from django_actionable_messages.exceptions import CardException
 
 URL = "https://www.example.com/"
 
@@ -55,10 +55,7 @@ class ContainersTestCase(TestCase):
                 "style": "default"
             }]
         })
-
-    def test_action_set_add_action(self):
-        action_set = ActionSet(actions=[Submit(title="Submit"), ])
-        action_set.add_action(OpenUrl("www.qwer.com", title="Click"))
+        action_set.add_actions(OpenUrl("www.qwer2.com", title="Click"))
         self.assertDictEqual(action_set.as_data(), {
             "type": "ActionSet",
             "actions": [{
@@ -67,6 +64,14 @@ class ContainersTestCase(TestCase):
             }, {
                 "type": "Action.OpenUrl",
                 "url": "www.qwer.com",
+                "title": "Click"
+            }, {
+                "type": "Action.Submit",
+                "title": "Submit",
+                "style": "default"
+            }, {
+                "type": "Action.OpenUrl",
+                "url": "www.qwer2.com",
                 "title": "Click"
             }]
         })
@@ -269,16 +274,23 @@ class ContainersTestCase(TestCase):
                 "fontType": "monospace"
             }]
         })
-
-    def test_container_add_item(self):
-        container = Container(items=[TextBlock(text="zxcv", color=Color.ACCENT), ])
-        container.add_item(Image(URL, alternate_text="image_none", height="32px"))
+        container.add_items(Image(URL, alternate_text="image_none", height="32px"))
         self.assertDictEqual(container.as_data(), {
             "type": "Container",
             "items": [{
                 "type": "TextBlock",
                 "text": "zxcv",
                 "color": "accent"
+            }, {
+                "type": "Image",
+                "url": URL,
+                "altText": "image_none",
+                "height": "32px"
+            }, {
+                "type": "TextBlock",
+                "text": "asdf",
+                "color": "default",
+                "fontType": "monospace"
             }, {
                 "type": "Image",
                 "url": URL,
@@ -478,29 +490,21 @@ class ContainersTestCase(TestCase):
                 "color": "accent"
             }]
         })
-
-    def test_column_add_item(self):
-        column = Column()
-        column.add_item(TextBlock(text="Integer et enim a sapien dapibus", color=Color.GOOD))
+        column.add_items(TextBlock(text="Integer et enim a sapien dapibus", color=Color.GOOD))
         self.assertDictEqual(column.as_data(), {
             "type": "Column",
             "items": [{
-                "type": "TextBlock",
-                "text": "Integer et enim a sapien dapibus",
-                "color": "good"
-            }]
-        })
-        column.add_item(Image(URL, alternate_text="image1"))
-        self.assertDictEqual(column.as_data(), {
-            "type": "Column",
-            "items": [{
-                "type": "TextBlock",
-                "text": "Integer et enim a sapien dapibus",
-                "color": "good"
-            }, {
                 "type": "Image",
                 "url": URL,
-                "altText": "image1"
+                "altText": "images"
+            }, {
+                "type": "TextBlock",
+                "text": " Sed sit amet sem",
+                "color": "accent"
+            }, {
+                "type": "TextBlock",
+                "text": "Integer et enim a sapien dapibus",
+                "color": "good"
             }]
         })
 
@@ -718,10 +722,7 @@ class ContainersTestCase(TestCase):
                 "separator": True
             }]
         })
-
-    def test_column_set_add_column(self):
-        column_set = ColumnSet(columns=[Column(style=Style.ACCENT, item_id="col"), Column(bleed=True)])
-        column_set.add_column(Column(bleed=True, min_height="120px", spacing=SpacingStyle.DEFAULT))
+        column_set.add_columns(Column(bleed=True, min_height="120px", spacing=SpacingStyle.DEFAULT))
         self.assertDictEqual(column_set.as_data(), {
             "type": "ColumnSet",
             "columns": [{
@@ -730,7 +731,9 @@ class ContainersTestCase(TestCase):
                 "id": "col"
             }, {
                 "type": "Column",
-                "bleed": True
+                "backgroundImage": URL,
+                "bleed": True,
+                "separator": True
             }, {
                 "type": "Column",
                 "bleed": True,
@@ -910,10 +913,7 @@ class ContainersTestCase(TestCase):
                 "value": "John"
             }]
         })
-
-    def test_fact_set_add_fact(self):
-        fact_set = FactSet([Fact("foo", "asdf")])
-        fact_set.add_fact(Fact("bar", "zxcv"))
+        fact_set.add_facts(Fact("abcd", "zxcv"))
         self.assertDictEqual(fact_set.as_data(), {
             "type": "FactSet",
             "facts": [{
@@ -921,6 +921,12 @@ class ContainersTestCase(TestCase):
                 "value": "asdf"
             }, {
                 "title": "bar",
+                "value": "zxcv"
+            }, {
+                "title": "name",
+                "value": "John"
+            }, {
+                "title": "abcd",
                 "value": "zxcv"
             }]
         })
@@ -1100,10 +1106,7 @@ class ContainersTestCase(TestCase):
                 "url": "www.example.com/image2.jpeg"
             }]
         })
-
-    def test_image_set_add_image(self):
-        image_set = ImageSet(images=[Image(url="www.sample.com/image.bmp"), ])
-        image_set.add_image(Image(url="www.example.com/image2.jpeg"))
+        image_set.add_images(Image(url="www.example.com/image3.jpeg"))
         self.assertDictEqual(image_set.as_data(), {
             "type": "ImageSet",
             "images": [{
@@ -1111,7 +1114,13 @@ class ContainersTestCase(TestCase):
                 "url": "www.sample.com/image.bmp"
             }, {
                 "type": "Image",
+                "url": "www.example.com/image1.jpeg"
+            }, {
+                "type": "Image",
                 "url": "www.example.com/image2.jpeg"
+            }, {
+                "type": "Image",
+                "url": "www.example.com/image3.jpeg"
             }]
         })
 

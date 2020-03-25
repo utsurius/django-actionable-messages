@@ -1,14 +1,12 @@
-from typing import List
-
-from django_actionable_messages.message_card.elements import Fact, HeroImage
 from django_actionable_messages.utils import CardElement
 
 
 class Section(CardElement):
-    def __init__(self, start_group: bool = False, title: str = None, text: str = None, activity_image: str = None,
-                 activity_title: str = None, activity_subtitle: str = None, activity_text: str = None,
-                 hero_image: HeroImage = None, facts: List[Fact] = None, actions: list = None):
+    def __init__(self, start_group: bool = False, title=None, text=None, activity_image: str = None,
+                 activity_title=None, activity_subtitle=None, activity_text=None, hero_image=None, facts=None,
+                 actions=None, **kwargs):
         self._data = {}
+        super().__init__(**kwargs)
         if start_group:
             self.set_start_group(start_group)
         if title is not None:
@@ -29,18 +27,17 @@ class Section(CardElement):
             self.add_facts(facts)
         if actions:
             self.add_potential_actions(actions)
-        super().__init__()
 
     def set_start_group(self, start_group=True):
         self._data["startGroup"] = start_group
 
-    def set_title(self, title: str):
+    def set_title(self, title):
         self._data["title"] = title
 
-    def set_text(self, text: str):
+    def set_text(self, text):
         self._data["text"] = text
 
-    def set_activity(self, image: str = None, title: str = None, subtitle: str = None, text: str = None):
+    def set_activity(self, image: str = None, title=None, subtitle=None, text=None):
         if image is not None:
             self.set_activity_image(image)
         if title is not None:
@@ -53,30 +50,28 @@ class Section(CardElement):
     def set_activity_image(self, image: str):
         self._data["activityImage"] = image
 
-    def set_activity_title(self, title: str):
+    def set_activity_title(self, title):
         self._data["activityTitle"] = title
 
-    def set_activity_subtitle(self, subtitle: str):
+    def set_activity_subtitle(self, subtitle):
         self._data["activitySubtitle"] = subtitle
 
-    def set_activity_text(self, text: str):
+    def set_activity_text(self, text):
         self._data["activityText"] = text
 
-    def set_hero_image(self, hero_image: HeroImage):
+    def set_hero_image(self, hero_image):
         self._data["heroImage"] = hero_image.as_data()
 
-    def add_facts(self, facts: List[Fact]):
+    def add_facts(self, facts):
         self._data.setdefault("facts", [])
-        self._data["facts"].extend(self._get_items_list(facts))
+        if isinstance(facts, (list, set, tuple)):
+            self._data["facts"].extend(self._get_items_list(facts))
+        else:
+            self._data["facts"].append(facts.as_data())
 
-    def add_fact(self, fact: Fact):
-        self._data.setdefault("facts", [])
-        self._data["facts"].append(fact.as_data())
-
-    def add_potential_actions(self, actions: list):
+    def add_potential_actions(self, actions):
         self._data.setdefault("potentialAction", [])
-        self._data["potentialAction"].extend(self._get_items_list(actions))
-
-    def add_potential_action(self, potential_action):
-        self._data.setdefault("potentialAction", [])
-        self._data["potentialAction"].append(potential_action.as_data())
+        if isinstance(actions, (list, set, tuple)):
+            self._data["potentialAction"].extend(self._get_items_list(actions))
+        else:
+            self._data["potentialAction"].append(actions.as_data())

@@ -104,11 +104,14 @@ SETTINGS
 
 ```python
 ACTIONABLE_MESSAGES = {
-    "JSON_ENCODER": None
+    "JSON_ENCODER": None,
+    "LANGUAGE_CODE": "en"
 }
 ```
 
-"JSON_ENCODER" is a doted path to custom json encoder.
+"JSON_ENCODER" - doted path to custom json encoder (default: BaseEncoder).
+
+"LANGUAGE_CODE" - language code used for translations (defaults to project settings.LANGUAGE_CODE). Each element of adaptive_card/message_card can set individual "lang_code".
 
 
 <h2 id="requirements">Requirements</h2>
@@ -116,7 +119,7 @@ ACTIONABLE_MESSAGES = {
 |Name|Version|
 |---|---|
 |python|3.5 - 3.8|
-|django|1.11.0 - 3.0|
+|django|2.2 - 3.0|
 
 
 <h2 id="usage">Usage</h2>
@@ -134,7 +137,7 @@ from django_actionable_messages.message_card.utils import OSType
 
 issue_opened = MessageCard(title="Issue opened: \"Push notifications not working\"", summary="Issue 176715375",
                            theme_color="0078D7")
-issue_opened.add_section(
+issue_opened.add_sections(
     Section(
         activity_title="Miguel Garcie",
         activity_subtitle="9/13/2016, 11:46am",
@@ -176,13 +179,13 @@ from django_actionable_messages.adaptive_card.utils import SCHEMA, FontSize, Fon
 calendar_reminder = AdaptiveCard(version="1.0", schema=SCHEMA)
 calendar_reminder.set_speak("Your  meeting about \"Adaptive Card design session\" is starting at 12:30pm"
                             "Do you want to snooze  or do you want to send a late notification to the attendees?")
-calendar_reminder.add_element(TextBlock("Adaptive Card design session", size=FontSize.LARGE, weight=FontWeight.BOLDER))
+calendar_reminder.add_elements(TextBlock("Adaptive Card design session", size=FontSize.LARGE, weight=FontWeight.BOLDER))
 calendar_reminder.add_elements([
     TextBlock("Conf Room 112/3377 (10)", is_subtle=True),
     TextBlock("12:30 PM - 1:30 PM", is_subtle=True, spacing=SpacingStyle.NONE),
     TextBlock("Snooze for")
 ])
-calendar_reminder.add_element(ChoiceSetInput(
+calendar_reminder.add_elements(ChoiceSetInput(
     item_id="snooze", style=ChoiceInputStyle.COMPACT, value="5", choices=[
         InputChoice("5 minutes", "5"),
         InputChoice("15 minutes", "15"),
@@ -203,16 +206,16 @@ For more view **`examples`** folder
 
 To get dictionary, json or html payload from card use:
 
-|Function|Type|
+|Property|Type|
 |---|---|
-|.payload|*dict*|
+|.payload|*dict* (raw data)|
 |.json_payload|json string|
 |.html_payload|html string - can be used to send card via email ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/send-via-email))|
 
 
-Problem: **'... is not JSON serializable'** - probably invalid argument type was used (for example: custom object or `lazy` object instead of *str*).
+Problem: **'... is not JSON serializable'** - probably invalid argument type was used. Default json serializer can handle translated strings and everything that `DjangoJSONEncoder` can handle. 
 
-Solution: [Better Python Object Serialization](https://hynek.me/articles/serialization/)
+Solution: [Better Python Object Serialization](https://hynek.me/articles/serialization/). Remember to ALWAYS inherit from EncoderMixin (`django_actionable_messages.encoders import EncoderMixin`)
 
 You can set JSON_ENCODER (globally) in SETTINGS(ACTIONABLE_MESSAGES) or set it by card(json_encoder):
 
@@ -240,7 +243,7 @@ import requests
 
 requests.post(
     webhook_url,
-    json=card.payload,
+    json=card.json_payload,
     headers={
         "Content-Type": "application/json; charset=utf-8"
     }
@@ -264,7 +267,7 @@ Supported versions: **1.0**, **1.1**, **1.2**
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**text**|set_text()|text|*str*|
+|**text**|set_text()|text|*str, trans<sup>3</sup>*|
 |color|set_color()|color|Color<sup>1</sup>|
 |font_type|set_font_type()|fontType|FontType<sup>1</sup>|
 |horizontal_alignment|set_horizontal_alignment()|horizontalAlignment|HorizontalAlignment<sup>1</sup>|
@@ -280,6 +283,7 @@ Supported versions: **1.0**, **1.1**, **1.2**
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -290,6 +294,8 @@ Supported versions: **1.0**, **1.1**, **1.2**
 |`containers`|Fact, Column|`from django_actionable_messages.adaptive_cards.containers import ...`|
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
+
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-image">Image <a href="https://adaptivecards.io/explorer/Image.html">docs</a></h4>
 
@@ -311,6 +317,7 @@ Supported versions: **1.0**, **1.1**, **1.2**
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -343,6 +350,7 @@ Supported versions: **1.0**, **1.1**, **1.2**
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>2</sup>|
+|lang_code|-|-|*str*|
 
 Other functions
 
@@ -366,7 +374,7 @@ Other functions
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**text**|set_text()|text|*str*|
+|**text**|set_text()|text|*str*, trans <sup>2</sup>|
 |color|set_color()|color|Color<sup>1</sup>|
 |font_type|set_font_type()|fontType|FontType<sup>1</sup>|
 |highlight|set_highlight()|highlight|*bool*|
@@ -376,14 +384,17 @@ Other functions
 |size|set_size()|fontSize|FontSize<sup>1</sup>|
 |strike_through|set_strike_through()|strikethrough|*bool*|
 |weight|set_weight()|fontWeight|FontWeight<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
+
+\[2\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-richtextblock">RichTextBlock <a href="https://adaptivecards.io/explorer/RichTextBlock.html">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**inlines**|set_inlines()|inlines|*str*, TextRun<sup>1</sup>|
+|**inlines**|set_inlines()|inlines|*str*, TextRun<sup>1</sup>, trans<sup>4</sup>|
 |horizontal_alignment|set_horizontal_alignment()|horizontalAlignment|HorizontalAlignment<sup>1</sup>|
 |fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or card element<sup>3</sup>|
 |separator|set_separator()|separator|*bool*|
@@ -405,6 +416,8 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
+\[4\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
 <h3 id="adaptivecard-inputs">Inputs</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.inputs import ...`
@@ -415,10 +428,10 @@ Other functions
 |---|---|---|---|
 |is_multiline|set_is_multiline()|isMultiline|*bool*|
 |max_length|set_max_length()|maxLength|*int*|
-|placeholder|set_placeholder()|placeholder|*str*|
+|placeholder|set_placeholder()|placeholder|*str*, trans<sup>3</sup>|
 |style|set_style()|style|TextInputStyle<sup>1</sup>|
 |inline_action|set_inline_action()|inlineAction|see docs|
-|value|set_value()|value|*str*|
+|value|set_value()|value|*str*, trans<sup>3</sup>|
 |fallback|set_fallback()|fallback|FallbackOption<sup>1</sup> or card element<sup>2</sup>|
 |separator|set_separator()|separator|*bool*|
 |spacing|set_spacing()|spacing|SpacingStyle<sup>1</sup>|
@@ -426,6 +439,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -437,13 +451,15 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
 <h4 id="adaptivecard-numberinput">NumberInput <a href="https://adaptivecards.io/explorer/Input.Number.html">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |max_value|set_max_value()|maxValue|*int*|
 |min_value|set_min_value()|minValue|*int*|
-|placeholder|set_placeholder()|placeholder|*str*|
+|placeholder|set_placeholder()|placeholder|*str*, trans<sup>3</sup>|
 |value|set_value()|value|*int*|
 |fallback|set_fallback()|fallback|FallbackOption<sup>1</sup> or card element<sup>2</sup>|
 |separator|set_separator()|separator|*bool*|
@@ -452,6 +468,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -462,6 +479,8 @@ Other functions
 |`containers`|Fact, Column|`from django_actionable_messages.adaptive_cards.containers import ...`|
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
+
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-dateinput">DateInput <a href="https://adaptivecards.io/explorer/Input.Date.html">docs</a></h4>
 
@@ -469,7 +488,7 @@ Other functions
 |---|---|---|---|
 |max_value|set_max_value()|maxValue|*str*|
 |min_value|set_min_value()|minValue|*str*|
-|placeholder|set_placeholder()|placeholder|*str*|
+|placeholder|set_placeholder()|placeholder|*str*, trans<sup>3</sup>|
 |value|set_value()|value|*str*|
 |fallback|set_fallback()|fallback|FallbackOption<sup>1</sup> or card element<sup>2</sup>|
 |separator|set_separator()|separator|*bool*|
@@ -478,6 +497,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -488,6 +508,8 @@ Other functions
 |`containers`|Fact, Column|`from django_actionable_messages.adaptive_cards.containers import ...`|
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
+
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-timeinput">TimeInput <a href="https://adaptivecards.io/explorer/Input.Time.html">docs</a></h4>
 
@@ -495,7 +517,7 @@ Other functions
 |---|---|---|---|
 |max_value|set_max_value()|maxValue|*str*|
 |min_value|set_min_value()|minValue|*str*|
-|placeholder|set_placeholder()|placeholder|*str*|
+|placeholder|set_placeholder()|placeholder|*str*, trans<sup>3</sup>|
 |value|set_value()|value|*str*|
 |fallback|set_fallback()|fallback|FallbackOption<sup>1</sup> or card element<sup>2</sup>|
 |separator|set_separator()|separator|*bool*|
@@ -504,6 +526,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -515,11 +538,13 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
 <h4 id="adaptivecard-toggleinput">ToggleInput <a href="https://adaptivecards.io/explorer/Input.Toggle.html">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**title**|set_title()|title|*str*|
+|**title**|set_title()|title|*str*, trans<sup>3</sup>|
 |value|set_value()|value|*str*|
 |value_off|set_value_off()|valueOff|*str*|
 |value_on|set_value_on()|valueOn|*str*|
@@ -531,6 +556,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -542,12 +568,17 @@ Other functions
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
 <h4 id="adaptivecard-inputchoice">InputChoice <a href="https://adaptivecards.io/explorer/Input.Choice.html">docs</a></h4>
 
 |Argument name|Property|Type|
 |---|---|---|
-|**title**|title|*str*|
+|**title**|title|*str*, trans<sup>1</sup>|
 |**value**|value|*str*, *int*|
+|lang_code|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-choicesetinput">ChoiceSetInput <a href="https://adaptivecards.io/explorer/Input.ChoiceSet.html">docs</a></h4>
 
@@ -565,6 +596,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>2</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.inputs import ...`
 
@@ -588,50 +620,59 @@ Other functions
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |**url**|set_url()|url|*str*|
-|title|set_title()|title|*str*|
+|title|set_title()|title|*str*, trans<sup>3</sup>|
 |icon_url|set_icon_url()|iconUrl|*str*|
 |style|set_style()|style|ActionStyle<sup>2</sup>|
 |item_id|set_id()|id|*str*|
 |fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or action<sup>1</sup>(except TargetElement<sup>1</sup>)|
 |requires|set_requires()|requires|*dict*|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.actions import ...`
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
+
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-submit">Submit <a href="https://adaptivecards.io/explorer/Action.Submit.html">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |data|set_data()|data|*str*, *dict*|
-|title|set_title()|title|*str*|
+|title|set_title()|title|*str*, trans<sup>3</sup>|
 |icon_url|set_icon_url()|iconUrl|*str*|
 |style|set_style()|style|ActionStyle<sup>2</sup>|
 |item_id|set_id()|id|*str*|
 |fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or action<sup>1</sup>(except TargetElement<sup>1</sup>)|
 |requires|set_requires()|requires|*dict*|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.actions import ...`
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
+
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-showcard">ShowCard <a href="https://adaptivecards.io/explorer/Action.ShowCard.html">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |card|set_card()|card|AdaptiveCard<sup>2</sup>|
-|title|set_title()|title|*str*|
+|title|set_title()|title|*str*, trans<sup>4</sup>|
 |icon_url|set_icon_url()|iconUrl|*str*|
 |style|set_style()|style|ActionStyle<sup>3</sup>|
 |item_id|set_id()|id|*str*|
 |fallback|set_fallback()|fallback|FallbackOption<sup>3</sup> or action<sup>1</sup>(except TargetElement<sup>1</sup>)|
 |requires|set_requires()|requires|*dict*|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.actions import ...`
 
 \[2\] `from django_actionable_messages.adaptive_cards.cards import ...`
 
 \[3\] `from django_actionable_messages.adaptive_cards.utils import ...`
+
+\[4\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-targetelement">TargetElement <a href="https://adaptivecards.io/explorer/TargetElement.html">docs</a></h4>
 
@@ -644,18 +685,20 @@ Other functions
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|target_elements|set_target_elements()|targetElements|*list* of TargetElement<sup>1</sup>/str (can be mixed)|
+|target_elements|set_target_elements()|targetElements|*list* of TargetElement<sup>1</sup>/*str*/trans<sup>3</sup> (can be mixed)|
 |title|set_title()|title|*str*|
 |icon_url|set_icon_url()|iconUrl|*str*|
 |style|set_style()|style|ActionStyle<sup>2</sup>|
 |item_id|set_id()|id|*str*|
 |fallback|set_fallback()|fallback|FallbackOption<sup>1</sup> or action<sup>1</sup>(except TargetElement<sup>1</sup>)|
 |requires|set_requires()|requires|*dict*|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.actions import ...`
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h3 id="adaptivecard-containers">Containers</h3>
 
@@ -665,7 +708,7 @@ Other functions
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|actions|add_actions()|actions|*list* of actions(see docs)|
+|actions|add_actions()|actions|action or *list* of actions(see docs)|
 |fallback|set_fallback()|fallback|FallbackOption<sup>1</sup> or card element<sup>2</sup>|
 |separator|set_separator()|separator|*bool*|
 |spacing|set_spacing()|spacing|SpacingStyle<sup>1</sup>|
@@ -673,12 +716,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
-
-Other functions
-
-|Name|Property|Type|
-|---|---|---|
-|add_action()|actions|see docs|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -694,7 +732,7 @@ Other functions
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|items|add_items()|items|see docs|
+|items|add_items()|items|item or *list* of items(see docs)|
 |select_action|set_select_action()|selectAction|any action(see docs)|
 |style|set_style()|style|Style<sup>2</sup>|
 |vertical_content_alignment|set_vertical_content_alignment()|verticalContentAlignment|VerticalAlignment<sup>2</sup>|
@@ -708,12 +746,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>2</sup>|
-
-Other functions
-
-|Name|Property|Type|
-|---|---|---|
-|add_item()|items|see docs|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.types import ...`
 
@@ -731,7 +764,7 @@ Other functions
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|items|add_items()|items|*list* (see docs)|
+|items|add_items()|items|item or *list* of items(see docs)|
 |background_image|set_background_image()|backgroundImage|*str*, BackgroundImage<sup>2</sup>|
 |bleed|set_bleed()|bleed|*bool*|
 |fallback|set_fallback()|fallback|FallbackOption<sup>3</sup> or Column<sup>1</sup>|
@@ -745,6 +778,7 @@ Other functions
 |item_id|set_id()|id|*str*|
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.containers import ...`
 
@@ -756,7 +790,7 @@ Other functions
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**columns**|add_columns()|columns|*list* of Column(s)<sup>1</sup>|
+|**columns**|add_columns()|columns|Column<sup>1</sup> or *list* of Column(s)<sup>1</sup>|
 |select_action|set_select_action()|selectAction|see docs|
 |style|set_style()|style|Style<sup>2</sup>|
 |bleed|set_bleed()|bleed|*bool*|
@@ -768,12 +802,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>2</sup>|
-
-Other functions
-
-|Name|Property|Type|
-|---|---|---|
-|add_column()|columns|Column<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.containers import ...`
 
@@ -791,14 +820,17 @@ Other functions
 
 |Argument name|Property|Type|
 |---|---|---|
-|**title**|title|*str*|
-|**value**|value|*str*|
+|**title**|title|*str*, trans<sup>1</sup>|
+|**value**|value|*str*, trans<sup>1</sup>|
+|lang_code|-|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="adaptivecard-factset">FactSet <a href="https://adaptivecards.io/explorer/FactSet.html">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|facts|add_facts()|facts|*list* of Fact(s)<sup>1</sup>|
+|facts|add_facts()|facts|Fact<sup>1</sup> or *list* of Fact(s)<sup>1</sup>|
 |fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or card element<sup>3</sup>|
 |separator|set_separator()|separator|*bool*|
 |spacing|set_spacing()|spacing|SpacingStyle<sup>2</sup>|
@@ -806,12 +838,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>2</sup>|
-
-Other functions
-
-|Name|Property|Type|
-|---|---|---|
-|add_fact()|facts|Fact<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.containers import ...`
 
@@ -829,7 +856,7 @@ Other functions
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|images|add_images()|images|*list* of Image(s)<sup>1</sup>|
+|images|add_images()|images|Image<sup>1</sup> or *list* of Image(s)<sup>1</sup>|
 |image_size|set_image_size()|imageSize|ImageSize<sup>2</sup>|
 |fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or card element<sup>3</sup>|
 |separator|set_separator()|separator|*bool*|
@@ -838,12 +865,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>2</sup>|
-
-Other functions
-
-|Name|Property|Type|
-|---|---|---|
-|add_image()|images|Image<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
@@ -870,6 +892,7 @@ Other functions
 |fill_mode|set_fill_mode()|fillMode|FillMode<sup>1</sup>|
 |horizontal_alignment|set_horizontal_alignment()|horizontalAlignment|HorizontalAlignment<sup>1</sup>|
 |vertical_alignment|set_vertical_alignment()|verticalAlignment|VerticalAlignment<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -883,8 +906,8 @@ Other functions
 |---|---|---|---|
 |version|set_version()|version|*str*, SCHEMA<sup>1</sup>|
 |schema|set_schema()|$schema|*str*|
-|inputs|add_elements()|inputs|*list* of inputs(see docs)|
-|actions|add_actions()|actions|*list* of actions(see docs)|
+|inputs|add_elements()|inputs|input or *list* of inputs(see docs)|
+|actions|add_actions()|actions|action or *list* of actions(see docs)|
 |select_action|set_select_action()|selectAction|see docs|
 |style|set_style()|style|Style<sup>1</sup>|
 |hide_original_body|set_hide_original_body()|hideOriginalBody|*bool*|
@@ -894,13 +917,7 @@ Other functions
 |speak|set_speak()|speak|*str*|
 |lang|set_lang()|lang|*str*|
 |vertical_content_alignment|set_vertical_content_alignment()|verticalContentAlignment|VerticalAlignment<sup>1</sup>|
-
-AdaptiveCard also have other functions:
-
-|Name|Property|Type|
-|---|---|---|
-|add_element()|body|any input(see docs)|
-|add_action()|actions|any action(see docs)|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
@@ -919,28 +936,37 @@ AdaptiveCard also have other functions:
 |Argument name|Property|Type|
 |---|---|---|
 |**name**|name|*str*|
-|value|value|*str*, *int*|
+|**value**|value|*str*, *int*|
 
 <h4 id="messagecard-fact">**Fact**</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
-|**name**|name|*str*|
-|**value**|value|*str*|
+|**name**|name|*str*, trans<sup>1</sup>|
+|**value**|value|*str*, trans<sup>1</sup>|
+|lang_code|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="messagecard-heroimage">HeroImage <a href="https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#image-object">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |**url**|set_url()|image|*str*|
-|title|set_title()|title|*str*|
+|title|set_title()|title|*str*, trans<sup>1</sup>|
+|lang_code|-|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="messagecard-inputchoice">InputChoice</h4>
 
 |Argument name|Property|Type|
 |---|---|---|
-|**name**|display|*str*|
+|**name**|display|*str*, trans<sup>1</sup>|
 |**value**|value|*str*, *int*|
+|lang_code|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="messagecard-actiontarget">ActionTarget</h4>
 
@@ -948,6 +974,7 @@ AdaptiveCard also have other functions:
 |---|---|---|
 |**os_type**|os|OSType<sup>1</sup>|
 |url|uri|*str*|
+|lang_code|-|*str*|
 
 \[1\] `from django_actionable_messages.message_cards.utils import ...`
 
@@ -962,9 +989,12 @@ AdaptiveCard also have other functions:
 |max_length|set_max_length()|maxLength|*int*|
 |is_multiline|set_is_multiline()|isMultiline|*bool*|
 |input_id|set_id()|id|*str*|
-|title|set_title()|title|*str*|
+|title|set_title()|title|*str*, trans<sup>1</sup>|
 |value|set_value()|value|*str*|
 |is_required|set_is_required()|isRequired|*bool*|
+|lang_code|-|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="messagecard-dateinput">DateInput <a href="https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#dateinput">docs</a></h4>
 
@@ -972,9 +1002,12 @@ AdaptiveCard also have other functions:
 |---|---|---|---|
 |include_time|set_include_time()|maxLength|*bool*|
 |input_id|set_id()|id|*str*|
-|title|set_title()|title|*str*|
+|title|set_title()|title|*str*, trans<sup>1</sup>|
 |value|set_value()|value|*str*|
 |is_required|set_is_required()|isRequired|*bool*|
+|lang_code|-|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="messagecard-multichoiceinput">MultiChoiceInput <a href="https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#multichoiceinput">docs</a></h4>
 
@@ -984,9 +1017,10 @@ AdaptiveCard also have other functions:
 |is_multi_select|set_is_multi_select()|isMultiSelect|*bool*|
 |style|set_style()|style|ChoiceStyle<sup>2</sup>|
 |input_id|set_id()|id|*str*|
-|title|set_title()|title|*str*|
+|title|set_title()|title|*str*, trans<sup>3</sup>|
 |value|set_value()|value|*str*|
 |is_required|set_is_required()|isRequired|*bool*|
+|lang_code|-|-|*str*|
 
 Other functions
 
@@ -998,6 +1032,8 @@ Other functions
 
 \[2\] `from django_actionable_messages.message_cards.utils import ...`
 
+\[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
 <h3 id="messagecard-actions">Actions</h3>
 
 **src**: `from django_actionable_messages.message_card.actions import ...`
@@ -1006,8 +1042,9 @@ Other functions
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**name**|set_name()|name|*str*|
+|**name**|set_name()|name|*str*, trans<sup>2</sup>|
 |targets|add_targets()|targets|*list* of ActionTarget<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 Other functions
 
@@ -1015,51 +1052,47 @@ Other functions
 |---|---|---|
 |add_target()|targets|ActionTarget<sup>1</sup>|
 
-
 \[1\] `from django_actionable_messages.message_cards.elements import ...`
+
+\[2\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="messagecard-httppost">HttpPOST <a href="https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#httppost-action">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**name**|set_name()|name|*str*|
+|**name**|set_name()|name|*str*, trans<sup>2</sup>|
 |**target**|set_target()|targets|*str*|
-|headers|add_headers()|headers|*list* of Header(s)<sup>1</sup>|
+|headers|add_headers()|headers|Header<sup>1</sup> or *list* of Header(s)<sup>1</sup>|
 |body|set_body()|body|*str*|
 |body_content_type|set_body_content_type()|bodyContentType|*str*|
-
-Other functions
-
-|Name|property|Type|
-|---|---|---|
-|add_header()|headers|Header<sup>1</sup>|
+|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.message_cards.elements import ...`
+
+\[2\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="messagecard-invokeaddincommand">InvokeAddInCommand <a href="https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#invokeaddincommand-action">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**name**|set_name()|name|*str*|
+|**name**|set_name()|name|*str*, trans<sup>1</sup>|
 |**add_in_id**|set_add_in_id()|addInId|*str*|
 |**desktop_command_id**|set_desktop_command_id()|desktopCommandId|*str*|
 |initialization_context|set_set_initialization_context()|initializationContext|*dict*|
+|lang_code|-|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h4 id="messagecard-actioncard">ActionCard <a href="https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#actioncard-action">docs</a></h4>
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|**name**|set_name()|name|*str*|
-|inputs|add_inputs()|inputs|*list* of inputs(see docs)|
-|actions|add_actions()|actions|*list* of actions(see docs)|
+|**name**|set_name()|name|*str*, trans<sup>1</sup>|
+|inputs|add_inputs()|inputs|input or *list* of inputs(see docs)|
+|actions|add_actions()|actions|action or *list* of actions(see docs)|
+|lang_code|-|-|*str*|
 
-Other functions
-
-|Name|Property|Type|
-|---|---|---|
-|add_input()|inputs|see docs|
-|add_action()|actions|see docs|
-
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h3 id="messagecard-sections">Sections</h3>
 
@@ -1070,25 +1103,26 @@ Other functions
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |start_group|set_start_group()|startGroup|*bool*|
-|title|set_title()|title|*str*|
-|text|set_text()|text|*str*|
+|title|set_title()|title|*str*, trans<sup>2</sup>|
+|text|set_text()|text|*str*, trans<sup>2</sup>|
 |activity_image|set_activity_image()|activityImage|*str*|
-|activity_title|set_activity_title()|activityTitle|*str*|
-|activity_subtitle|set_activity_subtitle()|activitySubtitle|*str*|
-|activity_text|set_activity_text()|activityText|*str*|
-|hero_image|set_hero_image()|heroImage|HeroImage<sup>1</sup>|
-|facts|add_facts()|facts|*list* of Fact(s)<sup>1</sup>|
-|actions|add_potential_actions()|potentialAction|*list* of actions(see docs)|
+|activity_title|set_activity_title()|activityTitle|*str*, trans<sup>2</sup>|
+|activity_subtitle|set_activity_subtitle()|activitySubtitle|*str*, trans<sup>2</sup>|
+|activity_text|set_activity_text()|activityText|*str*, trans<sup>2</sup>|
+|hero_image|set_hero_image()|heroImage|HeroImage<sup>2</sup>|
+|facts|add_facts()|facts|Fact(s)<sup>1</sup> or *list* of Fact<sup>1</sup>|
+|actions|add_potential_actions()|potentialAction|action or *list* of actions(see docs)|
+|lang_code|-|-|*str*|
 
 Other functions:
 
 |Name|Property|Type|
 |---|---|---|
 |set_activity(image, title, subtitle, text)|activityImage, activityTitle, activitySubtitle, activityText|*str*|
-|add_fact()|facts|Fact<sup>1</sup>|
-|add_action()|potentialAction|any action(see docs)|
 
 \[1\] `from django_actionable_messages.message_cards.elements import ...`
+
+\[2\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 <h3 id="messagecard-cards">Cards</h3>
 
@@ -1098,23 +1132,27 @@ Other functions:
 
 |Argument name|Function|Property|Type|
 |---|---|---|---|
-|title|set_title()|title|*str*|
-|text|set_text()|text|*str*|
+|title|set_title()|title|*str*, trans<sup>2</sup>|
+|text|set_text()|text|*str*, trans<sup>2</sup>|
 |originator|set_originator()|originator|*str*|
-|summary|set_summary()|summary|*str*|
+|summary|set_summary()|summary|*str*, trans<sup>2</sup>|
 |theme_color|set_theme_color()|themeColor|*str*|
 |correlation_id|set_correlation_id()|correlationId|*str*|
 |auto_correlation_id*|-|correlationId|*bool* (default: *True*)|
 |expected_actors|set_expected_actors()|expectedActors|*list* of emails|
 |hide_original_body|set_hide_original_body()|hideOriginalBody|*bool*|
-|sections|add_sections()|sections|*list* of Section(s)<sup>1</sup>|
-|actions|add_actions()|potentialAction|*list* of actions(see docs)|
+|sections|add_sections()|sections|Section<sup>1</sup> or *list* of Sections<sup>1</sup>|
+|actions|add_actions()|potentialAction|action<sup>3</sup> or *list* of actions<sup>3</sup>|
+|lang_code|-|-|*str*|
 
 Other functions:
 
 |Name|Property|Type|
 |---|---|---|
-|add_section()|sections|Section<sup>1</sup>|
-|add_action()|potentialAction|any action(see docs)|
+|add_expected_actors()|expectedActors|*str* or list of *str*|
 
 \[1\] `from django_actionable_messages.message_cards.sections import ...`
+
+\[2\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+\[3\] `from django_actionable_messages.message_cards.actions import ...`

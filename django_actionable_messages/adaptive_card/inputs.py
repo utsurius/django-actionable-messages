@@ -8,11 +8,11 @@ from django_actionable_messages.utils import CardElement
 class DateTimeMixin(ElementMixin):
     base_type = None
 
-    def __init__(self, max_value: str = None, min_value: str = None, placeholder: str = None, value: str = None,
-                 **kwargs):
+    def __init__(self, max_value: str = None, min_value: str = None, placeholder=None, value: str = None, **kwargs):
         self._data = {
             "type": self.base_type
         }
+        super().__init__(**kwargs)
         if max_value is not None:
             self.set_max(max_value)
         if min_value is not None:
@@ -21,7 +21,6 @@ class DateTimeMixin(ElementMixin):
             self.set_placeholder(placeholder)
         if value is not None:
             self.set_value(value)
-        super().__init__(**kwargs)
 
     def set_max(self, value: str):
         self._data["max"] = value
@@ -29,7 +28,7 @@ class DateTimeMixin(ElementMixin):
     def set_min(self, value: str):
         self._data["min"] = value
 
-    def set_placeholder(self, text: str):
+    def set_placeholder(self, text):
         self._data["placeholder"] = text
 
     def set_value(self, value: str):
@@ -37,11 +36,12 @@ class DateTimeMixin(ElementMixin):
 
 
 class TextInput(ElementMixin):
-    def __init__(self, is_multiline: bool = None, max_length: int = None, placeholder: str = None,
-                 style: TextInputStyle = None, inline_action=None, value: str = None, **kwargs):
+    def __init__(self, is_multiline: bool = None, max_length: int = None, placeholder=None,
+                 style: TextInputStyle = None, inline_action=None, value=None, **kwargs):
         self._data = {
             "type": "Input.Text"
         }
+        super().__init__(**kwargs)
         if is_multiline is not None:
             self.set_is_multiline(is_multiline)
         if max_length is not None:
@@ -54,7 +54,6 @@ class TextInput(ElementMixin):
             self.set_inline_action(inline_action)
         if value is not None:
             self.set_value(value)
-        super().__init__(**kwargs)
 
     def set_is_multiline(self, value=True):
         self._data["isMultiline"] = value
@@ -62,25 +61,25 @@ class TextInput(ElementMixin):
     def set_max_length(self, value: int):
         self._data["maxLength"] = value
 
-    def set_placeholder(self, text: str):
+    def set_placeholder(self, text):
         self._data["placeholder"] = text
 
     def set_style(self, style: TextInputStyle):
-        self._data["style"] = style.value
+        self._data["style"] = style
 
     def set_inline_action(self, action):
         self._data["inlineAction"] = action.as_data()
 
-    def set_value(self, value: str):
+    def set_value(self, value):
         self._data["value"] = value
 
 
 class NumberInput(ElementMixin):
-    def __init__(self, max_value: int = None, min_value: int = None, placeholder: str = None, value: int = None,
-                 **kwargs):
+    def __init__(self, max_value: int = None, min_value: int = None, placeholder=None, value: int = None, **kwargs):
         self._data = {
             "type": "Input.Number"
         }
+        super().__init__(**kwargs)
         if max_value is not None:
             self.set_max(max_value)
         if min_value is not None:
@@ -89,7 +88,6 @@ class NumberInput(ElementMixin):
             self.set_placeholder(placeholder)
         if value is not None:
             self.set_value(value)
-        super().__init__(**kwargs)
 
     def set_max(self, value: int):
         self._data["max"] = value
@@ -97,7 +95,7 @@ class NumberInput(ElementMixin):
     def set_min(self, value: int):
         self._data["min"] = value
 
-    def set_placeholder(self, text: str):
+    def set_placeholder(self, text):
         self._data["placeholder"] = text
 
     def set_value(self, value: int):
@@ -113,12 +111,13 @@ class TimeInput(DateTimeMixin):
 
 
 class ToggleInput(ElementMixin):
-    def __init__(self, title: str, value: str = None, value_off: str = None, value_on: str = None, wrap: bool = None,
+    def __init__(self, title, value: str = None, value_off: str = None, value_on: str = None, wrap: bool = None,
                  **kwargs):
         self._data = {
-            "type": "Input.Toggle",
-            "title": title
+            "type": "Input.Toggle"
         }
+        super().__init__(**kwargs)
+        self.set_title(title)
         if value is not None:
             self.set_value(value)
         if value_off is not None:
@@ -127,9 +126,8 @@ class ToggleInput(ElementMixin):
             self.set_value_on(value_on)
         if wrap is not None:
             self.set_wrap(wrap)
-        super().__init__(**kwargs)
 
-    def set_title(self, title: str):
+    def set_title(self, title):
         self._data["title"] = title
 
     def set_value(self, value: str):
@@ -146,21 +144,25 @@ class ToggleInput(ElementMixin):
 
 
 class InputChoice(CardElement):
-    def __init__(self, title: str, value: Union[str, int], **kwargs):
+    def __init__(self, title, value: Union[str, int], **kwargs):
         self._data = {
-            "title": title,
             "value": value
         }
         super().__init__(**kwargs)
+        self._set_title(title)
+
+    def _set_title(self, title):
+        self._data["title"] = title
 
 
 class ChoiceSetInput(ElementMixin):
     def __init__(self, choices: List[InputChoice], is_multi_select: bool = None, style: ChoiceInputStyle = None,
                  value: str = None, wrap: bool = None, **kwargs):
         self._data = {
-            "type": "Input.ChoiceSet",
-            "choices": self._get_items_list(choices)
+            "type": "Input.ChoiceSet"
         }
+        super().__init__(**kwargs)
+        self.set_choices(choices)
         if is_multi_select is not None:
             self.set_is_multi_select(is_multi_select)
         if style is not None:
@@ -169,7 +171,6 @@ class ChoiceSetInput(ElementMixin):
             self.set_value(value)
         if wrap is not None:
             self.set_wrap(wrap)
-        super().__init__(**kwargs)
 
     def set_choices(self, choices: List[InputChoice]):
         self._data["choices"] = self._get_items_list(choices)
@@ -178,7 +179,7 @@ class ChoiceSetInput(ElementMixin):
         self._data["isMultiSelect"] = value
 
     def set_style(self, style: ChoiceInputStyle):
-        self._data["style"] = style.value
+        self._data["style"] = style
 
     def set_value(self, value: str):
         self._data["value"] = value

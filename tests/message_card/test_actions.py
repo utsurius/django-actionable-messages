@@ -1,11 +1,10 @@
 from django.test import TestCase
 
-from django_actionable_messages.message_card.actions import (
-    OpenUri, ActionTarget, HttpPOST, Header, InvokeAddInCommand, ActionCard
-)
+from django_actionable_messages.exceptions import CardException
+from django_actionable_messages.message_card.actions import OpenUri, HttpPOST, InvokeAddInCommand, ActionCard
+from django_actionable_messages.message_card.elements import Header, ActionTarget
 from django_actionable_messages.message_card.inputs import DateInput, TextInput
 from django_actionable_messages.message_card.utils import OSType
-from django_actionable_messages.utils import CardException
 
 URL = "https://www.example.com/"
 
@@ -92,18 +91,6 @@ class ActionsTestCase(TestCase):
             "target": "https://www.sample.domain.com"
         })
 
-    def test_http_post_add_header(self):
-        action = HttpPOST("Send", URL)
-        action.add_header(Header("Connection", "keep-alive"))
-        self.assertDictEqual(action.as_data(), {
-            "@type": "HttpPOST",
-            "name": "Send",
-            "target": URL,
-            "headers": [
-                {"name": "Connection", "value": "keep-alive"}
-            ]
-        })
-
     def test_http_post_add_headers(self):
         action = HttpPOST("Send", URL)
         action.add_headers([Header("Transfer-Encoding", "chunked"), Header("Proxy-Authenticate", "Basic")])
@@ -114,6 +101,17 @@ class ActionsTestCase(TestCase):
             "headers": [
                 {"name": "Transfer-Encoding", "value": "chunked"},
                 {"name": "Proxy-Authenticate", "value": "Basic"},
+            ]
+        })
+        action.add_headers(Header("Trailer", "Expires"))
+        self.assertDictEqual(action.as_data(), {
+            "@type": "HttpPOST",
+            "name": "Send",
+            "target": URL,
+            "headers": [
+                {"name": "Transfer-Encoding", "value": "chunked"},
+                {"name": "Proxy-Authenticate", "value": "Basic"},
+                {"name": "Trailer", "value": "Expires"}
             ]
         })
 
@@ -239,19 +237,6 @@ class ActionsTestCase(TestCase):
             }]
         })
 
-    def test_action_card_add_input(self):
-        action_card = ActionCard("Inputs")
-        action_card.add_input(TextInput(max_length=64, is_multiline=True))
-        self.assertDictEqual(action_card.as_data(), {
-            "@type": "ActionCard",
-            "name": "Inputs",
-            "inputs": [{
-                "@type": "TextInput",
-                "isMultiline": True,
-                "maxLength": 64
-            }]
-        })
-
     def test_action_card_add_inputs(self):
         action_card = ActionCard("Inputs")
         action_card.add_inputs([
@@ -271,19 +256,22 @@ class ActionsTestCase(TestCase):
                 "maxLength": 16
             }]
         })
-
-    def test_action_card_add_action(self):
-        action_card = ActionCard("Actions")
-        action_card.add_action(OpenUri("View", targets=[ActionTarget(OSType.ANDROID, URL)]))
+        action_card.add_inputs(TextInput(max_length=64, is_multiline=True))
         self.assertDictEqual(action_card.as_data(), {
             "@type": "ActionCard",
-            "name": "Actions",
-            "actions": [{
-                "@type": "OpenUri",
-                "name": "View",
-                "targets": [
-                    {"os": "android", "uri": URL}
-                ]
+            "name": "Inputs",
+            "inputs": [{
+                "@type": "DateInput",
+                "includeTime": True
+            }, {
+                "@type": "TextInput",
+                "id": "id_text",
+                "isMultiline": True,
+                "maxLength": 16
+            }, {
+                "@type": "TextInput",
+                "isMultiline": True,
+                "maxLength": 64
             }]
         })
 
@@ -312,5 +300,32 @@ class ActionsTestCase(TestCase):
                 ],
                 "body": "sample",
                 "bodyContentType": "zxcv"
+            }]
+        })
+        action_card.add_actions(OpenUri("View", targets=[ActionTarget(OSType.ANDROID, URL)]))
+        self.assertDictEqual(action_card.as_data(), {
+            "@type": "ActionCard",
+            "name": "Actions",
+            "actions": [{
+                "@type": "OpenUri",
+                "name": "Click",
+                "targets": [
+                    {"os": "iOS", "uri": URL}
+                ]
+            }, {
+                "@type": "HttpPOST",
+                "name": "Post",
+                "target": URL,
+                "headers": [
+                    {"name": "Cache-Control", "value": "no-cache"}
+                ],
+                "body": "sample",
+                "bodyContentType": "zxcv"
+            }, {
+                "@type": "OpenUri",
+                "name": "View",
+                "targets": [
+                    {"os": "android", "uri": URL}
+                ]
             }]
         })

@@ -1,8 +1,6 @@
 from django.test import TestCase
 
-from django_actionable_messages.message_card.actions import ActionTarget
-from django_actionable_messages.message_card.elements import Header, Fact, HeroImage
-from django_actionable_messages.message_card.inputs import InputChoice
+from django_actionable_messages.message_card.elements import Header, Fact, HeroImage, InputChoice, ActionTarget
 from django_actionable_messages.message_card.utils import OSType
 
 URL = "https://www.example.com/"
@@ -15,10 +13,6 @@ class HelpersTestCase(TestCase):
             "name": "Accept-Encoding",
             "value": "gzip,deflate"
         })
-
-    def test_header_get_name(self):
-        header = Header("Access-Control-Request-Method", "POST")
-        self.assertEqual(header.get_name(), "Access-Control-Request-Method")
 
     def test_fact(self):
         fact = Fact("First name", "Gal Anonim")
@@ -62,7 +56,7 @@ class HelpersTestCase(TestCase):
 
     def test_input_choice_get_value(self):
         input_choice = InputChoice("Choice 1", "12")
-        self.assertEqual(input_choice.get_value(), "12")
+        self.assertEqual(input_choice._get_value(), "12")
 
     def test_action_target(self):
         action_target = ActionTarget(OSType.WINDOWS, URL)
@@ -73,4 +67,4 @@ class HelpersTestCase(TestCase):
 
     def test_action_target_get_os(self):
         action_target = ActionTarget(OSType.ANDROID, URL)
-        self.assertEqual(action_target.get_os(), "android")
+        self.assertEqual(action_target._get_os(), "android")

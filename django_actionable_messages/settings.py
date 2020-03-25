@@ -2,9 +2,12 @@ from django.conf import settings
 from django.core.signals import setting_changed
 from django.utils.module_loading import import_string
 
+from django_actionable_messages.encoders import BaseEncoder
+
 SETTINGS_NAMESPACE = "ACTIONABLE_MESSAGES"
 DEFAULTS = {
-    "JSON_ENCODER": None
+    "JSON_ENCODER": BaseEncoder,
+    "LANGUAGE_CODE": settings.LANGUAGE_CODE
 }
 
 
@@ -18,7 +21,7 @@ def import_from_string(value, name):
 def import_setting(value, name):
     if value is None:
         return None
-    elif isinstance(value, str):
+    elif name == "JSON_ENCODER" and isinstance(value, str):
         return import_from_string(value, name)
     return value
 

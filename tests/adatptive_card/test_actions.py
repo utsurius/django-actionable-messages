@@ -4,7 +4,7 @@ from django_actionable_messages.adaptive_card.actions import OpenUrl, Submit, Sh
 from django_actionable_messages.adaptive_card.cards import AdaptiveCard
 from django_actionable_messages.adaptive_card.elements import TextBlock
 from django_actionable_messages.adaptive_card.utils import ActionStyle, FallbackOption
-from django_actionable_messages.utils import CardException
+from django_actionable_messages.exceptions import CardException
 
 URL = "https://www.example.com/"
 
@@ -54,8 +54,8 @@ class ActionsTestCase(TestCase):
 
     def test_show_card(self):
         adaptive_card = AdaptiveCard()
-        adaptive_card.add_element(TextBlock(text="Sample text"))
-        adaptive_card.add_action(Submit(title="Vote"))
+        adaptive_card.add_elements(TextBlock(text="Sample text"))
+        adaptive_card.add_actions(Submit(title="Vote"))
         show_card = ShowCard(card=adaptive_card)
         self.assertDictEqual(show_card.as_data(), {
             "type": "Action.ShowCard",
@@ -78,7 +78,7 @@ class ActionsTestCase(TestCase):
             "type": "Action.ShowCard"
         })
         adaptive_card = AdaptiveCard()
-        adaptive_card.add_action(Submit(title="Something"))
+        adaptive_card.add_actions(Submit(title="Something"))
         show_card.set_card(adaptive_card)
         self.assertDictEqual(show_card.as_data(), {
             "type": "Action.ShowCard",
@@ -180,5 +180,3 @@ class ActionsTestCase(TestCase):
                 }
             ]
         })
-        with self.assertRaisesMessage(CardException, "Invalid target element type"):
-            toggle_visibility.set_target_elements([1234, ])

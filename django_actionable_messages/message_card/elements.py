@@ -5,61 +5,62 @@ from django_actionable_messages.utils import CardElement
 
 
 class Header(CardElement):
-    def __init__(self, name: str, value: Union[str, int]):
+    def __init__(self, name: str, value: Union[str, int], **kwargs):
         self._data = {
             "name": name,
             "value": value
         }
-        super().__init__()
-
-    def get_name(self):
-        return self._data["name"]
+        super().__init__(**kwargs)
 
 
 class Fact(CardElement):
-    def __init__(self, name: str, value: str):
+    def __init__(self, name, value, **kwargs):
+        self._data = {}
+        super().__init__(**kwargs)
         self._data = {
             "name": name,
             "value": value
         }
-        super().__init__()
 
 
 class HeroImage(CardElement):
-    def __init__(self, url: str, title: str = None):
+    def __init__(self, url: str, title=None, **kwargs):
         self._data = {
             "image": url
         }
+        super().__init__(**kwargs)
         if title is not None:
             self.set_title(title)
-        super().__init__()
 
     def set_url(self, url: str):
         self._data["image"] = url
 
-    def set_title(self, title: str):
+    def set_title(self, title):
         self._data["title"] = title
 
 
 class InputChoice(CardElement):
-    def __init__(self, name: str, value: Union[str, int]):
+    def __init__(self, name, value: Union[str, int], **kwargs):
         self._data = {
-            "display": name,
             "value": value
         }
-        super().__init__()
+        super().__init__(**kwargs)
+        self._set_display(name)
 
-    def get_value(self):
+    def _set_display(self, name):
+        self._data["display"] = name
+
+    def _get_value(self):
         return self._data["value"]
 
 
 class ActionTarget(CardElement):
-    def __init__(self, os_type: OSType, url: str):
+    def __init__(self, os_type: OSType, url: str, **kwargs):
         self._data = {
-            "os": os_type.value,
+            "os": os_type,
             "uri": url
         }
-        super().__init__()
+        super().__init__(**kwargs)
 
-    def get_os(self):
+    def _get_os(self):
         return self._data["os"]

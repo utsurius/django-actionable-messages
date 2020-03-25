@@ -30,6 +30,6 @@ restaurant.add_elements([
         )
     ])
 ])
-restaurant.add_action(
+restaurant.add_actions(
     OpenUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ", title="More info")
 )

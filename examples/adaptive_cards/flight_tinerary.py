@@ -2,7 +2,7 @@ from django_actionable_messages.adaptive_card.cards import AdaptiveCard
 from django_actionable_messages.adaptive_card.containers import Column, ColumnSet
 from django_actionable_messages.adaptive_card.elements import TextBlock, Image
 from django_actionable_messages.adaptive_card.utils import (
-    SCHEMA,FontSize, FontWeight, SpacingStyle, Width, ImageSize, HorizontalAlignment, Color
+    SCHEMA, FontSize, FontWeight, SpacingStyle, Width, ImageSize, HorizontalAlignment, Color
 )
 
 """
@@ -44,7 +44,7 @@ flight_itinerary.add_elements([
     TextBlock("2 Stops", weight=FontWeight.BOLDER, spacing=SpacingStyle.MEDIUM),
     TextBlock("Fri, October 10 8:30 AM", weight=FontWeight.BOLDER, spacing=SpacingStyle.NONE),
 ])
-flight_itinerary.add_element(ColumnSet([
+flight_itinerary.add_elements(ColumnSet([
     column_san_francisco,
     column_plane,
     column_amsterdam
@@ -53,7 +53,7 @@ flight_itinerary.add_elements([
     TextBlock("Non-Stop", weight=FontWeight.BOLDER, spacing=SpacingStyle.MEDIUM),
     TextBlock("Fri, October 18 9:50 PM", weight=FontWeight.BOLDER, spacing=SpacingStyle.NONE),
 ])
-flight_itinerary.add_element(ColumnSet(
+flight_itinerary.add_elements(ColumnSet(
     spacing=SpacingStyle.MEDIUM,
     columns=[
         column_amsterdam,
@@ -61,7 +61,7 @@ flight_itinerary.add_element(ColumnSet(
         column_san_francisco
     ]
 ))
-flight_itinerary.add_element(ColumnSet([
+flight_itinerary.add_elements(ColumnSet([
         Column(
             width="1",
             items=[
