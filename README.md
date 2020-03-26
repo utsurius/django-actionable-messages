@@ -211,11 +211,14 @@ To get dictionary, json or html payload from card use:
 |.payload|*dict* (raw data)|
 |.json_payload|json string|
 |.html_payload|html string - can be used to send card via email ([docs](https://docs.microsoft.com/en-gb/outlook/actionable-messages/send-via-email))|
+|.signed_html_payload|html string<sup>1</sup> - can be used to send card via email ([docs](https://docs.microsoft.com/en-us/outlook/actionable-messages/security-requirements))|
+
+\[1\] you must overwrite **get_signed_payload()** in AdaptiveCard/MessageCard to sign the payload!
 
 
 Problem: **'... is not JSON serializable'** - probably invalid argument type was used. Default json serializer can handle translated strings and everything that `DjangoJSONEncoder` can handle. 
 
-Solution: [Better Python Object Serialization](https://hynek.me/articles/serialization/). Remember to ALWAYS inherit from EncoderMixin (`django_actionable_messages.encoders import EncoderMixin`)
+Solution: [Better Python Object Serialization](https://hynek.me/articles/serialization/). Remember to ALWAYS inherit from EncoderMixin or BaseEncoder (`django_actionable_messages.encoders import EncoderMixin, BaseEncoder`)
 
 You can set JSON_ENCODER (globally) in SETTINGS(ACTIONABLE_MESSAGES) or set it by card(json_encoder):
 

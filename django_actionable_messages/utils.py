@@ -37,6 +37,10 @@ class Card(BaseMixin):
         MESSAGE_CARD: "application/ld+json",
         ADAPTIVE_CARD: "application/adaptivecard+json"
     }
+    signed_card_types = {
+        MESSAGE_CARD: "SignedMessageCard",
+        ADAPTIVE_CARD: "SignedAdaptiveCard"
+    }
 
     @property
     def payload(self):
@@ -50,20 +54,36 @@ class Card(BaseMixin):
     def html_payload(self):
         return self.get_payload(fmt="html")
 
+    @property
+    def signed_html_payload(self):
+        return self.get_payload(fmt="signed_html")
+
     def get_payload(self, fmt=None):
         payload = copy.deepcopy(self._payload)
         if fmt == "json":
             payload = self._get_json_payload(payload)
         elif fmt == "html":
             payload = self._get_html_payload(payload)
+        elif fmt == "signed_html":
+            payload = self._get_signed_html_payload(payload)
         return payload
+
+    def get_signed_payload(self, payload):
+        raise NotImplementedError
 
     def _get_json_payload(self, payload):
         return json.dumps(payload, cls=self.json_encoder, lang_code=self.get_language_code())
 
     def _get_html_payload(self, payload):
         context = {
-            "script_type": self.script_types[self.card_type],
+            "type": self.script_types[self.card_type],
             "payload": self._get_json_payload(payload)
         }
         return render_to_string("django_actionable_messages/email.html", context=context)
+
+    def _get_signed_html_payload(self, payload):
+        context = {
+            "type": self.signed_card_types[self.card_type],
+            "payload": self.get_signed_payload(payload)
+        }
+        return render_to_string("django_actionable_messages/signed_email.html", context=context)
