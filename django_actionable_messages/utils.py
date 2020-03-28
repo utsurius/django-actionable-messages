@@ -71,8 +71,16 @@ class Card(BaseMixin):
     def get_signed_payload(self, payload):
         raise NotImplementedError
 
+    def get_json_dump_kwargs(self):
+        return {}
+
     def _get_json_payload(self, payload):
-        return json.dumps(payload, cls=self.json_encoder, lang_code=self.get_language_code())
+        kwargs = {
+            "cls": self.json_encoder,
+            "lang_code": self.get_language_code()
+        }
+        kwargs.update(**self.get_json_dump_kwargs())
+        return json.dumps(payload, **kwargs)
 
     def _get_html_payload(self, payload):
         context = {

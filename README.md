@@ -5,14 +5,20 @@
 </h1>
 
 <p align="center">
-    <a href="https://github.com/utsurius/django-actionable-messages/blob/master/LICENSE">
-        <img src="https://img.shields.io/github/license/utsurius/django-actionable-messages" alt="license"/>
-    </a>
     <a href="https://github.com/utsurius/django-actionable-messages/releases">
         <img src="https://img.shields.io/github/release/utsurius/django-actionable-messages" alt="github"/>
     </a>
     <a href="https://pypi.python.org/pypi/django-actionable-messages">
         <img src="https://badge.fury.io/py/django-actionable-messages.svg" alt="pypi"/>
+    </a>
+    <a href="https://github.com/utsurius/django-actionable-messages">
+        <img src="https://img.shields.io/pypi/pyversions/django_actionable_messages.svg" alt="python"/>
+    </a>
+    <a href="https://github.com/utsurius/django-actionable-messages">
+        <img src="https://img.shields.io/pypi/djversions/django_actionable_messages.svg" alt="django"/>
+    </a>
+    <a href="https://github.com/utsurius/django-actionable-messages/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/utsurius/django-actionable-messages" alt="license"/>
     </a>
 </p>
 
@@ -238,6 +244,19 @@ class MyAdaptiveCard(AdaptiveCard):
     json_encoder = MyJSONEncoder
 ```
 
+To customize json dump you can overwrite `get_json_dump_kwargs()` in card (AdaptiveCard/MessageCard)
+
+```python
+from django_actionable_messages.adaptive_card.cards import AdaptiveCard
+
+
+class MyAdaptiveCard(AdaptiveCard):
+    def get_json_dump_kwargs(self):
+        return {
+            'ensure_ascii': False,
+            'indent': 2
+        }
+```
 
 Send MessageCard to msteams using webhooks and `requests` library:
 ```python

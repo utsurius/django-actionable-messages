@@ -7,7 +7,7 @@ setup(
     name="django_actionable_messages",
     packages=find_packages(exclude=["examples", "examples.*", "tests", "tests.*"]),
     include_package_data=True,
-    version="0.2.1",
+    version="0.2.2",
     license="MIT",
     description="Actionable messages",
     long_description=long_description,

@@ -14,6 +14,12 @@ class TestAdaptiveCard(AdaptiveCard):
     def get_signed_payload(self, payload):
         return "signed_payload_ac"
 
+    def get_json_dump_kwargs(self):
+        return {
+            'indent': 2,
+            'allow_nan': False
+        }
+
 
 class TestMessageCard(MessageCard):
     def get_signed_payload(self, payload):
@@ -37,3 +43,13 @@ class UtilsTestCase(TestCase):
         signed_html = TestMessageCard().signed_html_payload
         self.assertIn("http://schema.org/SignedMessageCard", signed_html)
         self.assertIn("signed_payload_mc", signed_html)
+
+    def test_get_json_dump_kwargs(self):
+        self.assertDictEqual(AdaptiveCard().get_json_dump_kwargs(), {})
+        self.assertDictEqual(
+            TestAdaptiveCard().get_json_dump_kwargs(),
+            {
+                'indent': 2,
+                'allow_nan': False
+            }
+        )
