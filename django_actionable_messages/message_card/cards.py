@@ -2,7 +2,7 @@ import uuid
 from typing import List, Union
 
 from django_actionable_messages.exceptions import CardException
-from django_actionable_messages.utils import MESSAGE_CARD, Card
+from django_actionable_messages.mixins import MESSAGE_CARD, Card
 
 
 class MessageCard(Card):

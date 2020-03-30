@@ -3,10 +3,11 @@ import uuid
 
 from django.test import TestCase
 
+from django_actionable_messages.elements import Header
 from django_actionable_messages.exceptions import CardException
 from django_actionable_messages.message_card.actions import OpenUri, HttpPOST, InvokeAddInCommand, ActionCard
 from django_actionable_messages.message_card.cards import MessageCard
-from django_actionable_messages.message_card.elements import Header, Fact, HeroImage, ActionTarget
+from django_actionable_messages.message_card.elements import Fact, HeroImage, ActionTarget
 from django_actionable_messages.message_card.inputs import TextInput
 from django_actionable_messages.message_card.sections import Section
 from django_actionable_messages.message_card.utils import OSType

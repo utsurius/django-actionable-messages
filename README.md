@@ -80,6 +80,16 @@
         * [Section](#messagecard-section)
     * [Cards](#messagecard-cards)
         * [MessageCard](#messagecard-messagecard)
+7. [HeroCard](#herocard)
+    * [Elements](#herocard-elements)
+        * [OpenUrl](#herocard-openurl)
+        * [Image](#herocard-image)
+    * [Cards](#herocard-cards)
+        * [HeroCard](#herocard-herocard)
+8. [ThumbnailCard](#thumbnailcard)
+    * [Elements](#thumbnailcard-elements)
+    * [Cards](#thumbnailcard-cards)
+        * [ThumbnailCard](#thumbnailcard-herocard)
 
 
 <h2 id="base-informations">Base informations</h2>
@@ -265,12 +275,12 @@ import requests
 
 requests.post(
     webhook_url,
-    json=card.json_payload,
+    data=card.json_payload,
     headers={
         "Content-Type": "application/json; charset=utf-8"
     }
 )
-```
+``` 
 
 To get/add `webhook_url` see here: [Get the Microsoft Teams webhook URL](https://learning.getpostman.com/docs/postman_pro/integrations/microsoft_teams/#get-the-microsoft-teams-webhook-url), [Create and add an outgoing webhook in Teams](https://support.office.com/en-ie/article/create-and-add-an-outgoing-webhook-in-teams-8e1a1648-982f-4511-b342-6d8492437207)
 
@@ -1178,3 +1188,60 @@ Other functions:
 \[2\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
 \[3\] `from django_actionable_messages.message_cards.actions import ...`
+
+<h2 id="herocard">HeroCard</h2>
+
+<h3 id="herocard-elements">Elements</h3>
+
+<h4 id="herocard-openurl">OpenUrl</h4>
+
+|Argument name|Function|Property|Type|
+|---|---|---|---|
+|**title**|-|title|*str*, trans<sup>1</sup>|
+|**url**|-|value|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+<h4 id="herocard-Image">Image</h4>
+
+|Argument name|Function|Property|Type|
+|---|---|---|---|
+|**url**|-|value|*str*|
+|alt|-|alt|*str*, trans<sup>1</sup>|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+<h3 id="herocard-cards">Cards</h3>
+
+**src**: `from django_actionable_messages.msteams_cards.cards import HeroCard`
+
+<h4 id="herocard-herocard">HeroCard <a href="https://docs.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-reference#hero-card">docs</a></h4>
+
+|Argument name|Function|Property|Type|
+|---|---|---|---|
+|title|set_title()|title|*str*, trans<sup>1</sup>|
+|subtitle|set_subtitle()|subtitle|*str*, trans<sup>1</sup>|
+|text|set_text()|text|*str*, trans<sup>1</sup>|
+|images|add_images()|images|Image<sup>2</sup> or *list* of Images<sup>2</sup>|
+|buttons|add_buttons()|buttons|OpenUrl<sup>3</sup> or *list* of OpenUrls<sup>3</sup>|
+|lang_code|-|-|*str*|
+
+\[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+\[2\] `from django_actionable_messages.msteams_cards.elements import Image`
+
+\[3\] `from django_actionable_messages.msteams_cards.elements import OpenUrl`
+
+<h2 id="thumbnailcard">ThumbnailCard</h2>
+
+<h3 id="thumbnailcard-elements">Elements</h3>
+
+see HeroCard [Elements](#herocard-elements) section
+
+<h3 id="thumbnailcard-cards">Cards</h3>
+
+**src**: `from django_actionable_messages.msteams_cards.cards import ThumbnailCard`
+
+<h4 id="thumbnailcard-thumbnailcard">ThumbnailCard <a href="https://docs.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-reference#thumbnail-card">docs</a></h4>
+
+see HeroCard [HeroCard](#herocard-herocard) section

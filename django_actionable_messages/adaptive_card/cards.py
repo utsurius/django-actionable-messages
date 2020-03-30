@@ -3,7 +3,7 @@ from typing import Union
 from django_actionable_messages.adaptive_card.elements import Image
 from django_actionable_messages.adaptive_card.utils import VERSIONS, Style, VerticalAlignment
 from django_actionable_messages.exceptions import CardException
-from django_actionable_messages.utils import ADAPTIVE_CARD, Card
+from django_actionable_messages.mixins import ADAPTIVE_CARD, Card
 
 
 class AdaptiveCard(Card):

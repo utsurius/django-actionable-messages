@@ -1,38 +1,8 @@
 from typing import List, Union
 
-from django_actionable_messages.adaptive_card.mixins import ElementMixin
+from django_actionable_messages.adaptive_card.mixins import ElementMixin, DateTimeMixin
 from django_actionable_messages.adaptive_card.utils import ChoiceInputStyle, TextInputStyle
-from django_actionable_messages.utils import CardElement
-
-
-class DateTimeMixin(ElementMixin):
-    base_type = None
-
-    def __init__(self, max_value: str = None, min_value: str = None, placeholder=None, value: str = None, **kwargs):
-        self._data = {
-            "type": self.base_type
-        }
-        super().__init__(**kwargs)
-        if max_value is not None:
-            self.set_max(max_value)
-        if min_value is not None:
-            self.set_min(min_value)
-        if placeholder is not None:
-            self.set_placeholder(placeholder)
-        if value is not None:
-            self.set_value(value)
-
-    def set_max(self, value: str):
-        self._data["max"] = value
-
-    def set_min(self, value: str):
-        self._data["min"] = value
-
-    def set_placeholder(self, text):
-        self._data["placeholder"] = text
-
-    def set_value(self, value: str):
-        self._data["value"] = value
+from django_actionable_messages.mixins import CardElement
 
 
 class TextInput(ElementMixin):

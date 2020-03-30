@@ -1,8 +1,9 @@
 from django.test import TestCase
 
+from django_actionable_messages.elements import Header
 from django_actionable_messages.exceptions import CardException
 from django_actionable_messages.message_card.actions import OpenUri, HttpPOST, InvokeAddInCommand, ActionCard
-from django_actionable_messages.message_card.elements import Header, ActionTarget
+from django_actionable_messages.message_card.elements import ActionTarget
 from django_actionable_messages.message_card.inputs import DateInput, TextInput
 from django_actionable_messages.message_card.utils import OSType
 
@@ -10,7 +11,7 @@ URL = "https://www.example.com/"
 
 
 class ActionsTestCase(TestCase):
-    def test_open_uri(self):
+    def test_open_uri1(self):
         url1, url2 = "{}first/".format(URL), "{}second/".format(URL)
         action = OpenUri("Open", targets=[ActionTarget(OSType.IOS, url1), ActionTarget(OSType.ANDROID, url2)])
         self.assertDictEqual(action.as_data(), {
@@ -22,35 +23,18 @@ class ActionsTestCase(TestCase):
             ]
         })
 
-    def test_open_uri_set_name(self):
-        action = OpenUri("Click")
-        action.set_name("Sample name")
-        self.assertDictEqual(action.as_data(), {
-            "@type": "OpenUri",
-            "name": "Sample name"
-        })
-
-    def test_open_uri_add_targets(self):
-        url1, url2 = "{}asdf/".format(URL), "{}zxcv/".format(URL)
-        action = OpenUri("Click")
-        action.add_targets([ActionTarget(OSType.WINDOWS, url1), ActionTarget(OSType.DEFAULT, url2)])
+    def test_open_uri2(self):
+        url1, url2 = "{}first/".format(URL), "{}second/".format(URL)
+        action = OpenUri("View")
+        action.set_name("Click")
+        action.add_target(ActionTarget(OSType.IOS, url1))
+        action.add_targets([ActionTarget(OSType.ANDROID, url2)])
         self.assertDictEqual(action.as_data(), {
             "@type": "OpenUri",
             "name": "Click",
             "targets": [
-                {"os": "windows", "uri": url1},
-                {"os": "default", "uri": url2}
-            ]
-        })
-
-    def test_open_uri_add_target(self):
-        action = OpenUri("Click")
-        action.add_target(ActionTarget(OSType.DEFAULT, URL))
-        self.assertDictEqual(action.as_data(), {
-            "@type": "OpenUri",
-            "name": "Click",
-            "targets": [
-                {"os": "default", "uri": URL}
+                {"os": "iOS", "uri": url1},
+                {"os": "android", "uri": url2}
             ]
         })
 

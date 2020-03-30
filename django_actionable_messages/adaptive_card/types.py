@@ -1,5 +1,5 @@
 from django_actionable_messages.adaptive_card.utils import HorizontalAlignment, VerticalAlignment, FillMode
-from django_actionable_messages.utils import CardElement
+from django_actionable_messages.mixins import CardElement
 
 
 class BackgroundImage(CardElement):

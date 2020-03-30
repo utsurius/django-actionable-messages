@@ -5,6 +5,8 @@ from django_actionable_messages.adaptive_card.containers import (
     ActionSet, Container, Column, ColumnSet, Fact, FactSet, ImageSet
 )
 from django_actionable_messages.adaptive_card.elements import Image, TextBlock
+from django_actionable_messages.adaptive_card.outlook.actions import ActionHttp, DisplayAppointmentForm
+from django_actionable_messages.adaptive_card.outlook.containers import ActionSet as oActionSet
 from django_actionable_messages.adaptive_card.types import BackgroundImage
 from django_actionable_messages.adaptive_card.utils import (
     SpacingStyle, FallbackOption, ImageSize, Style, VerticalAlignment, Width, BlockElementHeight, ActionStyle,
@@ -1258,3 +1260,57 @@ class ContainersTestCase(TestCase):
             }],
             "height": "auto"
         })
+
+    def test_outlook_action_set1(self):
+        container = oActionSet(
+            item_id="container1", spacing=SpacingStyle.EXTRA_LARGE, separator=True,
+            horizontal_alignment=HorizontalAlignment.CENTER, actions=ActionHttp(method="POST", url=URL, body="data")
+        )
+        self.assertDictEqual(
+            container.as_data(),
+            {
+                "type": "ActionSet",
+                "id": "container1",
+                "spacing": "extraLarge",
+                "separator": True,
+                "horizontalAlignment": "center",
+                "actions": [{
+                    "type": "Action.Http",
+                    "method": "POST",
+                    "url": URL,
+                    "body": "data"
+                }]
+            }
+        )
+
+    def test_outlook_action_set2(self):
+        container = oActionSet()
+        container.set_id("container1")
+        container.set_spacing(SpacingStyle.EXTRA_LARGE)
+        container.set_separator()
+        container.set_horizontal_alignment(HorizontalAlignment.RIGHT)
+        container.add_actions([
+            ActionHttp(method="POST", url=URL, body="data"),
+            DisplayAppointmentForm(title="Title", item_id="item_2", is_visible=False)
+        ])
+        self.assertDictEqual(
+            container.as_data(),
+            {
+                "type": "ActionSet",
+                "id": "container1",
+                "spacing": "extraLarge",
+                "separator": True,
+                "horizontalAlignment": "right",
+                "actions": [{
+                    "type": "Action.Http",
+                    "method": "POST",
+                    "url": URL,
+                    "body": "data"
+                }, {
+                    "type": "Action.DisplayAppointmentForm",
+                    "title": "Title",
+                    "itemId": "item_2",
+                    "isVisible": False
+                }]
+            }
+        )

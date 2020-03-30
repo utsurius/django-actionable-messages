@@ -7,7 +7,7 @@ setup(
     name="django_actionable_messages",
     packages=find_packages(exclude=["examples", "examples.*", "tests", "tests.*"]),
     include_package_data=True,
-    version="0.2.2",
+    version="0.2.3",
     license="MIT",
     description="Actionable messages",
     long_description=long_description,
@@ -16,7 +16,7 @@ setup(
     author_email="przemek@upsecure.pl",
     url="https://github.com/utsurius/django-actionable-messages",
     python_requires=">=3.5",
-    keywords=["msteams", "AdaptiveCard", "MessageCard", "actionable messages"],
+    keywords=["msteams", "AdaptiveCard", "MessageCard", "HeroCard", "ThumbnailCard", "actionable messages"],
     install_requires=[
         "django>=2.2.0",
     ],

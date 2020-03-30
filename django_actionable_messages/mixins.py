@@ -7,6 +7,8 @@ from django_actionable_messages.settings import card_settings
 
 MESSAGE_CARD = 1
 ADAPTIVE_CARD = 2
+HERO_CARD = 3
+THUMBNAIL_CARD = 4
 
 
 class BaseMixin:
@@ -65,10 +67,10 @@ class Card(BaseMixin):
         elif fmt == "html":
             payload = self._get_html_payload(payload)
         elif fmt == "signed_html":
-            payload = self._get_signed_html_payload(payload)
+            payload = self._get_signed_html_payload()
         return payload
 
-    def get_signed_payload(self, payload):
+    def get_signed_payload(self):
         raise NotImplementedError
 
     def get_json_dump_kwargs(self):
@@ -89,9 +91,9 @@ class Card(BaseMixin):
         }
         return render_to_string("django_actionable_messages/email.html", context=context)
 
-    def _get_signed_html_payload(self, payload):
+    def _get_signed_html_payload(self):
         context = {
             "type": self.signed_card_types[self.card_type],
-            "payload": self.get_signed_payload(payload)
+            "payload": self.get_signed_payload()
         }
         return render_to_string("django_actionable_messages/signed_email.html", context=context)

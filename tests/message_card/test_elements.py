@@ -1,19 +1,12 @@
 from django.test import TestCase
 
-from django_actionable_messages.message_card.elements import Header, Fact, HeroImage, InputChoice, ActionTarget
+from django_actionable_messages.message_card.elements import Fact, HeroImage, InputChoice, ActionTarget
 from django_actionable_messages.message_card.utils import OSType
 
 URL = "https://www.example.com/"
 
 
 class HelpersTestCase(TestCase):
-    def test_header(self):
-        header = Header("Accept-Encoding", "gzip,deflate")
-        self.assertDictEqual(header.as_data(), {
-            "name": "Accept-Encoding",
-            "value": "gzip,deflate"
-        })
-
     def test_fact(self):
         fact = Fact("First name", "Gal Anonim")
         self.assertDictEqual(fact.as_data(), {

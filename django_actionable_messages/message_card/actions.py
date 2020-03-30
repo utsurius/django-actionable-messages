@@ -1,5 +1,5 @@
 from django_actionable_messages.exceptions import CardException
-from django_actionable_messages.utils import CardElement
+from django_actionable_messages.mixins import CardElement
 
 
 class OpenUri(CardElement):

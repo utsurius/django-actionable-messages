@@ -5,7 +5,7 @@ from django_actionable_messages.adaptive_card.utils import (
     HorizontalAlignment, Color, FontType, FontSize, FontWeight, BlockElementHeight, ImageSize, ImageStyle
 )
 from django_actionable_messages.exceptions import CardException
-from django_actionable_messages.utils import CardElement
+from django_actionable_messages.mixins import CardElement
 
 
 class TextBlock(ElementMixin):

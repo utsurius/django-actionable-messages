@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from django_actionable_messages.adaptive_card.cards import AdaptiveCard
 from django_actionable_messages.message_card.cards import MessageCard
-from django_actionable_messages.utils import BaseMixin
+from django_actionable_messages.mixins import BaseMixin
 
 
 class TestTrans(BaseMixin):
@@ -11,7 +11,7 @@ class TestTrans(BaseMixin):
 
 
 class TestAdaptiveCard(AdaptiveCard):
-    def get_signed_payload(self, payload):
+    def get_signed_payload(self):
         return "signed_payload_ac"
 
     def get_json_dump_kwargs(self):
@@ -22,7 +22,7 @@ class TestAdaptiveCard(AdaptiveCard):
 
 
 class TestMessageCard(MessageCard):
-    def get_signed_payload(self, payload):
+    def get_signed_payload(self):
         return "signed_payload_mc"
 
 
@@ -32,9 +32,9 @@ class UtilsTestCase(TestCase):
 
     def test_get_signed_payload(self):
         with self.assertRaises(NotImplementedError):
-            AdaptiveCard().get_signed_payload("{}")
+            AdaptiveCard().get_signed_payload()
         with self.assertRaises(NotImplementedError):
-            MessageCard().get_signed_payload("{}")
+            MessageCard().get_signed_payload()
 
     def test_signed_html_payload(self):
         signed_html = TestAdaptiveCard().signed_html_payload
@@ -46,10 +46,7 @@ class UtilsTestCase(TestCase):
 
     def test_get_json_dump_kwargs(self):
         self.assertDictEqual(AdaptiveCard().get_json_dump_kwargs(), {})
-        self.assertDictEqual(
-            TestAdaptiveCard().get_json_dump_kwargs(),
-            {
-                'indent': 2,
-                'allow_nan': False
-            }
-        )
+        self.assertDictEqual(TestAdaptiveCard().get_json_dump_kwargs(), {
+            'indent': 2,
+            'allow_nan': False
+        })
