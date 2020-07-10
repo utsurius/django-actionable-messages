@@ -1,11 +1,11 @@
 from typing import List, Union
 
-from django_actionable_messages.adaptive_card.mixins import ElementMixin, DateTimeMixin
+from django_actionable_messages.adaptive_card.mixins import InputMixin, DateTimeMixin
 from django_actionable_messages.adaptive_card.utils import ChoiceInputStyle, TextInputStyle
 from django_actionable_messages.mixins import CardElement
 
 
-class TextInput(ElementMixin):
+class TextInput(InputMixin):
     def __init__(self, is_multiline: bool = None, max_length: int = None, placeholder=None,
                  style: TextInputStyle = None, inline_action=None, value=None, **kwargs):
         self._data = {
@@ -44,7 +44,7 @@ class TextInput(ElementMixin):
         self._data["value"] = value
 
 
-class NumberInput(ElementMixin):
+class NumberInput(InputMixin):
     def __init__(self, max_value: int = None, min_value: int = None, placeholder=None, value: int = None, **kwargs):
         self._data = {
             "type": "Input.Number"
@@ -80,7 +80,7 @@ class TimeInput(DateTimeMixin):
     base_type = "Input.Time"
 
 
-class ToggleInput(ElementMixin):
+class ToggleInput(InputMixin):
     def __init__(self, title, value: str = None, value_off: str = None, value_on: str = None, wrap: bool = None,
                  **kwargs):
         self._data = {
@@ -125,7 +125,7 @@ class InputChoice(CardElement):
         self._data["title"] = title
 
 
-class ChoiceSetInput(ElementMixin):
+class ChoiceSetInput(InputMixin):
     def __init__(self, choices: List[InputChoice], is_multi_select: bool = None, style: ChoiceInputStyle = None,
                  value: str = None, wrap: bool = None, **kwargs):
         self._data = {

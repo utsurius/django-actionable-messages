@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from django_actionable_messages.adaptive_card.actions import Submit, OpenUrl
-from django_actionable_messages.adaptive_card.elements import Image
+from django_actionable_messages.adaptive_card.elements import TextBlock, Image, RichTextBlock
 from django_actionable_messages.adaptive_card.inputs import (
     TextInput, NumberInput, DateInput, TimeInput, ToggleInput, InputChoice, ChoiceSetInput
 )
@@ -23,7 +23,7 @@ class InputsTestCase(TestCase):
     def test_input_text(self):
         inline_action = Submit(title="Submit", icon_url="http://www.example.com/1.png")
         input_text = TextInput(is_multiline=True, max_length=128, placeholder="Morbi in ipsum sit amet pede facilisis",
-                               style=TextInputStyle.EMAIL, inline_action=inline_action,
+                               style=TextInputStyle.EMAIL, inline_action=inline_action, label="Curabitur convallis",
                                value="Class aptent taciti sociosqu ad", fallback=FallbackOption.DROP, separator=True,
                                spacing=SpacingStyle.SMALL, item_id="id_text", is_visible=True, requires=self.requires)
         self.assertDictEqual(input_text.as_data(), {
@@ -43,7 +43,8 @@ class InputsTestCase(TestCase):
             "spacing": "small",
             "id": "id_text",
             "isVisible": True,
-            "requires": self.requires
+            "requires": self.requires,
+            "label": "Curabitur convallis"
         })
 
     def test_input_text_set_is_multiline(self):
@@ -197,10 +198,37 @@ class InputsTestCase(TestCase):
             "requires": self.requires
         })
 
+    def test_input_text_set_label(self):
+        input_text = TextInput(item_id="id_text")
+        input_text.set_label("Cras id nibh")
+        self.assertDictEqual(input_text.as_data(), {
+            "type": "Input.Text",
+            "id": "id_text",
+            "label": "Cras id nibh"
+        })
+        input_text.set_label(TextBlock("Proin volutpat semper elit"))
+        self.assertDictEqual(input_text.as_data(), {
+            "type": "Input.Text",
+            "id": "id_text",
+            "label": {
+                "type": "TextBlock",
+                "text": "Proin volutpat semper elit"
+            }
+        })
+        input_text.set_label(RichTextBlock(inlines=["Quisque porta placerat tristique", ]))
+        self.assertDictEqual(input_text.as_data(), {
+            "type": "Input.Text",
+            "id": "id_text",
+            "label": {
+                "type": "RichTextBlock",
+                "inlines": ["Quisque porta placerat tristique", ]
+            }
+        })
+
     def test_input_number(self):
         input_number = NumberInput(max_value=100, min_value=10, placeholder="Maecenas mattis", value=42,
                                    fallback=FallbackOption.DROP, separator=True, spacing=SpacingStyle.PADDING,
-                                   item_id="id_number", is_visible=True, requires=self.requires)
+                                   item_id="id_number", is_visible=True, requires=self.requires, label="nisi felis")
         self.assertDictEqual(input_number.as_data(), {
             "type": "Input.Number",
             "max": 100,
@@ -212,7 +240,8 @@ class InputsTestCase(TestCase):
             "spacing": "padding",
             "id": "id_number",
             "isVisible": True,
-            "requires": self.requires
+            "requires": self.requires,
+            "label": "nisi felis"
         })
 
     def test_input_number_set_max(self):
@@ -339,9 +368,36 @@ class InputsTestCase(TestCase):
             "requires": self.requires
         })
 
+    def test_input_number_set_label(self):
+        input_number = NumberInput(item_id="id_number")
+        input_number.set_label("Proin volutpat")
+        self.assertDictEqual(input_number.as_data(), {
+            "type": "Input.Number",
+            "id": "id_number",
+            "label": "Proin volutpat"
+        })
+        input_number.set_label(TextBlock("Cras in tortor sed"))
+        self.assertDictEqual(input_number.as_data(), {
+            "type": "Input.Number",
+            "id": "id_number",
+            "label": {
+                "type": "TextBlock",
+                "text": "Cras in tortor sed"
+            }
+        })
+        input_number.set_label(RichTextBlock(inlines=["dui vulputate dignissim", ]))
+        self.assertDictEqual(input_number.as_data(), {
+            "type": "Input.Number",
+            "id": "id_number",
+            "label": {
+                "type": "RichTextBlock",
+                "inlines": ["dui vulputate dignissim", ]
+            }
+        })
+
     def test_input_date(self):
         input_date = DateInput(max_value="2020-10-25", min_value="2015-04-19", placeholder="Ne quo causae",
-                               value="2017-11-01", fallback=FallbackOption.DROP, separator=True,
+                               value="2017-11-01", fallback=FallbackOption.DROP, separator=True, label="Praesent",
                                spacing=SpacingStyle.MEDIUM, item_id="id_date", is_visible=True, requires=self.requires)
         self.assertDictEqual(input_date.as_data(), {
             "type": "Input.Date",
@@ -354,7 +410,8 @@ class InputsTestCase(TestCase):
             "spacing": "medium",
             "id": "id_date",
             "isVisible": True,
-            "requires": self.requires
+            "requires": self.requires,
+            "label": "Praesent"
         })
 
     def test_input_date_set_max(self):
@@ -481,10 +538,37 @@ class InputsTestCase(TestCase):
             "requires": self.requires
         })
 
+    def test_input_date_set_label(self):
+        input_date = DateInput(item_id="id_date")
+        input_date.set_label("Etiam sed")
+        self.assertDictEqual(input_date.as_data(), {
+            "type": "Input.Date",
+            "id": "id_date",
+            "label": "Etiam sed"
+        })
+        input_date.set_label(TextBlock("ultricies leo"))
+        self.assertDictEqual(input_date.as_data(), {
+            "type": "Input.Date",
+            "id": "id_date",
+            "label": {
+                "type": "TextBlock",
+                "text": "ultricies leo"
+            }
+        })
+        input_date.set_label(RichTextBlock(inlines=["Aliquam venenatis", ]))
+        self.assertDictEqual(input_date.as_data(), {
+            "type": "Input.Date",
+            "id": "id_date",
+            "label": {
+                "type": "RichTextBlock",
+                "inlines": ["Aliquam venenatis", ]
+            }
+        })
+
     def test_input_time(self):
         input_time = TimeInput(max_value="16:00", min_value="10:00", placeholder="bonorum", value="14:37",
                                fallback=FallbackOption.DROP, separator=True, spacing=SpacingStyle.MEDIUM,
-                               item_id="id_time", is_visible=True, requires=self.requires)
+                               item_id="id_time", is_visible=True, requires=self.requires, label="est sapien")
         self.assertDictEqual(input_time.as_data(), {
             "type": "Input.Time",
             "max": "16:00",
@@ -496,7 +580,8 @@ class InputsTestCase(TestCase):
             "spacing": "medium",
             "id": "id_time",
             "isVisible": True,
-            "requires": self.requires
+            "requires": self.requires,
+            "label": "est sapien"
         })
 
     def test_input_time_set_max(self):
@@ -623,10 +708,37 @@ class InputsTestCase(TestCase):
             "requires": self.requires
         })
 
+    def test_input_time_set_label(self):
+        input_time = TimeInput(item_id="id_time")
+        input_time.set_label("dapibus massa")
+        self.assertDictEqual(input_time.as_data(), {
+            "type": "Input.Time",
+            "id": "id_time",
+            "label": "dapibus massa"
+        })
+        input_time.set_label(TextBlock("Quisque in dolor eget"))
+        self.assertDictEqual(input_time.as_data(), {
+            "type": "Input.Time",
+            "id": "id_time",
+            "label": {
+                "type": "TextBlock",
+                "text": "Quisque in dolor eget"
+            }
+        })
+        input_time.set_label(RichTextBlock(inlines=["Nunc leo ligula", ]))
+        self.assertDictEqual(input_time.as_data(), {
+            "type": "Input.Time",
+            "id": "id_time",
+            "label": {
+                "type": "RichTextBlock",
+                "inlines": ["Nunc leo ligula", ]
+            }
+        })
+
     def test_input_toggle(self):
         input_toggle = ToggleInput(title="Usu paulo errem percipitur", value="true", value_off="false", value_on="true",
                                    wrap=True, fallback=FallbackOption.DROP, separator=True, spacing=SpacingStyle.SMALL,
-                                   item_id="id_toggle", is_visible=True, requires=self.requires)
+                                   item_id="id_toggle", is_visible=True, requires=self.requires, label="Sed convallis")
         self.assertDictEqual(input_toggle.as_data(), {
             "type": "Input.Toggle",
             "title": "Usu paulo errem percipitur",
@@ -639,7 +751,8 @@ class InputsTestCase(TestCase):
             "spacing": "small",
             "id": "id_toggle",
             "isVisible": True,
-            "requires": self.requires
+            "requires": self.requires,
+            "label": "Sed convallis"
         })
 
     def test_input_toggle_set_title(self):
@@ -787,6 +900,33 @@ class InputsTestCase(TestCase):
             "requires": self.requires
         })
 
+    def test_input_toggle_set_label(self):
+        input_toggle = ToggleInput(title="Lorem ipsum")
+        input_toggle.set_label("tellus sollicitudin")
+        self.assertDictEqual(input_toggle.as_data(), {
+            "type": "Input.Toggle",
+            "title": "Lorem ipsum",
+            "label": "tellus sollicitudin"
+        })
+        input_toggle.set_label(TextBlock("Nunc semper at"))
+        self.assertDictEqual(input_toggle.as_data(), {
+            "type": "Input.Toggle",
+            "title": "Lorem ipsum",
+            "label": {
+                "type": "TextBlock",
+                "text": "Nunc semper at"
+            }
+        })
+        input_toggle.set_label(RichTextBlock(inlines=["Suspendisse ac posuere", ]))
+        self.assertDictEqual(input_toggle.as_data(), {
+            "type": "Input.Toggle",
+            "title": "Lorem ipsum",
+            "label": {
+                "type": "RichTextBlock",
+                "inlines": ["Suspendisse ac posuere", ]
+            }
+        })
+
     def test_input_choice(self):
         input_choice = InputChoice(title="Choro homero aliquando", value=1)
         self.assertDictEqual(input_choice.as_data(), {
@@ -799,7 +939,7 @@ class InputsTestCase(TestCase):
         input_choice_set = ChoiceSetInput(choices=choices, is_multi_select=True, style=ChoiceInputStyle.EXPANDED,
                                           value="foo", wrap=True, fallback=FallbackOption.DROP, separator=True,
                                           spacing=SpacingStyle.LARGE, item_id="id_input_choice_set", is_visible=True,
-                                          requires=self.requires)
+                                          requires=self.requires, label="Cras nisi velit")
         self.assertDictEqual(input_choice_set.as_data(), {
             "type": "Input.ChoiceSet",
             "choices": [{
@@ -818,7 +958,8 @@ class InputsTestCase(TestCase):
             "spacing": "large",
             "id": "id_input_choice_set",
             "isVisible": True,
-            "requires": self.requires
+            "requires": self.requires,
+            "label": "Cras nisi velit"
         })
 
     def test_input_choice_set_set_choices(self):
@@ -1042,4 +1183,40 @@ class InputsTestCase(TestCase):
                 "value": "bar"
             }],
             "requires": self.requires
+        })
+
+    def test_input_choice_set_set_label(self):
+        input_choice_set = ChoiceSetInput([InputChoice("foo", "bar"), ])
+        input_choice_set.set_label("purus pretium")
+        self.assertDictEqual(input_choice_set.as_data(), {
+            "type": "Input.ChoiceSet",
+            "choices": [{
+                "title": "foo",
+                "value": "bar"
+            }],
+            "label": "purus pretium"
+        })
+        input_choice_set.set_label(TextBlock("Aenean at neque"))
+        self.assertDictEqual(input_choice_set.as_data(), {
+            "type": "Input.ChoiceSet",
+            "choices": [{
+                "title": "foo",
+                "value": "bar"
+            }],
+            "label": {
+                "type": "TextBlock",
+                "text": "Aenean at neque"
+            }
+        })
+        input_choice_set.set_label(RichTextBlock(inlines=["pellentesque arcu", ]))
+        self.assertDictEqual(input_choice_set.as_data(), {
+            "type": "Input.ChoiceSet",
+            "choices": [{
+                "title": "foo",
+                "value": "bar"
+            }],
+            "label": {
+                "type": "RichTextBlock",
+                "inlines": ["pellentesque arcu", ]
+            }
         })

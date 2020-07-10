@@ -54,7 +54,20 @@ class ElementMixin(BaseElementMixin):
         self._data["height"] = height
 
 
-class DateTimeMixin(ElementMixin):
+class InputMixin(ElementMixin):
+    def __init__(self, label=None, **kwargs):
+        super().__init__(**kwargs)
+        if label is not None:
+            self.set_label(label)
+
+    def set_label(self, label):
+        if isinstance(label, str):
+            self._data["label"] = label
+        else:
+            self._data["label"] = label.as_data()
+
+
+class DateTimeMixin(InputMixin):
     base_type = None
 
     def __init__(self, max_value: str = None, min_value: str = None, placeholder=None, value: str = None, **kwargs):

@@ -1,6 +1,6 @@
 from enum import Enum
 
-VERSIONS = ("1.0", "1.1", "1.2")
+VERSIONS = ("1.0", "1.1", "1.2", "1.3")
 SCHEMA = "http://adaptivecards.io/schemas/adaptive-card.json"
 
 

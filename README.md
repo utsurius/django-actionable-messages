@@ -89,7 +89,7 @@
 8. [ThumbnailCard](#thumbnailcard)
     * [Elements](#thumbnailcard-elements)
     * [Cards](#thumbnailcard-cards)
-        * [ThumbnailCard](#thumbnailcard-herocard)
+        * [ThumbnailCard](#thumbnailcard-thumbnailcard)
 
 
 <h2 id="base-informations">Base informations</h2>
@@ -286,7 +286,7 @@ To get/add `webhook_url` see here: [Get the Microsoft Teams webhook URL](https:/
 
 <h2 id="adaptivecard">AdaptiveCard</h2>
 
-Supported versions: **1.0**, **1.1**, **1.2**
+Supported versions: **1.0**, **1.1**, **1.2**, **1.3**
 
 [Schema Explorer](https://adaptivecards.io/explorer/)
 
@@ -471,6 +471,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|label|set_label()|label|*str*, TextBlock<sup>4</sup>, RichTextBlock<sup>4</sup>|
 |lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
@@ -484,6 +485,8 @@ Other functions
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
 \[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+\[4\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 <h4 id="adaptivecard-numberinput">NumberInput <a href="https://adaptivecards.io/explorer/Input.Number.html">docs</a></h4>
 
@@ -500,6 +503,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|label|set_label()|label|*str*, TextBlock<sup>4</sup>, RichTextBlock<sup>4</sup>|
 |lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
@@ -513,6 +517,8 @@ Other functions
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
 \[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+\[4\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 <h4 id="adaptivecard-dateinput">DateInput <a href="https://adaptivecards.io/explorer/Input.Date.html">docs</a></h4>
 
@@ -529,6 +535,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|label|set_label()|label|*str*, TextBlock<sup>4</sup>, RichTextBlock<sup>4</sup>|
 |lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
@@ -542,6 +549,8 @@ Other functions
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
 \[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+\[4\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 <h4 id="adaptivecard-timeinput">TimeInput <a href="https://adaptivecards.io/explorer/Input.Time.html">docs</a></h4>
 
@@ -558,6 +567,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|label|set_label()|label|*str*, TextBlock<sup>4</sup>, RichTextBlock<sup>4</sup>|
 |lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
@@ -571,6 +581,8 @@ Other functions
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
 \[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+\[4\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 <h4 id="adaptivecard-toggleinput">ToggleInput <a href="https://adaptivecards.io/explorer/Input.Toggle.html">docs</a></h4>
 
@@ -588,6 +600,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|label|set_label()|label|*str*, TextBlock<sup>4</sup>, RichTextBlock<sup>4</sup>|
 |lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
@@ -601,6 +614,8 @@ Other functions
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
 
 \[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
+
+\[4\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 <h4 id="adaptivecard-inputchoice">InputChoice <a href="https://adaptivecards.io/explorer/Input.Choice.html">docs</a></h4>
 
@@ -628,6 +643,7 @@ Other functions
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
 |height|set_height()|height|BlockElementHeight<sup>2</sup>|
+|label|set_label()|label|*str*, TextBlock<sup>4</sup>, RichTextBlock<sup>4</sup>|
 |lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.inputs import ...`
@@ -641,6 +657,8 @@ Other functions
 |`containers`|Fact, Column|`from django_actionable_messages.adaptive_cards.containers import ...`|
 |`elements`|MediaSource, TextRun|`from django_actionable_messages.adaptive_cards.elements import ...`|
 |`inputs`|InputChoice|`from django_actionable_messages.adaptive_cards.inputs import ...`|
+
+\[4\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 
 <h3 id="adaptivecard-actions">Actions</h3>
