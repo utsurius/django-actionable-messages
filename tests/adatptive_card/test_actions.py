@@ -1,13 +1,15 @@
 from django.test import TestCase
 
-from django_actionable_messages.adaptive_card.actions import OpenUrl, Submit, ShowCard, TargetElement, ToggleVisibility
-from django_actionable_messages.adaptive_card.cards import AdaptiveCard
-from django_actionable_messages.adaptive_card.elements import TextBlock
-from django_actionable_messages.adaptive_card.outlook.actions import (
-    ActionHttp, InvokeAddInCommand, DisplayMessageForm, DisplayAppointmentForm, ToggleVisibility as oToggleVisibility,
-    METHODS
+from django_actionable_messages.adaptive_card.actions import (
+    OpenUrl, Submit, ShowCard, TargetElement, ToggleVisibility, Execute
 )
-from django_actionable_messages.adaptive_card.utils import ActionStyle, FallbackOption
+from django_actionable_messages.adaptive_card.cards import AdaptiveCard
+from django_actionable_messages.adaptive_card.elements import TextBlock, Image
+from django_actionable_messages.adaptive_card.outlook.actions import (
+    METHODS, ActionHttp, InvokeAddInCommand, DisplayMessageForm, DisplayAppointmentForm,
+    ToggleVisibility as oToggleVisibility
+)
+from django_actionable_messages.adaptive_card.utils import ActionStyle, FallbackOption, AssociatedInputs
 from django_actionable_messages.elements import Header
 from django_actionable_messages.exceptions import CardException
 
@@ -359,3 +361,114 @@ class ActionsTestCase(TestCase):
                 "isVisible": False
             }
         )
+
+    def test_execute(self):
+        action = Execute(
+            verb="verb",
+            data="data",
+            associated_inputs=AssociatedInputs.AUTO,
+            title="title",
+            icon_url=URL + "image.bmp",
+            style=ActionStyle.DESTRUCTIVE,
+            fallback=FallbackOption.DROP,
+            requires={
+                "foo": "bar"
+            }
+        )
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "verb": "verb",
+            "data": "data",
+            "associatedInputs": "Auto",
+            "title": "title",
+            "iconUrl": URL + "image.bmp",
+            "style": "destructive",
+            "fallback": "drop",
+            "requires": {
+                "foo": "bar"
+            }
+        })
+
+    def test_execute_set_verb(self):
+        action = Execute()
+        action.set_verb("foo")
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "verb": "foo"
+        })
+
+    def test_execute_set_data(self):
+        action = Execute()
+        action.set_data("foo")
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "data": "foo"
+        })
+
+    def test_execute_set_associated_inputs(self):
+        action = Execute()
+        action.set_associated_inputs(AssociatedInputs.NONE)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "associatedInputs": "None"
+        })
+
+    def test_execute_set_title(self):
+        action = Execute()
+        action.set_title("foo")
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "title": "foo"
+        })
+
+    def test_execute_set_icon_url(self):
+        action = Execute()
+        action.set_icon_url(URL + "image.bmp")
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "iconUrl": URL + "image.bmp"
+        })
+
+    def test_execute_set_style(self):
+        action = Execute()
+        action.set_style(ActionStyle.POSITIVE)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "style": "positive"
+        })
+
+    def test_execute_set_set_fallback1(self):
+        action = Execute()
+        action.set_fallback(FallbackOption.DROP)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "fallback": "drop"
+        })
+
+    def test_execute_set_set_fallback2(self):
+        action = Execute()
+        action.set_fallback(Image(URL))
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "fallback": {
+                "type": "Image",
+                "url": URL
+            }
+        })
+
+    def test_execute_set_set_fallback3(self):
+        action = Execute()
+        with self.assertRaisesMessage(CardException, "Invalid fallback type"):
+            action.set_fallback(1)
+
+    def test_execute_set_requires(self):
+        action = Execute()
+        action.set_requires({
+            "foo": "bar"
+        })
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "requires": {
+                "foo": "bar"
+            }
+        })

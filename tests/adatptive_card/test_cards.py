@@ -2,9 +2,12 @@ import json
 
 from django.test import TestCase
 
-from django_actionable_messages.adaptive_card.actions import OpenUrl, Submit
+from django_actionable_messages.adaptive_card.actions import OpenUrl, Submit, Execute
 from django_actionable_messages.adaptive_card.cards import AdaptiveCard
 from django_actionable_messages.adaptive_card.elements import Image, TextRun
+from django_actionable_messages.adaptive_card.types import (
+    Refresh, TokenExchangeResource, AuthCardButton, Authentication
+)
 from django_actionable_messages.adaptive_card.utils import (
     VERSIONS, SCHEMA, Style, VerticalAlignment, Color, ActionStyle
 )
@@ -15,6 +18,25 @@ URL = "https://www.example.com/"
 
 class CardsTestCase(TestCase):
     def test_adaptive_card(self):
+        refresh = Refresh(
+            action=Execute(),
+            user_ids=["user_1", "user_2"]
+        )
+        authentication = Authentication(
+            text="text",
+            connection_name="conn_id_1",
+            token_exchange_resource=TokenExchangeResource(
+                token_id="token_1",
+                uri=URL,
+                provider_id="provider_id"
+            ),
+            buttons=[AuthCardButton(
+                btn_type="btn_submit",
+                value="submit",
+                title="sample_title",
+                image=URL + "image.bmp"
+            )]
+        )
         inputs = [
             TextRun(text="Curabitur consequat ac velit sed fermentum.", color=Color.ACCENT),
             Image("www.image.com/image1.jpeg", height="120px")
@@ -23,16 +45,38 @@ class CardsTestCase(TestCase):
             Submit(title="Submit", style=ActionStyle.POSITIVE),
             OpenUrl(URL, title="Click")
         ]
-        select_action, image = OpenUrl(URL), Image("https://www.example.com/bckg.bmp")
-        adaptive_card = AdaptiveCard(version="1.2", schema=SCHEMA, inputs=inputs, actions=actions,
-                                     select_action=select_action, style=Style.GOOD, hide_original_body=True,
-                                     fallback_text="Vestibulum sapien.", background_image=image, min_height="150px",
-                                     speak='<voice name="string">Sample text.</voice>', lang="en",
+        select_action, image = OpenUrl(URL), Image(URL + "bckg.bmp")
+        adaptive_card = AdaptiveCard(version="1.4", schema=SCHEMA, refresh=refresh, authentication=authentication,
+                                     inputs=inputs, actions=actions, select_action=select_action, style=Style.GOOD,
+                                     hide_original_body=True, fallback_text="Vestibulum sapien.",
+                                     background_image=image, min_height="150px", lang="en",
+                                     speak='<voice name="string">Sample text.</voice>',
                                      vertical_content_alignment=VerticalAlignment.CENTER)
         self.assertDictEqual(adaptive_card.payload, {
             "type": "AdaptiveCard",
-            "version": "1.2",
+            "version": "1.4",
             "$schema": SCHEMA,
+            "refresh": {
+                "action": {
+                    "type": "Action.Execute"
+                },
+                "userIds": ["user_1", "user_2"]
+            },
+            "authentication": {
+                "text": "text",
+                "connectionName": "conn_id_1",
+                "tokenExchangeResource": {
+                    "id": "token_1",
+                    "uri": URL,
+                    "providerId": "provider_id"
+                },
+                "buttons": [{
+                    "type": "btn_submit",
+                    "value": "submit",
+                    "title": "sample_title",
+                    "image": URL + "image.bmp"
+                }]
+            },
             "selectAction": {
                 "type": "Action.OpenUrl",
                 "url": URL
@@ -86,6 +130,58 @@ class CardsTestCase(TestCase):
         self.assertDictEqual(adaptive_card.payload, {
             "type": "AdaptiveCard",
             "$schema": "https://www.example.com/schema"
+        })
+
+    def test_adaptive_card_set_refresh(self):
+        adaptive_card = AdaptiveCard()
+        adaptive_card.set_refresh(Refresh(
+            action=Execute(),
+            user_ids=["user_1", "user_2"]
+        ))
+        self.assertDictEqual(adaptive_card.payload, {
+            "type": "AdaptiveCard",
+            "refresh": {
+                "action": {
+                    "type": "Action.Execute"
+                },
+                "userIds": ["user_1", "user_2"]
+            }
+        })
+
+    def test_adaptive_card_set_authentication(self):
+        adaptive_card = AdaptiveCard()
+        adaptive_card.set_authentication(Authentication(
+            text="text",
+            connection_name="conn_id_1",
+            token_exchange_resource=TokenExchangeResource(
+                token_id="token_1",
+                uri=URL,
+                provider_id="provider_id"
+            ),
+            buttons=[AuthCardButton(
+                btn_type="btn_submit",
+                value="submit",
+                title="sample_title",
+                image=URL + "image.bmp"
+            )]
+        ))
+        self.assertDictEqual(adaptive_card.payload, {
+            "type": "AdaptiveCard",
+            "authentication": {
+                "text": "text",
+                "connectionName": "conn_id_1",
+                "tokenExchangeResource": {
+                    "id": "token_1",
+                    "uri": URL,
+                    "providerId": "provider_id"
+                },
+                "buttons": [{
+                    "type": "btn_submit",
+                    "value": "submit",
+                    "title": "sample_title",
+                    "image": URL + "image.bmp"
+                }]
+            }
         })
 
     def test_adaptive_card_set_select_action(self):

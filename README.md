@@ -48,6 +48,7 @@
         * [ShowCard](#adaptivecard-showcard)
         * [TargetElement](#adaptivecard-targetelement)
         * [ToggleVisibility](#adaptivecard-togglevisibility)
+        * [Execute](#adaptivecard-execute)
     * [Containers](#adaptivecard-containers)
         * [ActionSet](#adaptivecard-actionset)
         * [Container](#adaptivecard-container)
@@ -58,6 +59,10 @@
         * [ImageSet](#adaptivecard-imageset)
     * [Types](#adaptivecard-types)
         * [BackgroundImage](#adaptivecard-backgroundimage)
+        * [Refresh](#adaptivecard-refresh)
+        * [TokenExchangeResource](#adaptivecard-tokenexchangeresource)
+        * [AuthCardButton](#adaptivecard-authcardbutton)
+        * [Authentication](#adaptivecard-authentication)
     * [Cards](#adaptivecard-cards)
         * [AdaptiveCard](#adaptivecard-adaptivecard)
 6. [MessageCard](#messagecard)
@@ -134,8 +139,8 @@ ACTIONABLE_MESSAGES = {
 
 |Name|Version|
 |---|---|
-|python|3.5 - 3.8|
-|django|2.2 - 3.0|
+|python|3.5 - 3.9|
+|django|2.2 - 4.0|
 
 
 <h2 id="usage">Usage</h2>
@@ -286,7 +291,7 @@ To get/add `webhook_url` see here: [Get the Microsoft Teams webhook URL](https:/
 
 <h2 id="adaptivecard">AdaptiveCard</h2>
 
-Supported versions: **1.0**, **1.1**, **1.2**, **1.3**
+Supported versions: **1.0**, **1.1**, **1.2**, **1.3**, **1.4**
 
 [Schema Explorer](https://adaptivecards.io/explorer/)
 
@@ -319,7 +324,7 @@ Supported versions: **1.0**, **1.1**, **1.2**, **1.3**
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[2\]
+\[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -353,7 +358,7 @@ Supported versions: **1.0**, **1.1**, **1.2**, **1.3**
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[2\]
+\[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -375,7 +380,7 @@ Supported versions: **1.0**, **1.1**, **1.2**, **1.3**
 |**sources**|add_sources()|sources|*list* of MediaSource(s)<sup>1</sup>|
 |poster|set_poster()|poster|*str*|
 |alternate_text|set_alternate_text()|altText|*str*|
-|fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or card element<sup>3</sup>|
+|fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or card element<sup>1</sup>|
 |separator|set_separator()|separator|*bool*|
 |spacing|set_spacing()|spacing|SpacingStyle<sup>2</sup>|
 |item_id|set_id()|id|*str*|
@@ -393,8 +398,6 @@ Other functions
 \[1\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
-
-\[3\]
 
 |Type|All except|Import|
 |---|---|---|
@@ -427,20 +430,18 @@ Other functions
 |Argument name|Function|Property|Type|
 |---|---|---|---|
 |**inlines**|set_inlines()|inlines|*str*, TextRun<sup>1</sup>, trans<sup>4</sup>|
-|horizontal_alignment|set_horizontal_alignment()|horizontalAlignment|HorizontalAlignment<sup>1</sup>|
-|fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or card element<sup>3</sup>|
+|horizontal_alignment|set_horizontal_alignment()|horizontalAlignment|HorizontalAlignment<sup>2</sup>|
+|fallback|set_fallback()|fallback|FallbackOption<sup>2</sup> or card element<sup>1</sup>|
 |separator|set_separator()|separator|*bool*|
 |spacing|set_spacing()|spacing|SpacingStyle<sup>2</sup>|
 |item_id|set_id()|id|*str*|
 |is_visible|set_is_visible()|isVisible|*bool*|
 |requires|set_requires()|requires|*dict*|
-|height|set_height()|height|BlockElementHeight<sup>1</sup>|
+|height|set_height()|height|BlockElementHeight<sup>2</sup>|
 
 \[1\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
-
-\[3\]
 
 |Type|All except|Import|
 |---|---|---|
@@ -476,7 +477,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[2\]
+\[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -508,7 +509,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[2\]
+\[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -540,7 +541,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[2\]
+\[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -572,7 +573,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[2\]
+\[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -605,7 +606,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[2\]
+\[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -650,7 +651,7 @@ Other functions
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[3\]
+\[3\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -750,6 +751,24 @@ Other functions
 
 \[3\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
+<h4 id="adaptivecard-execute">Execute <a href="https://adaptivecards.io/explorer/Action.Execute.html">docs</a></h4>
+
+| Argument name | Function | Property | Type |
+|---|---|---|---|
+|verb|set_verb()|verb|*str*|
+|data|set_data()|data|*str*, object|
+|associated_inputs|set_associated_inputs()|associatedInputs|AssociatedInputs<sup>1</sup>|
+|title|set_title()|title|*str*|
+|icon_url|set_icon_url()|iconUrl|*str*|
+|style|set_style()|style|ActionStyle<sup>1</sup>|
+|fallback|set_fallback()|fallback|FallbackOption<sup>1</sup> or action<sup>2</sup>(except TargetElement<sup>2</sup>)|
+|requires|set_requires()|requires|*dict*|
+|lang_code|-|-|*str*|
+
+\[1\] `from django_actionable_messages.adaptive_card.utils import ...`
+
+\[2\] `from django_actionable_messages.adaptive_card.actions import ...`
+
 <h3 id="adaptivecard-containers">Containers</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.containers import ...`
@@ -770,7 +789,7 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[2\]
+\[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -802,7 +821,7 @@ Other functions
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[3\]
+\[3\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -858,7 +877,7 @@ Other functions
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[3\]
+\[3\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -894,7 +913,7 @@ Other functions
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[3\]
+\[3\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -921,7 +940,7 @@ Other functions
 
 \[2\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
-\[3\]
+\[3\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
 |Type|All except|Import|
 |---|---|---|
@@ -942,9 +961,45 @@ Other functions
 |fill_mode|set_fill_mode()|fillMode|FillMode<sup>1</sup>|
 |horizontal_alignment|set_horizontal_alignment()|horizontalAlignment|HorizontalAlignment<sup>1</sup>|
 |vertical_alignment|set_vertical_alignment()|verticalAlignment|VerticalAlignment<sup>1</sup>|
-|lang_code|-|-|*str*|
 
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
+
+<h4 id="adaptivecard-refresh">Refresh <a href="https://adaptivecards.io/explorer/Refresh.html">docs</a></h4>
+
+|Argument name|Function|Property|Type|
+|---|---|---|---|
+|action|set_action()|Execute|Execute<sup>1</sup>|
+|user_ids|set_user_ids()|list|list of *str*|
+
+\[1\] `from django_actionable_messages.adaptive_cards.actions import ...`
+
+<h4 id="adaptivecard-tokenexchangeresource">TokenExchangeResource <a href="https://adaptivecards.io/explorer/TokenExchangeResource.html">docs</a></h4>
+
+|Argument name|Function|Property|Type|
+|---|---|---|---|
+|**token_id**|set_id()|id|*str*|
+|**uri**|set_user_uri()|uri|*str*|
+|**provider_id**|set_provider_id()|providerId|*str*|
+
+<h4 id="adaptivecard-authcardbutton">AuthCardButton <a href="https://adaptivecards.io/explorer/AuthCardButton.html">docs</a></h4>
+
+|Argument name|Function|Property|Type|
+|---|---|---|---|
+|**btn_type**|-|type|*str*|
+|**value**|-|value|*str*|
+|title|set_title()|title|*str*|
+|image|set_image()|image|*str*|
+
+<h4 id="adaptivecard-authentication">Authentication <a href="https://adaptivecards.io/explorer/Authentication.html">docs</a></h4>
+
+|Argument name|Function|Property|Type|
+|---|---|---|---|
+|text|set_text()|text|*str*|
+|connection_name|set_connection_name()|connectionName|*str*|
+|token_exchange_resource|set_token_exchange_resource()|tokenExchangeResource|TokenExchangeResource<sup>1</sup>|
+|buttons|set_buttons()|buttons|*list* of AuthCardButton<sup>1</sup>|
+
+\[1\] `from django_actionable_messages.adaptive_cards.types import ...`
 
 <h3 id="adaptivecard-cards">Cards</h3>
 
@@ -956,6 +1011,8 @@ Other functions
 |---|---|---|---|
 |version|set_version()|version|*str*, SCHEMA<sup>1</sup>|
 |schema|set_schema()|$schema|*str*|
+|refresh|set_refresh()|refresh|Refresh<sup>3</sup>|
+|authentication|set_authentication()|authentication|Authentication<sup>3</sup>|
 |inputs|add_elements()|inputs|input or *list* of inputs(see docs)|
 |actions|add_actions()|actions|action or *list* of actions(see docs)|
 |select_action|set_select_action()|selectAction|see docs|
@@ -972,6 +1029,8 @@ Other functions
 \[1\] `from django_actionable_messages.adaptive_cards.utils import ...`
 
 \[2\] `from django_actionable_messages.adaptive_cards.elements import ...`
+
+\[3\] `from django_actionable_messages.adaptive_cards.types import ...`
 
 <h2 id="messagecard">MessageCard</h2>
 

@@ -1,6 +1,6 @@
 from enum import Enum
 
-VERSIONS = ("1.0", "1.1", "1.2", "1.3")
+VERSIONS = ("1.0", "1.1", "1.2", "1.3", "1.4")
 SCHEMA = "http://adaptivecards.io/schemas/adaptive-card.json"
 
 
@@ -114,3 +114,8 @@ class FillMode(str, Enum):
     REPEAT_HORIZONTALLY = "repeatHorizontally"
     REPEAT_VERTICALLY = "repeatVertically"
     REPEAT = "repeat"
+
+
+class AssociatedInputs(str, Enum):
+    AUTO = "Auto"
+    NONE = "None"

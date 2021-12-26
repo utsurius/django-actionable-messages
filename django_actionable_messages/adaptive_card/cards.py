@@ -9,10 +9,11 @@ from django_actionable_messages.mixins import ADAPTIVE_CARD, Card
 class AdaptiveCard(Card):
     card_type = ADAPTIVE_CARD
 
-    def __init__(self, version: str = None, schema: str = None, inputs: list = None, actions: list = None,
-                 select_action=None, style: Style = None, hide_original_body: bool = None, fallback_text: str = None,
-                 background_image: Union[str, Image] = None, min_height: str = None, speak: str = None,
-                 lang: str = None, vertical_content_alignment: VerticalAlignment = None, **kwargs):
+    def __init__(self, version: str = None, schema: str = None, refresh=None, authentication=None,
+                 inputs: list = None, actions: list = None, select_action=None, style: Style = None,
+                 hide_original_body: bool = None, fallback_text: str = None, background_image: Union[str, Image] = None,
+                 min_height: str = None, speak: str = None, lang: str = None,
+                 vertical_content_alignment: VerticalAlignment = None, **kwargs):
         self._payload = {
             "type": "AdaptiveCard"
         }
@@ -21,6 +22,10 @@ class AdaptiveCard(Card):
             self.set_version(version)
         if schema is not None:
             self.set_schema(schema)
+        if refresh is not None:
+            self.set_refresh(refresh)
+        if authentication is not None:
+            self.set_authentication(authentication)
         if inputs:
             self.add_elements(inputs)
         if actions:
@@ -51,6 +56,12 @@ class AdaptiveCard(Card):
 
     def set_schema(self, schema: str):
         self._payload["$schema"] = schema
+
+    def set_refresh(self, refresh):
+        self._payload["refresh"] = refresh.as_data()
+
+    def set_authentication(self, authentication):
+        self._payload["authentication"] = authentication.as_data()
 
     def set_select_action(self, action):
         self._payload["selectAction"] = action.as_data()
