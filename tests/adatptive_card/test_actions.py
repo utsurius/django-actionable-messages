@@ -9,7 +9,7 @@ from django_actionable_messages.adaptive_card.outlook.actions import (
     METHODS, ActionHttp, InvokeAddInCommand, DisplayMessageForm, DisplayAppointmentForm,
     ToggleVisibility as oToggleVisibility
 )
-from django_actionable_messages.adaptive_card.utils import ActionStyle, FallbackOption, AssociatedInputs
+from django_actionable_messages.adaptive_card.utils import ActionStyle, FallbackOption, AssociatedInputs, ActionMode
 from django_actionable_messages.elements import Header
 from django_actionable_messages.exceptions import CardException
 
@@ -39,8 +39,9 @@ class ActionsTestCase(TestCase):
             "parameter1": 1,
             "parameter2": "asdf"
         }
-        open_url = OpenUrl(URL, title="View", icon_url="www.asdf.com", style=ActionStyle.POSITIVE,
-                           fallback=FallbackOption.DROP, requires=requires)
+        open_url = OpenUrl(URL, title="View", icon_url="www.asdf.com", style=ActionStyle.POSITIVE, is_enabled=True,
+                           mode=ActionMode.PRIMARY, tooltip="Phasellus sodales leo", fallback=FallbackOption.DROP,
+                           requires=requires)
         self.assertDictEqual(open_url.as_data(), {
             "type": "Action.OpenUrl",
             "url": URL,
@@ -48,6 +49,9 @@ class ActionsTestCase(TestCase):
             "iconUrl": "www.asdf.com",
             "style": "positive",
             "fallback": "drop",
+            "mode": "primary",
+            "isEnabled": True,
+            "tooltip": "Phasellus sodales leo",
             "requires": requires
         })
 
@@ -59,11 +63,38 @@ class ActionsTestCase(TestCase):
             "url": "https://www.zxcv.com/1/"
         })
 
+    def test_open_url_set_tooltip(self):
+        action = OpenUrl(URL)
+        action.set_tooltip("Vivamus ornare elit")
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.OpenUrl",
+            "url": URL,
+            "tooltip": "Vivamus ornare elit"
+        })
+
+    def test_open_url_set_is_enabled(self):
+        action = OpenUrl(URL)
+        action.set_is_enabled(False)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.OpenUrl",
+            "url": URL,
+            "isEnabled": False
+        })
+
+    def test_open_url_set_mode(self):
+        action = OpenUrl(URL)
+        action.set_mode(ActionMode.SECONDARY)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.OpenUrl",
+            "url": URL,
+            "mode": "secondary"
+        })
+
     def test_show_card(self):
         adaptive_card = AdaptiveCard()
         adaptive_card.add_elements(TextBlock(text="Sample text"))
         adaptive_card.add_actions(Submit(title="Vote"))
-        show_card = ShowCard(card=adaptive_card)
+        show_card = ShowCard(card=adaptive_card, tooltip="Etiam venenatis", is_enabled=True, mode=ActionMode.PRIMARY)
         self.assertDictEqual(show_card.as_data(), {
             "type": "Action.ShowCard",
             "card": {
@@ -76,7 +107,10 @@ class ActionsTestCase(TestCase):
                     "type": "Action.Submit",
                     "title": "Vote"
                 }]
-            }
+            },
+            "tooltip": "Etiam venenatis",
+            "mode": "primary",
+            "isEnabled": True
         })
 
     def test_show_card_set_card(self):
@@ -98,13 +132,38 @@ class ActionsTestCase(TestCase):
             }
         })
 
+    def test_show_card_set_tooltip(self):
+        show_card = ShowCard()
+        show_card.set_tooltip("Ligula malesuada")
+        self.assertDictEqual(show_card.as_data(), {
+            "type": "Action.ShowCard",
+            "tooltip": "Ligula malesuada"
+        })
+
+    def test_show_card_set_is_enabled(self):
+        show_card = ShowCard()
+        show_card.set_is_enabled(False)
+        self.assertDictEqual(show_card.as_data(), {
+            "type": "Action.ShowCard",
+            "isEnabled": False
+        })
+
+    def test_show_card_set_mode(self):
+        show_card = ShowCard()
+        show_card.set_mode(ActionMode.SECONDARY)
+        self.assertDictEqual(show_card.as_data(), {
+            "type": "Action.ShowCard",
+            "mode": "secondary"
+        })
+
     def test_submit(self):
         requires = {
             "parameter1": 1,
             "parameter2": "asdf"
         }
         submit = Submit({"x": 0, "y": 1, "z": "2"}, title="Submit me", icon_url=URL, style=ActionStyle.DESTRUCTIVE,
-                        fallback=FallbackOption.DROP, requires=requires)
+                        fallback=FallbackOption.DROP, tooltip="Morbi felis arcu", is_enabled=True,
+                        mode=ActionMode.SECONDARY, requires=requires)
         self.assertDictEqual(submit.as_data(), {
             "type": "Action.Submit",
             "title": "Submit me",
@@ -112,7 +171,10 @@ class ActionsTestCase(TestCase):
             "style": "destructive",
             "fallback": "drop",
             "requires": requires,
-            "data": {"x": 0, "y": 1, "z": "2"}
+            "data": {"x": 0, "y": 1, "z": "2"},
+            "tooltip": "Morbi felis arcu",
+            "mode": "secondary",
+            "isEnabled": True
         })
 
     def test_submit_set_data(self):
@@ -126,6 +188,30 @@ class ActionsTestCase(TestCase):
         self.assertDictEqual(submit.as_data(), {
             "type": "Action.Submit",
             "data": data
+        })
+
+    def test_submit_set_tooltip(self):
+        action = Submit()
+        action.set_tooltip("Volutpat nec pharetra")
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Submit",
+            "tooltip": "Volutpat nec pharetra"
+        })
+
+    def test_submit_set_is_enabled(self):
+        action = Submit()
+        action.set_is_enabled(False)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Submit",
+            "isEnabled": False
+        })
+
+    def test_submit_set_mode(self):
+        action = Submit()
+        action.set_mode(ActionMode.SECONDARY)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Submit",
+            "mode": "secondary"
         })
 
     def test_target_element1(self):
@@ -150,7 +236,8 @@ class ActionsTestCase(TestCase):
             "parameter2": "asdf"
         }
         toggle_visibility = ToggleVisibility(["target1", "target2"], title="Title", icon_url=URL,
-                                             style=ActionStyle.DEFAULT, fallback=FallbackOption.DROP, requires=requires)
+                                             style=ActionStyle.DEFAULT, fallback=FallbackOption.DROP, is_enabled=True,
+                                             tooltip="Faucibus orci luctus", mode=ActionMode.PRIMARY, requires=requires)
         self.assertDictEqual(toggle_visibility.as_data(), {
             "type": "Action.ToggleVisibility",
             "title": "Title",
@@ -158,7 +245,10 @@ class ActionsTestCase(TestCase):
             "style": "default",
             "fallback": "drop",
             "requires": requires,
-            "targetElements": ["target1", "target2"]
+            "targetElements": ["target1", "target2"],
+            "tooltip": "Faucibus orci luctus",
+            "mode": "primary",
+            "isEnabled": True
         })
 
     def test_toggle_visibility_set_target_elements(self):
@@ -174,6 +264,30 @@ class ActionsTestCase(TestCase):
                     "isVisible": True
                 }
             ]
+        })
+
+    def test_toggle_visibility_set_tooltip(self):
+        toggle_visibility = ToggleVisibility()
+        toggle_visibility.set_tooltip("Vestibulum ante ipsum")
+        self.assertDictEqual(toggle_visibility.as_data(), {
+            "type": "Action.ToggleVisibility",
+            "tooltip": "Vestibulum ante ipsum"
+        })
+
+    def test_toggle_visibility_set_is_enabled(self):
+        toggle_visibility = ToggleVisibility()
+        toggle_visibility.set_is_enabled(False)
+        self.assertDictEqual(toggle_visibility.as_data(), {
+            "type": "Action.ToggleVisibility",
+            "isEnabled": False
+        })
+
+    def test_toggle_visibility_set_mode(self):
+        toggle_visibility = ToggleVisibility()
+        toggle_visibility.set_mode(ActionMode.SECONDARY)
+        self.assertDictEqual(toggle_visibility.as_data(), {
+            "type": "Action.ToggleVisibility",
+            "mode": "secondary"
         })
 
     def test_outlook_action_http_invalid_method(self):
@@ -209,23 +323,95 @@ class ActionsTestCase(TestCase):
             }
         )
 
-    def test_outlook_action_http1(self):
-        action = ActionHttp(method="POST", url=URL, body="asdf")
-        action.add_headers(Header("Transfer-Encoding", "chunked"))
-        action.set_title("Action title")
-        action.set_body("zxcv")
+    def test_outlook_action_http_minimal(self):
+        action = ActionHttp(method="GET", url=URL)
         self.assertDictEqual(
             action.as_data(),
             {
                 "type": "Action.Http",
-                "method": "POST",
+                "method": "GET",
+                "url": URL
+            }
+        )
+
+    def test_outlook_action_http_set_title(self):
+        action = ActionHttp(method="GET", url=URL)
+        action.set_title("Praesent a consectetur")
+        self.assertDictEqual(
+            action.as_data(),
+            {
+                "type": "Action.Http",
+                "method": "GET",
+                "url": URL,
+                "title": "Praesent a consectetur"
+            }
+        )
+
+    def test_outlook_action_http_add_headers_as_list(self):
+        action = ActionHttp(method="GET", url=URL)
+        action.add_headers([
+            Header("Proxy-Authorization", "Basic YWxhZGRpbjpvcGVuc2VzYW1l"),
+            Header("Connection", "close")
+        ])
+        self.assertDictEqual(
+            action.as_data(),
+            {
+                "type": "Action.Http",
+                "method": "GET",
                 "url": URL,
                 "headers": [{
-                    "name": "Transfer-Encoding",
-                    "value": "chunked"
-                }],
-                "title": "Action title",
-                "body": "zxcv"
+                    "name": "Proxy-Authorization",
+                    "value": "Basic YWxhZGRpbjpvcGVuc2VzYW1l"
+                }, {
+                    "name": "Connection",
+                    "value": "close"
+                }]
+            }
+        )
+
+    def test_outlook_action_http_add_headers_object(self):
+        action = ActionHttp(method="GET", url=URL)
+        action.add_headers(Header("Connection", "close"))
+        self.assertDictEqual(
+            action.as_data(),
+            {
+                "type": "Action.Http",
+                "method": "GET",
+                "url": URL,
+                "headers": [{
+                    "name": "Connection",
+                    "value": "close"
+                }]
+            }
+        )
+
+    def test_outlook_action_http_set_body(self):
+        action = ActionHttp(method="GET", url=URL)
+        action.set_body("bar")
+        self.assertDictEqual(
+            action.as_data(),
+            {
+                "type": "Action.Http",
+                "method": "GET",
+                "url": URL,
+                "body": "bar"
+            }
+        )
+
+    def test_outlook_invoke_add_in_command_minimal(self):
+        action = InvokeAddInCommand(add_in_id="id_qwerty", desktop_command_id="cmd_id",
+                                    initialization_context={"x": 1234, "y": "no"}, is_visible=True)
+        self.assertDictEqual(
+            action.as_data(),
+            {
+                "type": "Action.InvokeAddInCommand",
+                "addInId": "id_qwerty",
+                "desktopCommandId": "cmd_id",
+                "initializationContext": {
+                    "x": 1234,
+                    "y": "no"
+                },
+                "isVisible": True
             }
         )
 
@@ -363,18 +549,9 @@ class ActionsTestCase(TestCase):
         )
 
     def test_execute(self):
-        action = Execute(
-            verb="verb",
-            data="data",
-            associated_inputs=AssociatedInputs.AUTO,
-            title="title",
-            icon_url=URL + "image.bmp",
-            style=ActionStyle.DESTRUCTIVE,
-            fallback=FallbackOption.DROP,
-            requires={
-                "foo": "bar"
-            }
-        )
+        action = Execute(verb="verb", data="data", associated_inputs=AssociatedInputs.AUTO, title="title",
+                         icon_url=URL + "image.bmp", style=ActionStyle.DESTRUCTIVE, fallback=FallbackOption.DROP,
+                         tooltip="Fusce eget rutrum", is_enabled=True, mode=ActionMode.PRIMARY, requires={"foo": "bar"})
         self.assertDictEqual(action.as_data(), {
             "type": "Action.Execute",
             "verb": "verb",
@@ -384,9 +561,18 @@ class ActionsTestCase(TestCase):
             "iconUrl": URL + "image.bmp",
             "style": "destructive",
             "fallback": "drop",
+            "tooltip": "Fusce eget rutrum",
+            "isEnabled": True,
+            "mode": "primary",
             "requires": {
                 "foo": "bar"
             }
+        })
+
+    def test_execute_empty(self):
+        action = Execute()
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute"
         })
 
     def test_execute_set_verb(self):
@@ -460,6 +646,30 @@ class ActionsTestCase(TestCase):
         action = Execute()
         with self.assertRaisesMessage(CardException, "Invalid fallback type"):
             action.set_fallback(1)
+
+    def test_execute_set_tooltip(self):
+        action = Execute()
+        action.set_tooltip("Maecenas consequat")
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "tooltip": "Maecenas consequat"
+        })
+
+    def test_execute_set_is_enabled(self):
+        action = Execute()
+        action.set_is_enabled(False)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "isEnabled": False
+        })
+
+    def test_execute_set_mode(self):
+        action = Execute()
+        action.set_mode(ActionMode.SECONDARY)
+        self.assertDictEqual(action.as_data(), {
+            "type": "Action.Execute",
+            "mode": "secondary"
+        })
 
     def test_execute_set_requires(self):
         action = Execute()

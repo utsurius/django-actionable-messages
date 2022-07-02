@@ -1,10 +1,11 @@
 from django.test import TestCase
 
-from django_actionable_messages.adaptive_card.actions import OpenUrl, Submit
+from django_actionable_messages.adaptive_card.actions import OpenUrl, Submit, Execute
 from django_actionable_messages.adaptive_card.containers import (
-    ActionSet, Container, Column, ColumnSet, Fact, FactSet, ImageSet
+    ActionSet, Container, Column, ColumnSet, Fact, FactSet, ImageSet, TableCell, TableRow, Table
 )
 from django_actionable_messages.adaptive_card.elements import Image, TextBlock
+from django_actionable_messages.adaptive_card.inputs import TextInput, NumberInput, DateInput
 from django_actionable_messages.adaptive_card.outlook.actions import ActionHttp, DisplayAppointmentForm
 from django_actionable_messages.adaptive_card.outlook.containers import ActionSet as oActionSet
 from django_actionable_messages.adaptive_card.types import BackgroundImage
@@ -219,7 +220,7 @@ class ContainersTestCase(TestCase):
                               vertical_content_alignment=VerticalAlignment.TOP, bleed=True,
                               background_image=background_image, min_height="50px", fallback=FallbackOption.DROP,
                               separator=True, spacing=SpacingStyle.MEDIUM, item_id="id_container1", is_visible=True,
-                              requires=self.requires)
+                              requires=self.requires, rtl=False)
         self.assertDictEqual(container.as_data(), {
             "type": "Container",
             "items": [{
@@ -248,7 +249,8 @@ class ContainersTestCase(TestCase):
             "spacing": "medium",
             "id": "id_container1",
             "isVisible": True,
-            "requires": self.requires
+            "requires": self.requires,
+            "rtl": False
         })
 
     def test_container_add_items(self):
@@ -432,6 +434,19 @@ class ContainersTestCase(TestCase):
             "height": "auto"
         })
 
+    def test_container_set_rtl(self):
+        container = Container(items=[TextBlock(text="asdf", color=Color.GOOD), ])
+        container.set_rtl(False)
+        self.assertDictEqual(container.as_data(), {
+            "type": "Container",
+            "items": [{
+                "type": "TextBlock",
+                "text": "asdf",
+                "color": "good"
+            }],
+            "rtl": False
+        })
+
     def test_column(self):
         items = [
             Image(URL, alternate_text="alt_img", height="48px", background_color="abcdef"),
@@ -441,7 +456,7 @@ class ContainersTestCase(TestCase):
         column = Column(items=items, background_image=BackgroundImage("www.example.com"), bleed=True,
                         fallback=FallbackOption.DROP, min_height="100px", separator=True, spacing=SpacingStyle.MEDIUM,
                         select_action=action, style=Style.GOOD, vertical_content_alignment=VerticalAlignment.CENTER,
-                        width=Width.AUTO, item_id="id_column", is_visible=True, requires=self.requires)
+                        width=Width.AUTO, item_id="id_column", is_visible=True, requires=self.requires, rtl=False)
         self.assertDictEqual(column.as_data(), {
             "type": "Column",
             "items": [{
@@ -474,7 +489,8 @@ class ContainersTestCase(TestCase):
             "width": "auto",
             "id": "id_column",
             "isVisible": True,
-            "requires": self.requires
+            "requires": self.requires,
+            "rtl": False
         })
 
     def test_column_add_items(self):
@@ -669,6 +685,14 @@ class ContainersTestCase(TestCase):
         self.assertDictEqual(column.as_data(), {
             "type": "Column",
             "requires": self.requires
+        })
+
+    def test_column_set_rtl(self):
+        column = Column()
+        column.set_rtl(False)
+        self.assertDictEqual(column.as_data(), {
+            "type": "Column",
+            "rtl": False
         })
 
     def test_column_set(self):
@@ -1312,5 +1336,580 @@ class ContainersTestCase(TestCase):
                     "itemId": "item_2",
                     "isVisible": False
                 }]
+            }
+        )
+
+    def test_table_cell(self):
+        items = [
+            NumberInput(min_value=1, max_value=3), DateInput(min_value="2011-12-19", max_value="2020-01-10")
+        ]
+        cell = TableCell(items, select_action=Submit(data="foo"), style=Style.EMPHASIS,
+                         vertical_content_alignment=VerticalAlignment.CENTER, bleed=True,
+                         background_image=URL, min_height="10", rtl=False)
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }, {
+                    "type": "Input.Date",
+                    "min": "2011-12-19",
+                    "max": "2020-01-10"
+                }],
+                "selectAction": {
+                    "type": "Action.Submit",
+                    "data": "foo"
+                },
+                "style": "emphasis",
+                "verticalContentAlignment": "center",
+                "bleed": True,
+                "backgroundImage": "https://www.example.com/",
+                "minHeight": "10",
+                "rtl": False
+            }
+        )
+
+    def test_table_cell_add_items_as_list(self):
+        items = [
+            NumberInput(min_value=1, max_value=3), DateInput(min_value="2011-12-19", max_value="2020-01-10")
+        ]
+        cell = TableCell(items)
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }, {
+                    "type": "Input.Date",
+                    "min": "2011-12-19",
+                    "max": "2020-01-10"
+                }]
+            }
+        )
+
+    def test_table_cell_add_items_as_object(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }]
+            }
+        )
+
+    def test_table_cell_set_select_action(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        cell.set_select_action(Execute(verb="verb", data="data"))
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }],
+                "selectAction": {
+                    "type": "Action.Execute",
+                    "verb": "verb",
+                    "data": "data"
+                }
+            }
+        )
+
+    def test_table_cell_set_style(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        cell.set_style(Style.ATTENTION)
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }],
+                "style": "attention"
+            }
+        )
+
+    def test_table_cell_set_vertical_content_alignment(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        cell.set_vertical_content_alignment(VerticalAlignment.CENTER)
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }],
+                "verticalContentAlignment": "center"
+            }
+        )
+
+    def test_table_cell_set_bleed(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        cell.set_bleed(True)
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }],
+                "bleed": True
+            }
+        )
+
+    def test_table_cell_set_background_image_as_url(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        cell.set_background_image(URL)
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }],
+                "backgroundImage": URL
+            }
+        )
+
+    def test_table_cell_set_background_image_as_object(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        cell.set_background_image(BackgroundImage("www.image.com", fill_mode=FillMode.COVER))
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }],
+                "backgroundImage": {
+                    "url": "www.image.com",
+                    "fillMode": "cover"
+                }
+            }
+        )
+
+    def test_table_cell_set_background_image_invalid(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        with self.assertRaisesMessage(CardException, "Invalid image type"):
+            cell.set_background_image(None)
+
+    def test_table_cell_set_min_height(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        cell.set_min_height("10")
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }],
+                "minHeight": "10"
+            }
+        )
+
+    def test_table_cell_set_rtl(self):
+        item = NumberInput(min_value=1, max_value=3)
+        cell = TableCell(item)
+        cell.set_rtl(True)
+        self.assertDictEqual(
+            cell.as_data(),
+            {
+                "type": "TableCell",
+                "items": [{
+                    "type": "Input.Number",
+                    "min": 1,
+                    "max": 3
+                }],
+                "rtl": True
+            }
+        )
+
+    def test_table_row(self):
+        row = TableRow([TableCell(TextInput(is_multiline=True, max_length=128)),
+                        TableCell(NumberInput(min_value=0, max_value=10))])
+        self.assertDictEqual(
+            row.as_data(),
+            {
+                "type": "TableRow",
+                "cells": [{
+                    "type": "TableCell",
+                    "items": [{
+                        "type": "Input.Text",
+                        "isMultiline": True,
+                        "maxLength": 128
+                    }]
+                }, {
+                    "type": "TableCell",
+                    "items": [{
+                        "type": "Input.Number",
+                        "min": 0,
+                        "max": 10
+                    }]
+                }]
+            }
+        )
+
+    def test_table_row_add_cells1(self):
+        row = TableRow(TableCell(TextInput(is_multiline=True, max_length=64)))
+        row.add_cells(TableCell(DateInput(min_value="2003-02-01", max_value="2014-11-12")))
+        self.assertDictEqual(
+            row.as_data(),
+            {
+                "type": "TableRow",
+                "cells": [{
+                    "type": "TableCell",
+                    "items": [{
+                        "type": "Input.Text",
+                        "isMultiline": True,
+                        "maxLength": 64
+                    }]
+                }, {
+                    "type": "TableCell",
+                    "items": [{
+                        "type": "Input.Date",
+                        "min": "2003-02-01",
+                        "max": "2014-11-12"
+                    }]
+                }]
+            }
+        )
+
+    def test_table_row_add_cells2(self):
+        row = TableRow(TableCell(TextInput(is_multiline=True, max_length=64)))
+        row.add_cells([TableCell(DateInput(min_value="2003-02-01", max_value="2014-13-12")),
+                       TableCell(NumberInput(min_value=1, max_value=9))])
+        self.assertDictEqual(
+            row.as_data(),
+            {
+                "type": "TableRow",
+                "cells": [{
+                    "type": "TableCell",
+                    "items": [{
+                        "type": "Input.Text",
+                        "isMultiline": True,
+                        "maxLength": 64
+                    }]
+                }, {
+                    "type": "TableCell",
+                    "items": [{
+                        "type": "Input.Date",
+                        "min": "2003-02-01",
+                        "max": "2014-13-12"
+                    }]
+                }, {
+                    "type": "TableCell",
+                    "items": [{
+                        "type": "Input.Number",
+                        "min": 1,
+                        "max": 9
+                    }]
+                }]
+            }
+        )
+
+    def test_table(self):
+        columns = [{"width": 1}, {"width": 2}]
+        rows = [TableRow([TableCell(Image(URL)), TableCell(Fact("foo", "bar"))])]
+        table = Table(columns=columns, rows=rows, horizontal_cell_content_alignment=HorizontalAlignment.RIGHT,
+                      vertical_cell_content_alignment=VerticalAlignment.CENTER, first_row_as_header=True,
+                      show_grid_lines=False, grid_style=Style.GOOD, height=BlockElementHeight.STRETCH,
+                      separator=False, spacing=SpacingStyle.EXTRA_LARGE, item_id="id_table",
+                      is_visible=True, requires=self.requires)
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table",
+                "columns": [{
+                    "width": 1
+                }, {
+                    "width": 2
+                }],
+                "rows": [{
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }, {
+                        "type": "TableCell",
+                        "items": [{
+                            "title": "foo",
+                            "value": "bar"
+                        }]
+                    }]
+                }],
+                "horizontalCellContentAlignment": "right",
+                "verticalCellContentAlignment": "center",
+                "firstRowAsHeader": True,
+                "showGridLines": False,
+                "style": "good",
+                "height": "stretch",
+                "separator": False,
+                "spacing": "extraLarge",
+                "id": "id_table",
+                "isVisible": True,
+                "requires": {
+                    "parameter1": "foo",
+                    "parameter2": "bar",
+                    "parameter3": 1337
+                }
+            }
+        )
+
+    def test_table_empty(self):
+        table = Table()
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table"
+            }
+        )
+
+    def test_table_add_columns(self):
+        columns = [{"width": 1}, {"width": 2}]
+        rows = [TableRow([TableCell(Image(URL)), TableCell(Fact("foo", "bar"))])]
+        table = Table(columns=columns, rows=rows)
+        table.add_columns({"width": 3})
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table",
+                "columns": [{
+                    "width": 1
+                }, {
+                    "width": 2
+                }, {
+                    "width": 3
+                }],
+                "rows": [{
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }, {
+                        "type": "TableCell",
+                        "items": [{
+                            "title": "foo",
+                            "value": "bar"
+                        }]
+                    }]
+                }]
+            }
+        )
+
+    def test_table_add_rows(self):
+        columns = [{"width": 1}, {"width": 2}]
+        rows = [TableRow([TableCell(Image(URL)), TableCell(Fact("foo", "bar"))])]
+        table = Table(columns=columns, rows=rows)
+        table.add_rows(TableRow([TableCell(TextBlock(text="Curabitur vitae")), TableCell(Image(URL))]))
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table",
+                "columns": [{
+                    "width": 1
+                }, {
+                    "width": 2
+                }],
+                "rows": [{
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }, {
+                        "type": "TableCell",
+                        "items": [{
+                            "title": "foo",
+                            "value": "bar"
+                        }]
+                    }]
+                }, {
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "TextBlock",
+                            "text": "Curabitur vitae"
+                        }]
+                    }, {
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }]
+
+                }]
+            }
+        )
+
+    def test_table_set_horizontal_cell_content_alignment(self):
+        columns = {"width": 1}
+        rows = TableRow(TableCell(Image(URL)))
+        table = Table(columns=columns, rows=rows)
+        table.set_horizontal_cell_content_alignment(HorizontalAlignment.RIGHT)
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table",
+                "columns": [{
+                    "width": 1
+                }],
+                "rows": [{
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }]
+                }],
+                "horizontalCellContentAlignment": "right"
+            }
+        )
+
+    def test_table_set_vertical_cell_content_alignment(self):
+        columns = {"width": 1}
+        rows = TableRow(TableCell(Image(URL)))
+        table = Table(columns=columns, rows=rows)
+        table.set_vertical_cell_content_alignment(VerticalAlignment.BOTTOM)
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table",
+                "columns": [{
+                    "width": 1
+                }],
+                "rows": [{
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }]
+                }],
+                "verticalCellContentAlignment": "bottom"
+            }
+        )
+
+    def test_table_set_first_row_as_header(self):
+        columns = {"width": 1}
+        rows = TableRow(TableCell(Image(URL)))
+        table = Table(columns=columns, rows=rows)
+        table.set_first_row_as_header(False)
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table",
+                "columns": [{
+                    "width": 1
+                }],
+                "rows": [{
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }]
+                }],
+                "firstRowAsHeader": False
+            }
+        )
+
+    def test_table_set_show_grid_lines(self):
+        columns = {"width": 1}
+        rows = TableRow(TableCell(Image(URL)))
+        table = Table(columns=columns, rows=rows)
+        table.set_show_grid_lines(False)
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table",
+                "columns": [{
+                    "width": 1
+                }],
+                "rows": [{
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }]
+                }],
+                "showGridLines": False
+            }
+        )
+
+    def test_table_set_grid_style(self):
+        columns = {"width": 1}
+        rows = TableRow(TableCell(Image(URL)))
+        table = Table(columns=columns, rows=rows)
+        table.set_grid_style(Style.ATTENTION)
+        self.assertDictEqual(
+            table.as_data(),
+            {
+                "type": "Table",
+                "columns": [{
+                    "width": 1
+                }],
+                "rows": [{
+                    "type": "TableRow",
+                    "cells": [{
+                        "type": "TableCell",
+                        "items": [{
+                            "type": "Image",
+                            "url": "https://www.example.com/"
+                        }]
+                    }]
+                }],
+                "style": "attention"
             }
         )

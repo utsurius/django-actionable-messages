@@ -1,6 +1,6 @@
 from enum import Enum
 
-VERSIONS = ("1.0", "1.1", "1.2", "1.3", "1.4")
+VERSIONS = ("1.0", "1.1", "1.2", "1.3", "1.4", "1.5")
 SCHEMA = "http://adaptivecards.io/schemas/adaptive-card.json"
 
 
@@ -90,6 +90,11 @@ class ActionStyle(str, Enum):
     DEFAULT = "default"
     POSITIVE = "positive"
     DESTRUCTIVE = "destructive"
+
+
+class ActionMode(str, Enum):
+    PRIMARY = "primary"
+    SECONDARY = "secondary"
 
 
 class ChoiceInputStyle(str, Enum):

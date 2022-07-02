@@ -1,4 +1,6 @@
-from django_actionable_messages.adaptive_card.utils import FallbackOption, BlockElementHeight, SpacingStyle, ActionStyle
+from django_actionable_messages.adaptive_card.utils import (
+    FallbackOption, BlockElementHeight, SpacingStyle, ActionStyle, ActionMode
+)
 from django_actionable_messages.exceptions import CardException
 from django_actionable_messages.mixins import CardElement
 
@@ -100,8 +102,8 @@ class DateTimeMixin(InputMixin):
 class ActionMixin(CardElement):
     action_type = ""
 
-    def __init__(self, title=None, icon_url: str = None, style: ActionStyle = None, fallback=None,
-                 requires: dict = None, **kwargs):
+    def __init__(self, title=None, icon_url: str = None, style: ActionStyle = None, fallback=None, tooltip: str = None,
+                 is_enabled: bool = None, mode: ActionMode = None, requires: dict = None, **kwargs):
         self._data = {
             "type": self.action_type
         }
@@ -114,6 +116,12 @@ class ActionMixin(CardElement):
             self.set_style(style)
         if fallback is not None:
             self.set_fallback(fallback)
+        if tooltip is not None:
+            self.set_tooltip(tooltip)
+        if is_enabled is not None:
+            self.set_is_enabled(is_enabled)
+        if mode is not None:
+            self.set_mode(mode)
         if requires is not None:
             self.set_requires(requires)
 
@@ -133,6 +141,15 @@ class ActionMixin(CardElement):
             self._data["fallback"] = fallback.as_data()
         else:
             raise CardException("Invalid fallback type")
+
+    def set_tooltip(self, tooltip: str):
+        self._data["tooltip"] = tooltip
+
+    def set_is_enabled(self, is_enabled: bool):
+        self._data["isEnabled"] = is_enabled
+
+    def set_mode(self, mode: ActionMode):
+        self._data["mode"] = mode
 
     def set_requires(self, requires: dict):
         self._data["requires"] = requires

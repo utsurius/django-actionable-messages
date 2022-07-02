@@ -12,7 +12,7 @@ class AdaptiveCard(Card):
     def __init__(self, version: str = None, schema: str = None, refresh=None, authentication=None,
                  inputs: list = None, actions: list = None, select_action=None, style: Style = None,
                  hide_original_body: bool = None, fallback_text: str = None, background_image: Union[str, Image] = None,
-                 min_height: str = None, speak: str = None, lang: str = None,
+                 min_height: str = None, speak: str = None, lang: str = None, rtl: bool = None,
                  vertical_content_alignment: VerticalAlignment = None, **kwargs):
         self._payload = {
             "type": "AdaptiveCard"
@@ -46,6 +46,8 @@ class AdaptiveCard(Card):
             self.set_speak(speak)
         if lang is not None:
             self.set_lang(lang)
+        if rtl is not None:
+            self.set_rtl(rtl)
         if vertical_content_alignment is not None:
             self.set_vertical_content_alignment(vertical_content_alignment)
 
@@ -91,6 +93,9 @@ class AdaptiveCard(Card):
 
     def set_lang(self, lang: str):
         self._payload["lang"] = lang
+
+    def set_rtl(self, value: bool):
+        self._payload["rtl"] = value
 
     def set_vertical_content_alignment(self, alignment: VerticalAlignment):
         self._payload["verticalContentAlignment"] = alignment

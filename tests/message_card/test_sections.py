@@ -100,6 +100,11 @@ class SectionTestCase(TestCase):
             "activityText": "Asdf zxcv"
         })
 
+    def test_section_set_activity_empty(self):
+        section = Section()
+        section.set_activity()
+        self.assertDictEqual(section.as_data(), {})
+
     def test_section_set_hero_image(self):
         section = Section()
         section.set_hero_image(HeroImage(URL, "Test"))

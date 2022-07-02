@@ -7,7 +7,7 @@ setup(
     name="django_actionable_messages",
     packages=find_packages(exclude=["examples", "examples.*", "tests", "tests.*"]),
     include_package_data=True,
-    version="0.2.5",
+    version="0.2.6",
     license="MIT",
     description="Actionable messages",
     long_description=long_description,
@@ -38,6 +38,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
     project_urls={

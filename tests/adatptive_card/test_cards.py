@@ -46,15 +46,15 @@ class CardsTestCase(TestCase):
             OpenUrl(URL, title="Click")
         ]
         select_action, image = OpenUrl(URL), Image(URL + "bckg.bmp")
-        adaptive_card = AdaptiveCard(version="1.4", schema=SCHEMA, refresh=refresh, authentication=authentication,
+        adaptive_card = AdaptiveCard(version="1.5", schema=SCHEMA, refresh=refresh, authentication=authentication,
                                      inputs=inputs, actions=actions, select_action=select_action, style=Style.GOOD,
                                      hide_original_body=True, fallback_text="Vestibulum sapien.",
                                      background_image=image, min_height="150px", lang="en",
-                                     speak='<voice name="string">Sample text.</voice>',
+                                     speak='<voice name="string">Sample text.</voice>', rtl=True,
                                      vertical_content_alignment=VerticalAlignment.CENTER)
         self.assertDictEqual(adaptive_card.payload, {
             "type": "AdaptiveCard",
-            "version": "1.4",
+            "version": "1.5",
             "$schema": SCHEMA,
             "refresh": {
                 "action": {
@@ -91,6 +91,7 @@ class CardsTestCase(TestCase):
             "minHeight": "150px",
             "speak": '<voice name="string">Sample text.</voice>',
             "lang": "en",
+            "rtl": True,
             "verticalContentAlignment": "center",
             "body": [{
                 "type": "TextRun",
@@ -271,6 +272,14 @@ class CardsTestCase(TestCase):
         self.assertDictEqual(adaptive_card.payload, {
             "type": "AdaptiveCard",
             "lang": "gb"
+        })
+
+    def test_adaptive_card_set_rtl(self):
+        adaptive_card = AdaptiveCard()
+        adaptive_card.set_rtl(False)
+        self.assertDictEqual(adaptive_card.payload, {
+            "type": "AdaptiveCard",
+            "rtl": False
         })
 
     def test_adaptive_card_set_vertical_content_alignment(self):

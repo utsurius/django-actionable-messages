@@ -1,7 +1,7 @@
 from typing import Union
 
 from django_actionable_messages.adaptive_card.mixins import ActionMixin, BaseElementMixin
-from django_actionable_messages.adaptive_card.utils import AssociatedInputs, ActionStyle, FallbackOption
+from django_actionable_messages.adaptive_card.utils import FallbackOption, ActionStyle, ActionMode, AssociatedInputs
 from django_actionable_messages.exceptions import CardException
 from django_actionable_messages.mixins import CardElement
 
@@ -79,6 +79,7 @@ class Execute(CardElement):
 
     def __init__(self, verb: str = None, data: Union[str, object] = None, associated_inputs: AssociatedInputs = None,
                  title: str = None, icon_url: str = None, style: ActionStyle = None, fallback=None,
+                 tooltip: str = None, is_enabled: bool = None, mode: ActionMode = None,
                  requires: dict = None, **kwargs):
         self._data = {
             "type": self.action_type
@@ -98,6 +99,12 @@ class Execute(CardElement):
             self.set_style(style)
         if fallback is not None:
             self.set_fallback(fallback)
+        if tooltip is not None:
+            self.set_tooltip(tooltip)
+        if is_enabled is not None:
+            self.set_is_enabled(is_enabled)
+        if mode is not None:
+            self.set_mode(mode)
         if requires is not None:
             self.set_requires(requires)
 
@@ -126,6 +133,15 @@ class Execute(CardElement):
             self._data["fallback"] = fallback.as_data()
         else:
             raise CardException("Invalid fallback type")
+
+    def set_tooltip(self, tooltip: str):
+        self._data["tooltip"] = tooltip
+
+    def set_is_enabled(self, is_enabled: bool):
+        self._data["isEnabled"] = is_enabled
+
+    def set_mode(self, mode: ActionMode):
+        self._data["mode"] = mode
 
     def set_requires(self, requires: dict):
         self._data["requires"] = requires
