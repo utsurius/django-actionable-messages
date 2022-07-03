@@ -100,6 +100,7 @@ class ActionMode(str, Enum):
 class ChoiceInputStyle(str, Enum):
     COMPACT = "compact"
     EXPANDED = "expanded"
+    FILTERED = "filtered"
 
 
 class TextInputStyle(str, Enum):
@@ -107,6 +108,7 @@ class TextInputStyle(str, Enum):
     TEL = "tel"
     URL = "url"
     EMAIL = "email"
+    PASSWORD = "password"
 
 
 class Width(str, Enum):
