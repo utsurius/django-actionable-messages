@@ -8,9 +8,10 @@ from django_actionable_messages.mixins import MESSAGE_CARD, Card
 class MessageCard(Card):
     card_type = MESSAGE_CARD
 
-    def __init__(self, title=None, text=None, originator: str = None, summary=None, theme_color: str = None,
-                 correlation_id: str = None, auto_correlation_id=True, expected_actors: List[str] = None,
-                 hide_original_body: bool = None, sections: list = None, actions: list = None, **kwargs):
+    def __init__(self, title: str = None, text: str = None, originator: str = None, summary: str = None,
+                 theme_color: str = None, correlation_id: str = None, auto_correlation_id=True,
+                 expected_actors: List[str] = None, hide_original_body: bool = None, sections: list = None,
+                 actions: list = None, **kwargs) -> None:
         self._payload = {
             "@type": "MessageCard",
             "@context": "https://schema.org/extensions"
@@ -28,37 +29,37 @@ class MessageCard(Card):
             self.set_theme_color(theme_color)
         if correlation_id is not None or auto_correlation_id:
             self._payload["correlationId"] = correlation_id or str(uuid.uuid4())
-        if expected_actors:
+        if expected_actors is not None:
             self.set_expected_actors(expected_actors)
         if hide_original_body is not None:
             self.set_hide_original_body(hide_original_body)
-        if sections:
+        if sections is not None:
             self.add_sections(sections)
-        if actions:
+        if actions is not None:
             self.add_actions(actions)
 
-    def set_title(self, title):
+    def set_title(self, title: str) -> None:
         self._payload["title"] = title
 
-    def set_text(self, text):
+    def set_text(self, text: str) -> None:
         self._payload["text"] = text
 
-    def set_originator(self, originator: str):
+    def set_originator(self, originator: str) -> None:
         self._payload["originator"] = originator
 
-    def set_summary(self, summary):
+    def set_summary(self, summary: str) -> None:
         self._payload["summary"] = summary
 
-    def set_theme_color(self, theme_color: str):
+    def set_theme_color(self, theme_color: str) -> None:
         self._payload["themeColor"] = theme_color
 
-    def set_correlation_id(self, correlation_id: str):
+    def set_correlation_id(self, correlation_id: str) -> None:
         self._payload["correlationId"] = correlation_id
 
-    def set_expected_actors(self, expected_actors: List[str]):
+    def set_expected_actors(self, expected_actors: List[str]) -> None:
         self._payload["expectedActors"] = expected_actors
 
-    def add_expected_actors(self, expected_actors: Union[str, List[str]]):
+    def add_expected_actors(self, expected_actors: Union[str, List[str]]) -> None:
         self._payload.setdefault("expectedActors", [])
         if isinstance(expected_actors, (list, set, tuple)):
             self._payload["expectedActors"].extend(list(expected_actors))
@@ -67,17 +68,17 @@ class MessageCard(Card):
         else:
             raise CardException("Invalid expected_actors type")
 
-    def set_hide_original_body(self, hide_original_body=True):
+    def set_hide_original_body(self, hide_original_body=True) -> None:
         self._payload["hideOriginalBody"] = hide_original_body
 
-    def add_sections(self, sections):
+    def add_sections(self, sections) -> None:
         self._payload.setdefault("sections", [])
         if isinstance(sections, (list, set, tuple)):
             self._payload["sections"].extend(self._get_items_list(sections))
         else:
             self._payload["sections"].append(sections.as_data())
 
-    def add_actions(self, actions):
+    def add_actions(self, actions) -> None:
         self._payload.setdefault("potentialAction", [])
         if isinstance(actions, (list, set, tuple)):
             self._payload["potentialAction"].extend(self._get_items_list(actions))

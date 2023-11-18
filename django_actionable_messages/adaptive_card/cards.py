@@ -1,6 +1,7 @@
 from typing import Union
 
 from django_actionable_messages.adaptive_card.elements import Image
+from django_actionable_messages.adaptive_card.types import Metadata
 from django_actionable_messages.adaptive_card.utils import VERSIONS, Style, VerticalAlignment
 from django_actionable_messages.exceptions import CardException
 from django_actionable_messages.mixins import ADAPTIVE_CARD, Card
@@ -12,8 +13,8 @@ class AdaptiveCard(Card):
     def __init__(self, version: str = None, schema: str = None, refresh=None, authentication=None,
                  inputs: list = None, actions: list = None, select_action=None, style: Style = None,
                  hide_original_body: bool = None, fallback_text: str = None, background_image: Union[str, Image] = None,
-                 min_height: str = None, speak: str = None, lang: str = None, rtl: bool = None,
-                 vertical_content_alignment: VerticalAlignment = None, **kwargs):
+                 metadata: Metadata = None, min_height: str = None, speak: str = None, lang: str = None,
+                 rtl: bool = None, vertical_content_alignment: VerticalAlignment = None, **kwargs) -> None:
         self._payload = {
             "type": "AdaptiveCard"
         }
@@ -40,6 +41,8 @@ class AdaptiveCard(Card):
             self.set_fallback_text(fallback_text)
         if background_image is not None:
             self.set_background_image(background_image)
+        if metadata is not None:
+            self.set_metadata(metadata)
         if min_height is not None:
             self.set_min_height(min_height)
         if speak is not None:
@@ -51,33 +54,33 @@ class AdaptiveCard(Card):
         if vertical_content_alignment is not None:
             self.set_vertical_content_alignment(vertical_content_alignment)
 
-    def set_version(self, version: str):
+    def set_version(self, version: str) -> None:
         if version not in VERSIONS:
-            raise CardException("Invalid version. Supported versions are: {}".format(VERSIONS))
+            raise CardException(f"Invalid version. Supported versions are: {VERSIONS}")
         self._payload["version"] = version
 
-    def set_schema(self, schema: str):
+    def set_schema(self, schema: str) -> None:
         self._payload["$schema"] = schema
 
-    def set_refresh(self, refresh):
+    def set_refresh(self, refresh) -> None:
         self._payload["refresh"] = refresh.as_data()
 
-    def set_authentication(self, authentication):
+    def set_authentication(self, authentication) -> None:
         self._payload["authentication"] = authentication.as_data()
 
-    def set_select_action(self, action):
+    def set_select_action(self, action) -> None:
         self._payload["selectAction"] = action.as_data()
 
-    def set_style(self, style: Style):
+    def set_style(self, style: Style) -> None:
         self._payload["style"] = style
 
-    def set_hide_original_body(self, value=True):
+    def set_hide_original_body(self, value=True) -> None:
         self._payload["hideOriginalBody"] = value
 
-    def set_fallback_text(self, text: str):
+    def set_fallback_text(self, text: str) -> None:
         self._payload["fallbackText"] = text
 
-    def set_background_image(self, image: Union[str, Image]):
+    def set_background_image(self, image: Union[str, Image]) -> None:
         if isinstance(image, Image):
             self._payload["backgroundImage"] = image.as_data()
         elif isinstance(image, str):
@@ -85,19 +88,22 @@ class AdaptiveCard(Card):
         else:
             raise CardException("Invalid image type")
 
-    def set_min_height(self, height: str):
+    def set_metadata(self, metadata: Metadata) -> None:
+        self._payload["metadata"] = metadata.as_data()
+
+    def set_min_height(self, height: str) -> None:
         self._payload["minHeight"] = height
 
-    def set_speak(self, text: str):
+    def set_speak(self, text: str) -> None:
         self._payload["speak"] = text
 
-    def set_lang(self, lang: str):
+    def set_lang(self, lang: str) -> None:
         self._payload["lang"] = lang
 
-    def set_rtl(self, value: bool):
+    def set_rtl(self, value: bool) -> None:
         self._payload["rtl"] = value
 
-    def set_vertical_content_alignment(self, alignment: VerticalAlignment):
+    def set_vertical_content_alignment(self, alignment: VerticalAlignment) -> None:
         self._payload["verticalContentAlignment"] = alignment
 
     def add_elements(self, elements):

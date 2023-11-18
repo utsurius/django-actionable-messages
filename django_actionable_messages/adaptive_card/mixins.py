@@ -7,7 +7,7 @@ from django_actionable_messages.mixins import CardElement
 
 class BaseElementMixin(CardElement):
     def __init__(self, fallback=None, separator: bool = None, spacing: SpacingStyle = None, item_id: str = None,
-                 is_visible: bool = None, requires: dict = None, **kwargs):
+                 is_visible: bool = None, requires: dict = None, **kwargs) -> None:
         super().__init__(**kwargs)
         if fallback is not None:
             self.set_fallback(fallback)
@@ -22,7 +22,7 @@ class BaseElementMixin(CardElement):
         if requires is not None:
             self.set_requires(requires)
 
-    def set_fallback(self, fallback):
+    def set_fallback(self, fallback) -> None:
         if isinstance(fallback, FallbackOption):
             self._data["fallback"] = fallback
         elif isinstance(fallback, BaseElementMixin):
@@ -30,49 +30,50 @@ class BaseElementMixin(CardElement):
         else:
             raise CardException("Invalid fallback type")
 
-    def set_separator(self, value=True):
+    def set_separator(self, value=True) -> None:
         self._data["separator"] = value
 
-    def set_spacing(self, spacing: SpacingStyle):
+    def set_spacing(self, spacing: SpacingStyle) -> None:
         self._data["spacing"] = spacing
 
-    def set_id(self, item_id: str):
+    def set_id(self, item_id: str) -> None:
         self._data["id"] = item_id
 
-    def set_is_visible(self, visible=True):
+    def set_is_visible(self, visible=True) -> None:
         self._data["isVisible"] = visible
 
-    def set_requires(self, requires: dict):
+    def set_requires(self, requires: dict) -> None:
         self._data["requires"] = requires
 
 
 class ElementMixin(BaseElementMixin):
-    def __init__(self, height: BlockElementHeight = None, **kwargs):
+    def __init__(self, height: BlockElementHeight = None, **kwargs) -> None:
         super().__init__(**kwargs)
         if height is not None:
             self.set_height(height)
 
-    def set_height(self, height: BlockElementHeight):
+    def set_height(self, height: BlockElementHeight) -> None:
         self._data["height"] = height
 
 
 class InputMixin(ElementMixin):
-    def __init__(self, label=None, **kwargs):
+    def __init__(self, label: str = None, **kwargs) -> None:
         super().__init__(**kwargs)
         if label is not None:
             self.set_label(label)
 
-    def set_label(self, label):
+    def set_label(self, label: str) -> None:
         if isinstance(label, str):
             self._data["label"] = label
         else:
-            self._data["label"] = label.as_data()
+            raise CardException("Invalid label type")
 
 
 class DateTimeMixin(InputMixin):
     base_type = None
 
-    def __init__(self, max_value: str = None, min_value: str = None, placeholder=None, value: str = None, **kwargs):
+    def __init__(self, max_value: str = None, min_value: str = None, placeholder: str = None, value: str = None,
+                 **kwargs) -> None:
         self._data = {
             "type": self.base_type
         }
@@ -86,24 +87,25 @@ class DateTimeMixin(InputMixin):
         if value is not None:
             self.set_value(value)
 
-    def set_max(self, value: str):
+    def set_max(self, value: str) -> None:
         self._data["max"] = value
 
-    def set_min(self, value: str):
+    def set_min(self, value: str) -> None:
         self._data["min"] = value
 
-    def set_placeholder(self, text):
+    def set_placeholder(self, text: str) -> None:
         self._data["placeholder"] = text
 
-    def set_value(self, value: str):
+    def set_value(self, value: str) -> None:
         self._data["value"] = value
 
 
 class ActionMixin(CardElement):
     action_type = ""
 
-    def __init__(self, title=None, icon_url: str = None, style: ActionStyle = None, fallback=None, tooltip: str = None,
-                 is_enabled: bool = None, mode: ActionMode = None, requires: dict = None, **kwargs):
+    def __init__(self, title: str = None, icon_url: str = None, style: ActionStyle = None, fallback=None,
+                 tooltip: str = None, is_enabled: bool = None, mode: ActionMode = None, requires: dict = None,
+                 **kwargs) -> None:
         self._data = {
             "type": self.action_type
         }
@@ -125,16 +127,16 @@ class ActionMixin(CardElement):
         if requires is not None:
             self.set_requires(requires)
 
-    def set_title(self, title):
+    def set_title(self, title: str) -> None:
         self._data["title"] = title
 
-    def set_icon_url(self, url: str):
+    def set_icon_url(self, url: str) -> None:
         self._data["iconUrl"] = url
 
-    def set_style(self, style: ActionStyle):
+    def set_style(self, style: ActionStyle) -> None:
         self._data["style"] = style
 
-    def set_fallback(self, fallback):
+    def set_fallback(self, fallback) -> None:
         if isinstance(fallback, FallbackOption):
             self._data["fallback"] = fallback
         elif isinstance(fallback, ActionMixin):
@@ -142,14 +144,14 @@ class ActionMixin(CardElement):
         else:
             raise CardException("Invalid fallback type")
 
-    def set_tooltip(self, tooltip: str):
+    def set_tooltip(self, tooltip: str) -> None:
         self._data["tooltip"] = tooltip
 
-    def set_is_enabled(self, is_enabled: bool):
+    def set_is_enabled(self, is_enabled: bool) -> None:
         self._data["isEnabled"] = is_enabled
 
-    def set_mode(self, mode: ActionMode):
+    def set_mode(self, mode: ActionMode) -> None:
         self._data["mode"] = mode
 
-    def set_requires(self, requires: dict):
+    def set_requires(self, requires: dict) -> None:
         self._data["requires"] = requires

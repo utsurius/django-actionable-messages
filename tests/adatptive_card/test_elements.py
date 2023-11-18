@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from django_actionable_messages.adaptive_card.actions import OpenUrl
 from django_actionable_messages.adaptive_card.elements import (
-    TextBlock, Image, MediaSource, Media, TextRun, RichTextBlock
+    TextBlock, Image, MediaSource, CaptionSource, Media, TextRun, RichTextBlock
 )
 from django_actionable_messages.adaptive_card.utils import (
     Color, FontType, HorizontalAlignment, FontSize, FallbackOption, FontWeight, SpacingStyle, ImageSize, ImageStyle,
@@ -43,14 +43,6 @@ class ElementsTestCase(TestCase):
             "id": "id_text_block",
             "isVisible": True,
             "requires": self.requires
-        })
-
-    def test_text_block_set_text(self):
-        text_block = TextBlock(text="asdf")
-        text_block.set_text("Ut enim ad minim veniam")
-        self.assertDictEqual(text_block.as_data(), {
-            "type": "TextBlock",
-            "text": "Ut enim ad minim veniam"
         })
 
     def test_text_block_set_color(self):
@@ -453,9 +445,14 @@ class ElementsTestCase(TestCase):
             MediaSource("application/gzip", "www.source.com/1"),
             MediaSource("text/calendar", "www.source.com/2")
         ]
+        caption_sources = [
+            CaptionSource(mime_type="text/plain", url=URL, label="Duis consectetur mattis"),
+            CaptionSource(mime_type="image/png", url=URL, label="Nulla tristique")
+        ]
         media = Media(sources=sources, poster="Excepteur sint occaecat cupidatat non proident",
-                      alternate_text="sunt in culpa", fallback=FallbackOption.DROP, separator=True,
-                      spacing=SpacingStyle.MEDIUM, item_id="id_image", is_visible=True, requires=self.requires)
+                      alternate_text="sunt in culpa", caption_sources=caption_sources, fallback=FallbackOption.DROP,
+                      separator=True, spacing=SpacingStyle.MEDIUM, item_id="id_image", is_visible=True,
+                      requires=self.requires)
         self.assertDictEqual(media.as_data(), {
             "type": "Media",
             "sources": [{
@@ -467,6 +464,15 @@ class ElementsTestCase(TestCase):
             }],
             "poster": "Excepteur sint occaecat cupidatat non proident",
             "altText": "sunt in culpa",
+            "captionSources": [{
+                "mimeType": "text/plain",
+                "url": URL,
+                "label": "Duis consectetur mattis"
+            }, {
+                "mimeType": "image/png",
+                "url": URL,
+                "label": "Nulla tristique"
+            }],
             "fallback": "drop",
             "separator": True,
             "spacing": "medium",
@@ -477,7 +483,8 @@ class ElementsTestCase(TestCase):
 
     def test_media_add_sources(self):
         media = Media(sources=[MediaSource("audio/mpeg", "www.url.com"), ])
-        media.add_sources([MediaSource("application/php", "www.php.com"), MediaSource("image/gif", "www.gif.com")])
+        media.add_sources([MediaSource("application/php", "www.php.com"),
+                           MediaSource("image/gif", "www.gif.com")])
         self.assertDictEqual(media.as_data(), {
             "type": "Media",
             "sources": [{
@@ -493,7 +500,8 @@ class ElementsTestCase(TestCase):
         })
 
     def test_media_add_source(self):
-        media = Media(sources=[MediaSource("audio/mpeg", "www.url.com"), MediaSource("application/php", "www.php.com")])
+        media = Media(sources=[MediaSource("audio/mpeg", "www.url.com"),
+                               MediaSource("application/php", "www.php.com")])
         media.add_source(MediaSource("image/gif", "www.gif.com"))
         self.assertDictEqual(media.as_data(), {
             "type": "Media",
@@ -510,7 +518,7 @@ class ElementsTestCase(TestCase):
         })
 
     def test_media_set_poster(self):
-        media = Media(sources=[MediaSource("audio/mpeg", "www.url.com"), ])
+        media = Media(sources=[MediaSource("audio/mpeg", "www.url.com")])
         media.set_poster("His ei quod fastidii quaestio")
         self.assertDictEqual(media.as_data(), {
             "type": "Media",
@@ -522,7 +530,7 @@ class ElementsTestCase(TestCase):
         })
 
     def test_media_set_alternate_text(self):
-        media = Media(sources=[MediaSource("audio/mpeg", "www.url.com"), ])
+        media = Media(sources=[MediaSource("audio/mpeg", "www.url.com")])
         media.set_alternate_text("Sale civibus suavitate vix eu")
         self.assertDictEqual(media.as_data(), {
             "type": "Media",
@@ -533,8 +541,64 @@ class ElementsTestCase(TestCase):
             "altText": "Sale civibus suavitate vix eu"
         })
 
+    def test_media_set_set_caption_sources(self):
+        media = Media(sources=[MediaSource("image/png", "www.url.com")],
+                      caption_sources=[CaptionSource(mime_type="video/webm", url=URL, label="Proin eget rhoncus")])
+        media.set_caption_sources([CaptionSource(mime_type="text/plain", url=URL, label="Nam vestibulum nunc")])
+        self.assertDictEqual(media.as_data(), {
+            "type": "Media",
+            "sources": [{
+                "mimeType": "image/png",
+                "url": "www.url.com"
+            }],
+            "captionSources": [{
+                "mimeType": "text/plain",
+                "url": URL,
+                "label": "Nam vestibulum nunc"
+            }]
+        })
+
+    def test_media_set_add_caption_sources(self):
+        media = Media(sources=[MediaSource("audio/ogg", "www.url.com")])
+        media.add_caption_sources([
+            CaptionSource(mime_type="image/gif", url=URL, label="Ut et libero"),
+            CaptionSource(mime_type="font/woff", url=URL, label="Cras luctus porttitor"),
+        ])
+        self.assertDictEqual(media.as_data(), {
+            "type": "Media",
+            "sources": [{
+                "mimeType": "audio/ogg",
+                "url": "www.url.com"
+            }],
+            "captionSources": [{
+                "mimeType": "image/gif",
+                "url": URL,
+                "label": "Ut et libero"
+            }, {
+                "mimeType": "font/woff",
+                "url": URL,
+                "label": "Cras luctus porttitor"
+            }]
+        })
+
+    def test_media_set_add_caption_source(self):
+        media = Media(sources=[MediaSource("image/avif", "www.url.com")])
+        media.add_caption_source(CaptionSource(mime_type="audio/webm", url=URL, label="Sed scelerisque"))
+        self.assertDictEqual(media.as_data(), {
+            "type": "Media",
+            "sources": [{
+                "mimeType": "image/avif",
+                "url": "www.url.com"
+            }],
+            "captionSources": [{
+                "mimeType": "audio/webm",
+                "url": URL,
+                "label": "Sed scelerisque"
+            }]
+        })
+
     def test_media_set_fallback(self):
-        media = Media(sources=[MediaSource("text/html", "www.url.com"), ])
+        media = Media(sources=[MediaSource("text/html", "www.url.com")])
         media.set_fallback(FallbackOption.DROP)
         self.assertDictEqual(media.as_data(), {
             "type": "Media",
@@ -560,7 +624,7 @@ class ElementsTestCase(TestCase):
             media.set_fallback(1234)
 
     def test_media_set_separator(self):
-        media = Media(sources=[MediaSource("text/html", "www.url.com"), ])
+        media = Media(sources=[MediaSource("text/html", "www.url.com")])
         media.set_separator(False)
         self.assertDictEqual(media.as_data(), {
             "type": "Media",
@@ -655,6 +719,14 @@ class ElementsTestCase(TestCase):
             "requires": self.requires
         })
 
+    def test_caption_source(self):
+        caption_source = CaptionSource(mime_type="text/html", url=URL, label="Aliquam a elementum")
+        self.assertDictEqual(caption_source.as_data(), {
+            "mimeType": "text/html",
+            "url": URL,
+            "label": "Aliquam a elementum"
+        })
+
     def test_text_run(self):
         text_run = TextRun(text="Choro homero aliquando te vis", color=Color.ATTENTION, font_type=FontType.MONOSPACE,
                            highlight=True, is_subtle=True, italic=True, select_action=OpenUrl(URL), size=FontSize.SMALL,
@@ -674,14 +746,6 @@ class ElementsTestCase(TestCase):
             "size": "small",
             "strikethrough": True,
             "weight": "bolder"
-        })
-
-    def test_text_run_set_text(self):
-        text_run = TextRun(text="lorem ipsum")
-        text_run.set_text("At sed sumo temporibus omittantur")
-        self.assertDictEqual(text_run.as_data(), {
-            "type": "TextRun",
-            "text": "At sed sumo temporibus omittantur"
         })
 
     def test_text_run_set_color(self):
@@ -840,20 +904,11 @@ class ElementsTestCase(TestCase):
             "requires": self.requires
         })
 
-    def test_rich_text_block_set_inlines(self):
-        rich_text_block = RichTextBlock(inlines=["lorem ipsum", ])
-        rich_text_block.set_inlines([TextRun("Sed ea quod nominati, at vel", color=Color.GOOD), "Eos saepe phaedrum"])
-        self.assertDictEqual(rich_text_block.as_data(), {
-            "type": "RichTextBlock",
-            "inlines": [
-                {
-                    "type": "TextRun",
-                    "text": "Sed ea quod nominati, at vel",
-                    "color": "good"
-                },
-                "Eos saepe phaedrum"
-            ]
-        })
+    def test_rich_text_block_invalid_inline(self):
+        with self.assertRaises(CardException):
+            RichTextBlock(inlines=[1], horizontal_alignment=HorizontalAlignment.CENTER, fallback=FallbackOption.DROP,
+                          separator=True, spacing=SpacingStyle.MEDIUM, item_id="id_image", is_visible=True,
+                          requires=self.requires)
 
     def test_rich_text_block_set_horizontal_alignment(self):
         rich_text_block = RichTextBlock(inlines=["lorem ipsum", ])

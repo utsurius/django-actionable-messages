@@ -11,7 +11,7 @@ URL = "https://www.example.com/"
 
 
 class ActionsTestCase(TestCase):
-    def test_open_uri1(self):
+    def test_open_uri(self):
         url1, url2 = "{}first/".format(URL), "{}second/".format(URL)
         action = OpenUri("Open", targets=[ActionTarget(OSType.IOS, url1), ActionTarget(OSType.ANDROID, url2)])
         self.assertDictEqual(action.as_data(), {
@@ -23,19 +23,11 @@ class ActionsTestCase(TestCase):
             ]
         })
 
-    def test_open_uri2(self):
-        url1, url2 = "{}first/".format(URL), "{}second/".format(URL)
-        action = OpenUri("View")
-        action.set_name("Click")
-        action.add_target(ActionTarget(OSType.IOS, url1))
-        action.add_targets([ActionTarget(OSType.ANDROID, url2)])
+    def test_open_uri_no_targets(self):
+        action = OpenUri("Open")
         self.assertDictEqual(action.as_data(), {
             "@type": "OpenUri",
-            "name": "Click",
-            "targets": [
-                {"os": "iOS", "uri": url1},
-                {"os": "android", "uri": url2}
-            ]
+            "name": "Open"
         })
 
     def test_open_uri_target_already_added(self):
@@ -55,24 +47,6 @@ class ActionsTestCase(TestCase):
             ],
             "body": "qwerty",
             "bodyContentType": "content_type"
-        })
-
-    def test_http_post_set_name(self):
-        action = HttpPOST("Send", URL)
-        action.set_name("Praesent")
-        self.assertDictEqual(action.as_data(), {
-            "@type": "HttpPOST",
-            "name": "Praesent",
-            "target": URL
-        })
-
-    def test_http_post_set_target(self):
-        action = HttpPOST("Send", URL)
-        action.set_target("https://www.sample.domain.com")
-        self.assertDictEqual(action.as_data(), {
-            "@type": "HttpPOST",
-            "name": "Send",
-            "target": "https://www.sample.domain.com"
         })
 
     def test_http_post_add_headers(self):
@@ -120,7 +94,8 @@ class ActionsTestCase(TestCase):
         })
 
     def test_invoke_add_in_command(self):
-        action = InvokeAddInCommand("Command", "id1", "show", initialization_context={"property1": True})
+        action = InvokeAddInCommand("Command", "id1", "show",
+                                    initialization_context={"property1": True})
         self.assertDictEqual(action.as_data(), {
             "@type": "InvokeAddInCommand",
             "name": "Command",
@@ -129,16 +104,6 @@ class ActionsTestCase(TestCase):
             "initializationContext": {
                 "property1": True
             }
-        })
-
-    def test_invoke_add_in_command_set_name(self):
-        action = InvokeAddInCommand("Command", "id1", "show")
-        action.set_name("Vestibulum")
-        self.assertDictEqual(action.as_data(), {
-            "@type": "InvokeAddInCommand",
-            "name": "Vestibulum",
-            "addInId": "id1",
-            "desktopCommandId": "show"
         })
 
     def test_invoke_add_in_command_set_add_in(self):
@@ -186,29 +151,6 @@ class ActionsTestCase(TestCase):
                 "@type": "TextInput",
                 "id": "id_text",
                 "isRequired": True,
-                "isMultiline": True,
-                "maxLength": 128
-            }],
-            "actions": [{
-                "@type": "OpenUri",
-                "name": "Open",
-                "targets": [
-                    {"os": "default", "uri": URL}
-                ]
-            }]
-        })
-
-    def test_action_card_set_name(self):
-        inputs = [TextInput(input_id="id_text", max_length=128, is_multiline=True), ]
-        actions = [OpenUri("Open", targets=[ActionTarget(OSType.DEFAULT, URL), ]), ]
-        action_card = ActionCard("Actions", inputs=inputs, actions=actions)
-        action_card.set_name("Donec")
-        self.assertDictEqual(action_card.as_data(), {
-            "@type": "ActionCard",
-            "name": "Donec",
-            "inputs": [{
-                "@type": "TextInput",
-                "id": "id_text",
                 "isMultiline": True,
                 "maxLength": 128
             }],

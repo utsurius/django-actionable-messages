@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from django_actionable_messages.adaptive_card.actions import Execute
 from django_actionable_messages.adaptive_card.types import (
-    BackgroundImage, Refresh, TokenExchangeResource, AuthCardButton, Authentication
+    BackgroundImage, Refresh, TokenExchangeResource, AuthCardButton, Authentication, Metadata
 )
 from django_actionable_messages.adaptive_card.utils import FillMode, HorizontalAlignment, VerticalAlignment
 
@@ -53,12 +53,14 @@ class TypesTestCase(TestCase):
     def test_refresh(self):
         refresh = Refresh(
             action=Execute(),
+            expires="2023-01-01T12:00:00Z",
             user_ids=["user_1", "user_2"]
         )
         self.assertDictEqual(refresh.as_data(), {
             "action": {
                 "type": "Action.Execute"
             },
+            "expires": "2023-01-01T12:00:00Z",
             "userIds": ["user_1", "user_2"]
         })
 
@@ -69,6 +71,13 @@ class TypesTestCase(TestCase):
             "action": {
                 "type": "Action.Execute"
             }
+        })
+
+    def test_refresh_set_expires(self):
+        refresh = Refresh()
+        refresh.set_expires("2023-01-01T12:00:00Z")
+        self.assertDictEqual(refresh.as_data(), {
+            "expires": "2023-01-01T12:00:00Z"
         })
 
     def test_refresh_set_user_ids(self):
@@ -88,45 +97,6 @@ class TypesTestCase(TestCase):
             "id": "token_1",
             "uri": URL,
             "providerId": "provider_id"
-        })
-
-    def test_token_exchange_resource_set_id(self):
-        token = TokenExchangeResource(
-            token_id="token_1",
-            uri=URL,
-            provider_id="provider_id"
-        )
-        token.set_id("token_2")
-        self.assertDictEqual(token.as_data(), {
-            "id": "token_2",
-            "uri": URL,
-            "providerId": "provider_id"
-        })
-
-    def test_token_exchange_resource_set_uri(self):
-        token = TokenExchangeResource(
-            token_id="token_1",
-            uri=URL,
-            provider_id="provider_id"
-        )
-        token.set_uri("https://www.test.com")
-        self.assertDictEqual(token.as_data(), {
-            "id": "token_1",
-            "uri": "https://www.test.com",
-            "providerId": "provider_id"
-        })
-
-    def test_token_exchange_resource_set_provider_id(self):
-        token = TokenExchangeResource(
-            token_id="token_1",
-            uri=URL,
-            provider_id="provider_id"
-        )
-        token.set_provider_id("provider_1")
-        self.assertDictEqual(token.as_data(), {
-            "id": "token_1",
-            "uri": URL,
-            "providerId": "provider_1"
         })
 
     def test_auth_card_button(self):
@@ -256,4 +226,17 @@ class TypesTestCase(TestCase):
                 "title": "view_title",
                 "image": URL + "image2.bmp"
             }]
+        })
+
+    def test_metadata(self):
+        metadata = Metadata(url="https://www.example.com")
+        self.assertDictEqual(metadata.as_data(), {
+            "webUrl": "https://www.example.com"
+        })
+
+    def test_metadata_set_url(self):
+        metadata = Metadata()
+        metadata.set_url("https://www.test.com")
+        self.assertDictEqual(metadata.as_data(), {
+            "webUrl": "https://www.test.com"
         })

@@ -55,14 +55,6 @@ class ActionsTestCase(TestCase):
             "requires": requires
         })
 
-    def test_open_url_set_url(self):
-        open_url = OpenUrl(URL)
-        open_url.set_url("https://www.zxcv.com/1/")
-        self.assertDictEqual(open_url.as_data(), {
-            "type": "Action.OpenUrl",
-            "url": "https://www.zxcv.com/1/"
-        })
-
     def test_open_url_set_tooltip(self):
         action = OpenUrl(URL)
         action.set_tooltip("Vivamus ornare elit")
@@ -214,20 +206,11 @@ class ActionsTestCase(TestCase):
             "mode": "secondary"
         })
 
-    def test_target_element1(self):
+    def test_target_element(self):
         target_element = TargetElement("sample_id", True)
         self.assertDictEqual(target_element.as_data(), {
             "elementId": "sample_id",
             "isVisible": True
-        })
-
-    def test_target_element2(self):
-        target_element = TargetElement("sample_id")
-        target_element.set_element_id("element4")
-        target_element.set_is_visible(False)
-        self.assertDictEqual(target_element.as_data(), {
-            "elementId": "element4",
-            "isVisible": False
         })
 
     def test_toggle_visibility(self):
@@ -265,6 +248,11 @@ class ActionsTestCase(TestCase):
                 }
             ]
         })
+
+    def test_toggle_visibility_set_target_elements_invalid_type(self):
+        toggle_visibility = ToggleVisibility()
+        with self.assertRaises(CardException):
+            toggle_visibility.set_target_elements([1])
 
     def test_toggle_visibility_set_tooltip(self):
         toggle_visibility = ToggleVisibility()
@@ -415,7 +403,7 @@ class ActionsTestCase(TestCase):
             }
         )
 
-    def test_outlook_invoke_add_in_command1(self):
+    def test_outlook_invoke_add_in_command(self):
         action = InvokeAddInCommand(add_in_id="id_qwerty", desktop_command_id="cmd_id", title="Sample title",
                                     initialization_context={"x": 1234, "y": "no"}, is_visible=True)
         self.assertDictEqual(
@@ -430,29 +418,6 @@ class ActionsTestCase(TestCase):
                 },
                 "title": "Sample title",
                 "isVisible": True
-            }
-        )
-
-    def test_outlook_invoke_add_in_command2(self):
-        action = InvokeAddInCommand(add_in_id="id_qwerty", desktop_command_id="cmd_id", title="Sample title",
-                                    initialization_context={"x": 1234, "y": "no"}, is_visible=True)
-        action.set_add_in_id("id_zxcv")
-        action.set_desktop_command_id("cmd_add")
-        action.set_initialization_context({"x": 4, "y": 2})
-        action.set_title("Command title")
-        action.set_is_visible(False)
-        self.assertDictEqual(
-            action.as_data(),
-            {
-                "type": "Action.InvokeAddInCommand",
-                "addInId": "id_zxcv",
-                "desktopCommandId": "cmd_add",
-                "initializationContext": {
-                    "x": 4,
-                    "y": 2
-                },
-                "title": "Command title",
-                "isVisible": False
             }
         )
 
@@ -623,7 +588,7 @@ class ActionsTestCase(TestCase):
             "style": "positive"
         })
 
-    def test_execute_set_set_fallback1(self):
+    def test_execute_set_set_fallback_fallback_option(self):
         action = Execute()
         action.set_fallback(FallbackOption.DROP)
         self.assertDictEqual(action.as_data(), {
@@ -631,7 +596,7 @@ class ActionsTestCase(TestCase):
             "fallback": "drop"
         })
 
-    def test_execute_set_set_fallback2(self):
+    def test_execute_set_set_fallback_element_type(self):
         action = Execute()
         action.set_fallback(Image(URL))
         self.assertDictEqual(action.as_data(), {
@@ -642,7 +607,7 @@ class ActionsTestCase(TestCase):
             }
         })
 
-    def test_execute_set_set_fallback3(self):
+    def test_execute_set_set_fallback_invalid_type(self):
         action = Execute()
         with self.assertRaisesMessage(CardException, "Invalid fallback type"):
             action.set_fallback(1)

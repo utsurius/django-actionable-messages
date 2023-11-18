@@ -1,6 +1,5 @@
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import translation
-from django.utils.functional import Promise
 
 
 class EncoderMixin:
@@ -15,7 +14,5 @@ class BaseEncoder(EncoderMixin, DjangoJSONEncoder):
     """
 
     def default(self, o):
-        if isinstance(o, Promise):
-            with translation.override(self.lang_code):
-                return translation.gettext(o)
-        return super().default(o)
+        with translation.override(self.lang_code):
+            return super().default(o)

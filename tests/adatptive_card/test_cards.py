@@ -6,7 +6,7 @@ from django_actionable_messages.adaptive_card.actions import OpenUrl, Submit, Ex
 from django_actionable_messages.adaptive_card.cards import AdaptiveCard
 from django_actionable_messages.adaptive_card.elements import Image, TextRun
 from django_actionable_messages.adaptive_card.types import (
-    Refresh, TokenExchangeResource, AuthCardButton, Authentication
+    Refresh, TokenExchangeResource, AuthCardButton, Authentication, Metadata
 )
 from django_actionable_messages.adaptive_card.utils import (
     VERSIONS, SCHEMA, Style, VerticalAlignment, Color, ActionStyle
@@ -20,6 +20,7 @@ class CardsTestCase(TestCase):
     def test_adaptive_card(self):
         refresh = Refresh(
             action=Execute(),
+            expires="2023-01-01T12:00:00Z",
             user_ids=["user_1", "user_2"]
         )
         authentication = Authentication(
@@ -46,10 +47,11 @@ class CardsTestCase(TestCase):
             OpenUrl(URL, title="Click")
         ]
         select_action, image = OpenUrl(URL), Image(URL + "bckg.bmp")
+        metadata = Metadata(url="https://www.example.com")
         adaptive_card = AdaptiveCard(version="1.5", schema=SCHEMA, refresh=refresh, authentication=authentication,
                                      inputs=inputs, actions=actions, select_action=select_action, style=Style.GOOD,
                                      hide_original_body=True, fallback_text="Vestibulum sapien.",
-                                     background_image=image, min_height="150px", lang="en",
+                                     background_image=image, metadata=metadata, min_height="150px", lang="en",
                                      speak='<voice name="string">Sample text.</voice>', rtl=True,
                                      vertical_content_alignment=VerticalAlignment.CENTER)
         self.assertDictEqual(adaptive_card.payload, {
@@ -60,6 +62,7 @@ class CardsTestCase(TestCase):
                 "action": {
                     "type": "Action.Execute"
                 },
+                "expires": "2023-01-01T12:00:00Z",
                 "userIds": ["user_1", "user_2"]
             },
             "authentication": {
@@ -87,6 +90,9 @@ class CardsTestCase(TestCase):
             "backgroundImage": {
                 "type": "Image",
                 "url": "https://www.example.com/bckg.bmp"
+            },
+            "metadata": {
+                "webUrl": "https://www.example.com"
             },
             "minHeight": "150px",
             "speak": '<voice name="string">Sample text.</voice>',
@@ -249,6 +255,16 @@ class CardsTestCase(TestCase):
         })
         with self.assertRaisesMessage(CardException, "Invalid image type"):
             adaptive_card.set_background_image(1234)
+
+    def test_adaptive_card_set_metadata(self):
+        adaptive_card = AdaptiveCard()
+        adaptive_card.set_metadata(Metadata(url="https://www,example.com"))
+        self.assertDictEqual(adaptive_card.payload, {
+            "type": "AdaptiveCard",
+            "metadata": {
+                "webUrl": "https://www,example.com"
+            }
+        })
 
     def test_adaptive_card_set_min_height(self):
         adaptive_card = AdaptiveCard()

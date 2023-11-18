@@ -4,7 +4,7 @@ from django_actionable_messages.adaptive_card.utils import HorizontalAlignment, 
 
 class ActionSet(ElementMixin):
     def __init__(self, item_id: str = None, spacing: SpacingStyle = None, separator: bool = None,
-                 horizontal_alignment: HorizontalAlignment = None, actions=None, **kwargs):
+                 horizontal_alignment: HorizontalAlignment = None, actions=None, **kwargs) -> None:
         self._data = {
             "type": "ActionSet"
         }
@@ -20,19 +20,19 @@ class ActionSet(ElementMixin):
         if actions:
             self.add_actions(actions)
 
-    def set_id(self, item_id: str):
+    def set_id(self, item_id: str) -> None:
         self._data["id"] = item_id
 
-    def set_spacing(self, spacing: SpacingStyle):
+    def set_spacing(self, spacing: SpacingStyle) -> None:
         self._data["spacing"] = spacing
 
-    def set_separator(self, value=True):
+    def set_separator(self, value=True) -> None:
         self._data["separator"] = value
 
-    def set_horizontal_alignment(self, horizontal_alignment: HorizontalAlignment):
+    def set_horizontal_alignment(self, horizontal_alignment: HorizontalAlignment) -> None:
         self._data["horizontalAlignment"] = horizontal_alignment
 
-    def add_actions(self, actions):
+    def add_actions(self, actions) -> None:
         self._data.setdefault("actions", [])
         if isinstance(actions, (list, set, tuple)):
             self._data["actions"].extend(self._get_items_list(actions))

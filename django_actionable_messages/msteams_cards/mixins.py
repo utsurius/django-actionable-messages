@@ -4,7 +4,8 @@ from django_actionable_messages.mixins import Card
 class CardMixin(Card):
     content_type = ""
 
-    def __init__(self, title=None, subtitle=None, text=None, images=None, buttons=None, **kwargs):
+    def __init__(self, title: str = None, subtitle: str = None, text: str = None, images=None, buttons=None,
+                 **kwargs) -> None:
         self._payload = {
              "contentType": self.content_type
         }
@@ -15,24 +16,24 @@ class CardMixin(Card):
             self.set_subtitle(subtitle)
         if text is not None:
             self.set_text(text)
-        if images:
+        if images is not None:
             self.add_images(images)
-        if buttons:
+        if buttons is not None:
             self.add_buttons(buttons)
 
-    def set_title(self, title):
+    def set_title(self, title: str) -> None:
         self._payload.setdefault("content", {})
         self._payload["content"]["title"] = title
 
-    def set_subtitle(self, subtitle):
+    def set_subtitle(self, subtitle: str) -> None:
         self._payload.setdefault("content", {})
         self._payload["content"]["subtitle"] = subtitle
 
-    def set_text(self, text):
+    def set_text(self, text: str) -> None:
         self._payload.setdefault("content", {})
         self._payload["content"]["text"] = text
 
-    def add_images(self, images):
+    def add_images(self, images) -> None:
         self._payload.setdefault("content", {})
         self._payload["content"].setdefault("images", [])
         if isinstance(images, (list, set, tuple)):
@@ -40,7 +41,7 @@ class CardMixin(Card):
         else:
             self._payload["content"]["images"].append(images.as_data())
 
-    def add_buttons(self, buttons):
+    def add_buttons(self, buttons) -> None:
         self._payload.setdefault("content", {})
         self._payload["content"].setdefault("buttons", [])
         if isinstance(buttons, (list, set, tuple)):

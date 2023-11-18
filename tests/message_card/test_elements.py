@@ -22,15 +22,6 @@ class HelpersTestCase(TestCase):
             "title": "Sample image"
         })
 
-    def test_hero_imageset_url(self):
-        url = "{}image2.jpeg".format(URL)
-        hero_image = HeroImage(url, title="Sample image")
-        hero_image.set_url("www.asdf.com")
-        self.assertDictEqual(hero_image.as_data(), {
-            "image": "www.asdf.com",
-            "title": "Sample image"
-        })
-
     def test_hero_image_set_title(self):
         url = "{}image.jpeg".format(URL)
         hero_image = HeroImage(url)

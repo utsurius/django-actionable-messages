@@ -31,6 +31,7 @@
         * [TextBlock](#adaptivecard-textblock)
         * [Image](#adaptivecard-image)
         * [MediaSource](#adaptivecard-mediasource)
+        * [CaptionSource](#adaptivecard-captionsource)
         * [Media](#adaptivecard-media)
         * [TextRun](#adaptivecard-textrun)
         * [RichTextBlock](#adaptivecard-richtextblock)
@@ -42,6 +43,7 @@
         * [ToggleInput](#adaptivecard-toggleinput)
         * [InputChoice](#adaptivecard-inputchoice)
         * [ChoiceSetInput](#adaptivecard-choicesetinput)
+        * [DataQuery](#adaptivecard-dataquery)
     * [Actions](#adaptivecard-actions)
         * [OpenUrl](#adaptivecard-openurl)
         * [Submit](#adaptivecard-submit)
@@ -66,6 +68,7 @@
         * [TokenExchangeResource](#adaptivecard-tokenexchangeresource)
         * [AuthCardButton](#adaptivecard-authcardbutton)
         * [Authentication](#adaptivecard-authentication)
+        * [Metadata](#adaptivecard-metadata)
     * [Cards](#adaptivecard-cards)
         * [AdaptiveCard](#adaptivecard-adaptivecard)
 6. [MessageCard](#messagecard)
@@ -142,8 +145,8 @@ ACTIONABLE_MESSAGES = {
 
 | Name    | Version    |
 |---------|------------|
-| python  | 3.5 - 3.10 |
-| django  | 2.2 - 4.0  |
+| python  | 3.6 - 3.10 |
+| django  | 3.2 - 4.2  |
 
 
 <h2 id="usage">Usage</h2>
@@ -294,7 +297,7 @@ To get/add `webhook_url` see here: [Get the Microsoft Teams webhook URL](https:/
 
 <h2 id="adaptivecard">AdaptiveCard</h2>
 
-Supported versions: **1.0 - 1.5**
+Supported versions: **1.0 - 1.6**
 
 [Schema Explorer](https://adaptivecards.io/explorer/)
 
@@ -307,7 +310,7 @@ Supported versions: **1.0 - 1.5**
 
 | Argument name        | Function                   | Property            | Type                                                   |
 |----------------------|----------------------------|---------------------|--------------------------------------------------------|
-| **text**             | set_text()                 | text                | *str, trans<sup>3</sup>*                               |
+| **text**             | -                          | text                | *str, trans<sup>3</sup>*                               |
 | color                | set_color()                | color               | Color<sup>1</sup>                                      |
 | font_type            | set_font_type()            | fontType            | FontType<sup>1</sup>                                   |
 | horizontal_alignment | set_horizontal_alignment() | horizontalAlignment | HorizontalAlignment<sup>1</sup>                        |
@@ -376,11 +379,19 @@ Supported versions: **1.0 - 1.5**
 | **mime_type** | mimeType | *str*  |
 | **url**       | url      | *str*  |
 
+<h4 id="adaptivecard-captionsource">CaptionSource <a href="https://adaptivecards.io/explorer/CaptionSource.html">docs</a></h4>
+
+| Argument name | Property | Type   |
+|---------------|----------|--------|
+| **mime_type** | mimeType | *str*  |
+| **url**       | url      | *str*  |
+| **label**     | label    | *str*  |
+
 <h4 id="adaptivecard-media">Media <a href="https://adaptivecards.io/explorer/Media.html">docs</a></h4>
 
 | Argument name  | Function             | Property  | Type                                                   |
 |----------------|----------------------|-----------|--------------------------------------------------------|
-| **sources**    | add_sources()        | sources   | *list* of MediaSource(s)<sup>1</sup>                   |
+| **sources**    | -                    | sources   | *list* of MediaSource(s)<sup>1</sup>                   |
 | poster         | set_poster()         | poster    | *str*                                                  |
 | alternate_text | set_alternate_text() | altText   | *str*                                                  |
 | fallback       | set_fallback()       | fallback  | FallbackOption<sup>2</sup> or card element<sup>1</sup> |
@@ -394,9 +405,13 @@ Supported versions: **1.0 - 1.5**
 
 Other functions
 
-| Name          | Property | Type                     |
-|---------------|----------|--------------------------|
-| add_source()  | sources  | MediaSource<sup>1</sup>  |
+| Name                  | Property       | Type                      |
+|-----------------------|----------------|---------------------------|
+| add_sources()         | sources        | MediaSource<sup>1</sup>   |
+| add_source()          | sources        | MediaSource<sup>1</sup>   |
+| set_caption_sources() | captionSources | CaptionSource<sup>2</sup> |
+| add_caption_sources() | captionSources | CaptionSource<sup>2</sup> |
+| add_caption_source()  | captionSources | CaptionSource<sup>2</sup> |
 
 \[1\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
@@ -412,7 +427,7 @@ Other functions
 
 | Argument name  | Function             | Property      | Type                      |
 |----------------|----------------------|---------------|---------------------------|
-| **text**       | set_text()           | text          | *str*, trans <sup>2</sup> |
+| **text**       | -                    | text          | *str*, trans <sup>2</sup> |
 | color          | set_color()          | color         | Color<sup>1</sup>         |
 | font_type      | set_font_type()      | fontType      | FontType<sup>1</sup>      |
 | highlight      | set_highlight()      | highlight     | *bool*                    |
@@ -432,7 +447,7 @@ Other functions
 
 | Argument name        | Function                   | Property            | Type                                                   |
 |----------------------|----------------------------|---------------------|--------------------------------------------------------|
-| **inlines**          | set_inlines()              | inlines             | *str*, TextRun<sup>1</sup>, trans<sup>4</sup>          |
+| **inlines**          | -                          | inlines             | *str*, TextRun<sup>1</sup>, trans<sup>4</sup>          |
 | horizontal_alignment | set_horizontal_alignment() | horizontalAlignment | HorizontalAlignment<sup>2</sup>                        |
 | fallback             | set_fallback()             | fallback            | FallbackOption<sup>2</sup> or card element<sup>1</sup> |
 | separator            | set_separator()            | separator           | *bool*                                                 |
@@ -592,7 +607,7 @@ Other functions
 
 | Argument name | Function         | Property  | Type                                                    |
 |---------------|------------------|-----------|---------------------------------------------------------|
-| **title**     | set_title()      | title     | *str*, trans<sup>3</sup>                                |
+| **title**     | -                | title     | *str*, trans<sup>3</sup>                                |
 | value         | set_value()      | value     | *str*                                                   |
 | value_off     | set_value_off()  | valueOff  | *str*                                                   |
 | value_on      | set_value_on()   | valueOn   | *str*                                                   |
@@ -635,7 +650,7 @@ Other functions
 
 | Argument name   | Function              | Property      | Type                                                    |
 |-----------------|-----------------------|---------------|---------------------------------------------------------|
-| **choices**     | set_choices()         | choices       | *list* of InputChoice(s)<sup>1</sup>                    |
+| **choices**     | -                     | choices       | *list* of InputChoice(s)<sup>1</sup>                    |
 | is_multi_select | set_is_multi_select() | isMultiSelect | *bool*                                                  |
 | style           | set_style()           | style         | ChoiceInputStyle<sup>2</sup>                            |
 | value           | set_value()           | value         | *str*                                                   |
@@ -664,6 +679,14 @@ Other functions
 
 \[4\] `from django_actionable_messages.adaptive_cards.elements import ...`
 
+<h4 id="adaptivecard-dataquery">DataQuery <a href="https://adaptivecards.io/explorer/Data.Query.html">docs</a></h4>
+
+| Argument name | Function      | Property | Type  |
+|---------------|---------------|----------|-------|
+| **dataset**   | set_dataset() | dataset  | *str* |
+| count         | set_count()   | count    | *int* |
+| skip          | set_skip()    | skip     | *int* |
+
 
 <h3 id="adaptivecard-actions">Actions</h3>
 
@@ -673,7 +696,7 @@ Other functions
 
 | Argument name | Function         | Property  | Type                                                                               |
 |---------------|------------------|-----------|------------------------------------------------------------------------------------|
-| **url**       | set_url()        | url       | *str*                                                                              |
+| **url**       | -                | url       | *str*                                                                              |
 | title         | set_title()      | title     | *str*, trans<sup>3</sup>                                                           |
 | icon_url      | set_icon_url()   | iconUrl   | *str*                                                                              |
 | style         | set_style()      | style     | ActionStyle<sup>2</sup>                                                            |
@@ -739,10 +762,10 @@ Other functions
 
 <h4 id="adaptivecard-targetelement">TargetElement <a href="https://adaptivecards.io/explorer/TargetElement.html">docs</a></h4>
 
-| Argument name   | Function          | Property   | Type   |
-|-----------------|-------------------|------------|--------|
-| **element_id**  | set_element_id()  | elementId  | *str*  |
-| is_visible      | set_is_visible()  | isVisible  | *bool* |
+| Argument name   | Function         | Property   | Type   |
+|-----------------|------------------|------------|--------|
+| **element_id**  | -                | elementId  | *str*  |
+| is_visible      | set_is_visible() | isVisible  | *bool* |
 
 <h4 id="adaptivecard-togglevisibility">ToggleVisibility <a href="https://adaptivecards.io/explorer/Action.ToggleVisibility.html">docs</a></h4>
 
@@ -1039,20 +1062,21 @@ Other functions
 
 <h4 id="adaptivecard-refresh">Refresh <a href="https://adaptivecards.io/explorer/Refresh.html">docs</a></h4>
 
-| Argument name | Function        | Property | Type                |
-|---------------|-----------------|----------|---------------------|
-| action        | set_action()    | Execute  | Execute<sup>1</sup> |
-| user_ids      | set_user_ids()  | list     | list of *str*       |
+| Argument name | Function       | Property | Type                |
+|---------------|----------------|----------|---------------------|
+| action        | set_action()   | action   | Execute<sup>1</sup> |
+| expires       | set_expires()  | expires  | *str* (ISO-8601)    |
+| user_ids      | set_user_ids() | list     | list of *str*       |
 
 \[1\] `from django_actionable_messages.adaptive_cards.actions import ...`
 
 <h4 id="adaptivecard-tokenexchangeresource">TokenExchangeResource <a href="https://adaptivecards.io/explorer/TokenExchangeResource.html">docs</a></h4>
 
-| Argument name    | Function           | Property    | Type   |
-|------------------|--------------------|-------------|--------|
-| **token_id**     | set_id()           | id          | *str*  |
-| **uri**          | set_user_uri()     | uri         | *str*  |
-| **provider_id**  | set_provider_id()  | providerId  | *str*  |
+| Argument name    | Function | Property    | Type   |
+|------------------|----------|-------------|--------|
+| **token_id**     | -        | id          | *str*  |
+| **uri**          | -        | uri         | *str*  |
+| **provider_id**  | -        | providerId  | *str*  |
 
 <h4 id="adaptivecard-authcardbutton">AuthCardButton <a href="https://adaptivecards.io/explorer/AuthCardButton.html">docs</a></h4>
 
@@ -1074,6 +1098,13 @@ Other functions
 
 \[1\] `from django_actionable_messages.adaptive_cards.types import ...`
 
+<h4 id="adaptivecard-metadata">Metadata <a href="https://adaptivecards.io/explorer/Metadata.html">docs</a></h4>
+
+| Argument name | Function  | Property | Type  |
+|---------------|-----------|----------|-------|
+| url           | set_url() | webUrl   | *str* |
+
+
 <h3 id="adaptivecard-cards">Cards</h3>
 
 **src**: `from django_actionable_messages.adaptive_card.cards import ...`
@@ -1093,6 +1124,7 @@ Other functions
 | hide_original_body         | set_hide_original_body()         | hideOriginalBody         | *bool*                                |
 | fallback_text              | set_fallback_text()              | fallbackText             | *str*                                 |
 | background_image           | set_background_image()           | backgroundImage          | *str*, Image<sup>2</sup>              |
+| metadata                   | set_metadata()                   | metadata                 | Metadata<sup>3</sup>                  |
 | min_height                 | set_min_height()                 | minHeight                | *str*                                 |
 | speak                      | set_speak()                      | speak                    | *str*                                 |
 | lang                       | set_lang()                       | lang                     | *str*                                 |
@@ -1135,7 +1167,7 @@ Other functions
 
 | Argument name | Function    | Property | Type                     |
 |---------------|-------------|----------|--------------------------|
-| **url**       | set_url()   | image    | *str*                    |
+| **url**       | -           | image    | *str*                    |
 | title         | set_title() | title    | *str*, trans<sup>1</sup> |
 | lang_code     | -           | -        | *str*                    |
 
@@ -1225,15 +1257,16 @@ Other functions
 
 | Argument name | Function      | Property | Type                               |
 |---------------|---------------|----------|------------------------------------|
-| **name**      | set_name()    | name     | *str*, trans<sup>2</sup>           |
+| **name**      | -             | name     | *str*, trans<sup>2</sup>           |
 | targets       | add_targets() | targets  | *list* of ActionTarget<sup>1</sup> |
 | lang_code     | -             | -        | *str*                              |
 
 Other functions
 
-| Name          | Property | Type                      |
-|---------------|----------|---------------------------|
-| add_target()  | targets  | ActionTarget<sup>1</sup>  |
+| Name          | Property | Type                                 |
+|---------------|----------|--------------------------------------|
+| add_target()  | targets  | ActionTarget<sup>1</sup>             |
+| add_targets() | targets  | **list** of ActionTarget<sup>1</sup> |
 
 \[1\] `from django_actionable_messages.message_cards.elements import ...`
 
@@ -1243,8 +1276,8 @@ Other functions
 
 | Argument name      | Function                | Property        | Type                                                  |
 |--------------------|-------------------------|-----------------|-------------------------------------------------------|
-| **name**           | set_name()              | name            | *str*, trans<sup>2</sup>                              |
-| **target**         | set_target()            | targets         | *str*                                                 |
+| **name**           | -                       | name            | *str*, trans<sup>2</sup>                              |
+| **target**         | -                       | targets         | *str*                                                 |
 | headers            | add_headers()           | headers         | Header<sup>1</sup> or *list* of Header(s)<sup>1</sup> |
 | body               | set_body()              | body            | *str*                                                 |
 | body_content_type  | set_body_content_type() | bodyContentType | *str*                                                 |
@@ -1258,7 +1291,7 @@ Other functions
 
 | Argument name          | Function                         | Property              | Type                     |
 |------------------------|----------------------------------|-----------------------|--------------------------|
-| **name**               | set_name()                       | name                  | *str*, trans<sup>1</sup> |
+| **name**               | -                                | name                  | *str*, trans<sup>1</sup> |
 | **add_in_id**          | set_add_in_id()                  | addInId               | *str*                    |
 | **desktop_command_id** | set_desktop_command_id()         | desktopCommandId      | *str*                    |
 | initialization_context | set_set_initialization_context() | initializationContext | *dict*                   |
@@ -1268,12 +1301,12 @@ Other functions
 
 <h4 id="messagecard-actioncard">ActionCard <a href="https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference#actioncard-action">docs</a></h4>
 
-| Argument name | Function       | Property | Type                                  |
-|---------------|----------------|----------|---------------------------------------|
-| **name**      | set_name()     | name     | *str*, trans<sup>1</sup>              |
-| inputs        | add_inputs()   | inputs   | input or *list* of inputs(see docs)   |
-| actions       | add_actions()  | actions  | action or *list* of actions(see docs) |
-| lang_code     | -              | -        | *str*                                 |
+| Argument name | Function      | Property | Type                                  |
+|---------------|---------------|----------|---------------------------------------|
+| **name**      | -             | name     | *str*, trans<sup>1</sup>              |
+| inputs        | add_inputs()  | inputs   | input or *list* of inputs(see docs)   |
+| actions       | add_actions() | actions  | action or *list* of actions(see docs) |
+| lang_code     | -             | -        | *str*                                 |
 
 \[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 
@@ -1355,10 +1388,10 @@ Other functions:
 
 <h4 id="herocard-Image">Image</h4>
 
-| Argument name | Function | Property | Type                      |
-|---------------|----------|----------|---------------------------|
-| **url**       | -        | value    | *str*                     |
-| alt           | -        | alt      | *str*, trans<sup>1</sup>  |
+| Argument name | Function  | Property | Type                      |
+|---------------|-----------|----------|---------------------------|
+| **url**       | -         | value    | *str*                     |
+| alt           | set_alt() | alt      | *str*, trans<sup>1</sup>  |
 
 \[1\] any translation like `from django.utils.translation import gettext, gettext_lazy, ...`
 

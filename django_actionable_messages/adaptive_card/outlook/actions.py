@@ -5,9 +5,9 @@ METHODS = ("GET", "POST")
 
 
 class ActionHttp(ElementMixin):
-    def __init__(self, method: str, url: str, title=None, headers: list = None, body=None, **kwargs):
+    def __init__(self, method: str, url: str, title: str = None, headers: list = None, body=None, **kwargs) -> None:
         if method not in METHODS:
-            raise CardException("Invalid method. Available methods are: {}".format(METHODS))
+            raise CardException(f"Invalid method. Available methods are: {METHODS}")
         if method == "POST" and not body:
             raise CardException("If method is POST body must be provided")
         self._data = {
@@ -18,27 +18,28 @@ class ActionHttp(ElementMixin):
         super().__init__(**kwargs)
         if title is not None:
             self.set_title(title)
-        if headers:
+        if headers is not None:
             self.add_headers(headers)
         if body is not None:
             self.set_body(body)
 
-    def set_title(self, title):
+    def set_title(self, title: str) -> None:
         self._data["title"] = title
 
-    def add_headers(self, headers):
+    def add_headers(self, headers) -> None:
         self._data.setdefault("headers", [])
         if isinstance(headers, (list, set, tuple)):
             self._data["headers"].extend(self._get_items_list(headers))
         else:
             self._data["headers"].append(headers.as_data())
 
-    def set_body(self, body):
+    def set_body(self, body) -> None:
         self._data["body"] = body
 
 
 class InvokeAddInCommand(ElementMixin):
-    def __init__(self, add_in_id: str, desktop_command_id: str, initialization_context, title=None, **kwargs):
+    def __init__(self, add_in_id: str, desktop_command_id: str, initialization_context, title: str = None,
+                 **kwargs) -> None:
         self._data = {
             "type": "Action.InvokeAddInCommand",
             "addInId": add_in_id,
@@ -49,16 +50,7 @@ class InvokeAddInCommand(ElementMixin):
         if title is not None:
             self.set_title(title)
 
-    def set_add_in_id(self, add_in_id: str):
-        self._data["addInId"] = add_in_id
-
-    def set_desktop_command_id(self, cmd_id: str):
-        self._data["desktopCommandId"] = cmd_id
-
-    def set_initialization_context(self, context):
-        self._data["initializationContext"] = context
-
-    def set_title(self, title):
+    def set_title(self, title: str) -> None:
         self._data["title"] = title
 
 
@@ -71,7 +63,7 @@ class DisplayAppointmentForm(DisplayFormMixin):
 
 
 class ToggleVisibility(ElementMixin):
-    def __init__(self, target_elements, title=None, **kwargs):
+    def __init__(self, target_elements, title: str = None, **kwargs) -> None:
         self._data = {
             "type": "Action.ToggleVisibility"
         }
@@ -80,10 +72,10 @@ class ToggleVisibility(ElementMixin):
         if title is not None:
             self.set_title(title)
 
-    def set_title(self, title):
+    def set_title(self, title: str) -> None:
         self._data["title"] = title
 
-    def add_target_elements(self, elements):
+    def add_target_elements(self, elements) -> None:
         self._data.setdefault("targetElements", [])
         if isinstance(elements, (list, set, tuple)):
             self._data["targetElements"].extend(self._get_items_list(elements))

@@ -11,17 +11,14 @@ from django_actionable_messages.mixins import CardElement
 
 
 class ActionSet(ElementMixin):
-    def __init__(self, actions: list, **kwargs):
+    def __init__(self, actions: list, **kwargs) -> None:
         self._data = {
-            "type": "ActionSet"
+            "type": "ActionSet",
+            "actions": self._get_items_list(actions)
         }
         super().__init__(**kwargs)
-        self._set_base_actions(actions)
 
-    def _set_base_actions(self, actions: list):
-        self._data["actions"] = self._get_items_list(actions)
-
-    def add_actions(self, actions):
+    def add_actions(self, actions) -> None:
         if isinstance(actions, (list, set, tuple)):
             self._data["actions"].extend(self._get_items_list(actions))
         else:
@@ -32,12 +29,12 @@ class Container(ElementMixin):
     def __init__(self, items: list, select_action=None, style: Style = None,
                  vertical_content_alignment: VerticalAlignment = None, bleed: bool = None,
                  background_image: Union[str, BackgroundImage] = None, min_height: str = None,
-                 rtl: bool = None, **kwargs):
+                 rtl: bool = None, **kwargs) -> None:
         self._data = {
-            "type": "Container"
+            "type": "Container",
+            "items": self._get_items_list(items)
         }
         super().__init__(**kwargs)
-        self._set_base_items(items)
         if select_action:
             self.set_select_action(select_action)
         if style is not None:
@@ -53,28 +50,25 @@ class Container(ElementMixin):
         if rtl is not None:
             self.set_rtl(rtl)
 
-    def _set_base_items(self, items: list):
-        self._data["items"] = self._get_items_list(items)
-
-    def add_items(self, items):
+    def add_items(self, items) -> None:
         if isinstance(items, (list, set, tuple)):
             self._data["items"].extend(self._get_items_list(items))
         else:
             self._data["items"].append(items.as_data())
 
-    def set_select_action(self, action):
+    def set_select_action(self, action) -> None:
         self._data["selectAction"] = action.as_data()
 
-    def set_style(self, style: Style):
+    def set_style(self, style: Style) -> None:
         self._data["style"] = style
 
-    def set_vertical_content_alignment(self, alignment: VerticalAlignment):
+    def set_vertical_content_alignment(self, alignment: VerticalAlignment) -> None:
         self._data["verticalContentAlignment"] = alignment
 
-    def set_bleed(self, value=True):
+    def set_bleed(self, value=True) -> None:
         self._data["bleed"] = value
 
-    def set_background_image(self, image: Union[str, BackgroundImage]):
+    def set_background_image(self, image: Union[str, BackgroundImage]) -> None:
         if isinstance(image, str):
             self._data["backgroundImage"] = image
         elif isinstance(image, BackgroundImage):
@@ -82,10 +76,10 @@ class Container(ElementMixin):
         else:
             raise CardException("Invalid image type")
 
-    def set_min_height(self, height: str):
+    def set_min_height(self, height: str) -> None:
         self._data["minHeight"] = height
 
-    def set_rtl(self, value: bool):
+    def set_rtl(self, value: bool) -> None:
         self._data["rtl"] = value
 
 
@@ -94,7 +88,7 @@ class Column(CardElement):
                  fallback=None, min_height: str = None, rtl: bool = None, separator: bool = None,
                  spacing: SpacingStyle = None, select_action=None, style: Style = None,
                  vertical_content_alignment: VerticalAlignment = None, width: Union[str, int, Width] = None,
-                 item_id: str = None, is_visible: bool = None, requires: dict = None, **kwargs):
+                 item_id: str = None, is_visible: bool = None, requires: dict = None, **kwargs) -> None:
         self._data = {
             "type": "Column"
         }
@@ -130,14 +124,14 @@ class Column(CardElement):
         if requires is not None:
             self.set_requires(requires)
 
-    def add_items(self, items):
+    def add_items(self, items) -> None:
         self._data.setdefault("items", [])
         if isinstance(items, (list, set, tuple)):
             self._data["items"].extend(self._get_items_list(items))
         else:
             self._data["items"].append(items.as_data())
 
-    def set_background_image(self, image: Union[str, BackgroundImage]):
+    def set_background_image(self, image: Union[str, BackgroundImage]) -> None:
         if isinstance(image, str):
             self._data["backgroundImage"] = image
         elif isinstance(image, BackgroundImage):
@@ -145,10 +139,10 @@ class Column(CardElement):
         else:
             raise CardException("Invalid image type")
 
-    def set_bleed(self, value=True):
+    def set_bleed(self, value=True) -> None:
         self._data["bleed"] = value
 
-    def set_fallback(self, fallback):
+    def set_fallback(self, fallback) -> None:
         if isinstance(fallback, FallbackOption):
             self._data["fallback"] = fallback
         elif isinstance(fallback, Column):
@@ -156,28 +150,28 @@ class Column(CardElement):
         else:
             raise CardException("Invalid fallback type")
 
-    def set_min_height(self, height: str):
+    def set_min_height(self, height: str) -> None:
         self._data["minHeight"] = height
 
-    def set_rtl(self, value: bool):
+    def set_rtl(self, value: bool) -> None:
         self._data["rtl"] = value
 
-    def set_separator(self, value=True):
+    def set_separator(self, value=True) -> None:
         self._data["separator"] = value
 
-    def set_spacing(self, spacing: SpacingStyle):
+    def set_spacing(self, spacing: SpacingStyle) -> None:
         self._data["spacing"] = spacing
 
-    def set_select_action(self, action):
+    def set_select_action(self, action) -> None:
         self._data["selectAction"] = action.as_data()
 
-    def set_style(self, style: Style):
+    def set_style(self, style: Style) -> None:
         self._data["style"] = style
 
-    def set_vertical_content_alignment(self, alignment: VerticalAlignment):
+    def set_vertical_content_alignment(self, alignment: VerticalAlignment) -> None:
         self._data["verticalContentAlignment"] = alignment
 
-    def set_width(self, width: Union[str, int, Width]):
+    def set_width(self, width: Union[str, int, Width]) -> None:
         if isinstance(width, Width):
             self._data["width"] = width
         elif isinstance(width, (str, int)):
@@ -185,19 +179,19 @@ class Column(CardElement):
         else:
             raise CardException("Invalid width type")
 
-    def set_id(self, item_id: str):
+    def set_id(self, item_id: str) -> None:
         self._data["id"] = item_id
 
-    def set_is_visible(self, value=True):
+    def set_is_visible(self, value=True) -> None:
         self._data["isVisible"] = value
 
-    def set_requires(self, requires: dict):
+    def set_requires(self, requires: dict) -> None:
         self._data["requires"] = requires
 
 
 class ColumnSet(ElementMixin):
     def __init__(self, columns: list = None, select_action=None, style: Style = None, bleed: bool = None,
-                 min_height: str = None, **kwargs):
+                 min_height: str = None, **kwargs) -> None:
         self._data = {
             "type": "ColumnSet"
         }
@@ -213,28 +207,28 @@ class ColumnSet(ElementMixin):
         if min_height is not None:
             self.set_min_height(min_height)
 
-    def add_columns(self, columns):
+    def add_columns(self, columns) -> None:
         self._data.setdefault("columns", [])
         if isinstance(columns, (list, set, tuple)):
             self._data["columns"].extend(self._get_items_list(columns))
         else:
             self._data["columns"].append(columns.as_data())
 
-    def set_select_action(self, action):
+    def set_select_action(self, action) -> None:
         self._data["selectAction"] = action.as_data()
 
-    def set_style(self, style: Style):
+    def set_style(self, style: Style) -> None:
         self._data["style"] = style
 
-    def set_bleed(self, value=True):
+    def set_bleed(self, value=True) -> None:
         self._data["bleed"] = value
 
-    def set_min_height(self, value: str):
+    def set_min_height(self, value: str) -> None:
         self._data["minHeight"] = value
 
 
 class Fact(CardElement):
-    def __init__(self, title, value, **kwargs):
+    def __init__(self, title, value, **kwargs) -> None:
         self._data = {}
         super().__init__(**kwargs)
         self._data = {
@@ -244,17 +238,14 @@ class Fact(CardElement):
 
 
 class FactSet(ElementMixin):
-    def __init__(self, facts: List[Fact], **kwargs):
+    def __init__(self, facts: List[Fact], **kwargs) -> None:
         self._data = {
-            "type": "FactSet"
+            "type": "FactSet",
+            "facts": self._get_items_list(facts)
         }
         super().__init__(**kwargs)
-        self._set_base_facts(facts)
 
-    def _set_base_facts(self, facts: List[Fact]):
-        self._data["facts"] = self._get_items_list(facts)
-
-    def add_facts(self, facts):
+    def add_facts(self, facts) -> None:
         if isinstance(facts, (list, set, tuple)):
             self._data["facts"].extend(self._get_items_list(facts))
         else:
@@ -262,25 +253,22 @@ class FactSet(ElementMixin):
 
 
 class ImageSet(ElementMixin):
-    def __init__(self, images: list, image_size: ImageSize = None, **kwargs):
+    def __init__(self, images: list, image_size: ImageSize = None, **kwargs) -> None:
         self._data = {
-            "type": "ImageSet"
+            "type": "ImageSet",
+            "images": self._get_items_list(images)
         }
         super().__init__(**kwargs)
-        self._set_base_images(images)
         if image_size is not None:
             self.set_image_size(image_size)
 
-    def _set_base_images(self, images: list):
-        self._data["images"] = self._get_items_list(images)
-
-    def add_images(self, images):
+    def add_images(self, images) -> None:
         if isinstance(images, (list, set, tuple)):
             self._data["images"].extend(self._get_items_list(images))
         else:
             self._data["images"].append(images.as_data())
 
-    def set_image_size(self, size: ImageSize):
+    def set_image_size(self, size: ImageSize) -> None:
         self._data["imageSize"] = size
 
 
@@ -288,7 +276,7 @@ class TableCell(CardElement):
     def __init__(self, items, select_action: Union[Execute, OpenUrl, Submit, ToggleVisibility] = None,
                  style: Style = None, vertical_content_alignment: VerticalAlignment = None, bleed: bool = None,
                  background_image: Union[BackgroundImage, str] = None, min_height: str = None, rtl: bool = None,
-                 **kwargs):
+                 **kwargs) -> None:
         self._data = {
             "type": "TableCell"
         }
@@ -309,26 +297,26 @@ class TableCell(CardElement):
         if rtl is not None:
             self.set_rtl(rtl)
 
-    def add_items(self, items):
+    def add_items(self, items) -> None:
         self._data.setdefault("items", [])
         if isinstance(items, (list, set, tuple)):
             self._data["items"].extend(self._get_items_list(items))
         else:
             self._data["items"].append(items.as_data())
 
-    def set_select_action(self, action: Union[Execute, OpenUrl, Submit, ToggleVisibility]):
+    def set_select_action(self, action: Union[Execute, OpenUrl, Submit, ToggleVisibility]) -> None:
         self._data["selectAction"] = action.as_data()
 
-    def set_style(self, style: Style):
+    def set_style(self, style: Style) -> None:
         self._data["style"] = style
 
-    def set_vertical_content_alignment(self, alignment: VerticalAlignment):
+    def set_vertical_content_alignment(self, alignment: VerticalAlignment) -> None:
         self._data["verticalContentAlignment"] = alignment
 
-    def set_bleed(self, value: bool):
+    def set_bleed(self, value: bool) -> None:
         self._data["bleed"] = value
 
-    def set_background_image(self, image: Union[BackgroundImage, str]):
+    def set_background_image(self, image: Union[BackgroundImage, str]) -> None:
         if isinstance(image, str):
             self._data["backgroundImage"] = image
         elif isinstance(image, BackgroundImage):
@@ -336,22 +324,22 @@ class TableCell(CardElement):
         else:
             raise CardException("Invalid image type")
 
-    def set_min_height(self, min_height: str):
+    def set_min_height(self, min_height: str) -> None:
         self._data["minHeight"] = min_height
 
-    def set_rtl(self, value: bool):
+    def set_rtl(self, value: bool) -> None:
         self._data["rtl"] = value
 
 
 class TableRow(CardElement):
-    def __init__(self, cells: Union[TableCell, List[TableCell]], **kwargs):
+    def __init__(self, cells: Union[TableCell, List[TableCell]], **kwargs) -> None:
         self._data = {
             "type": "TableRow"
         }
         super().__init__(**kwargs)
         self.add_cells(cells)
 
-    def add_cells(self, cells):
+    def add_cells(self, cells) -> None:
         self._data.setdefault("cells", [])
         if isinstance(cells, (list, set, tuple)):
             self._data["cells"].extend(self._get_items_list(cells))
@@ -364,7 +352,7 @@ class Table(ElementMixin):
                  horizontal_cell_content_alignment: HorizontalAlignment = None,
                  vertical_cell_content_alignment: VerticalAlignment = None,
                  first_row_as_header: bool = None, show_grid_lines: bool = None,
-                 grid_style: Style = None, **kwargs):
+                 grid_style: Style = None, **kwargs) -> None:
         self._data = {
             "type": "Table"
         }
@@ -384,31 +372,31 @@ class Table(ElementMixin):
         if grid_style is not None:
             self.set_grid_style(grid_style)
 
-    def add_columns(self, columns: Union[dict, List[dict]]):
+    def add_columns(self, columns: Union[dict, List[dict]]) -> None:
         self._data.setdefault("columns", [])
         if isinstance(columns, (list, set, tuple)):
             self._data["columns"].extend(columns)
         else:
             self._data["columns"].append(columns)
 
-    def add_rows(self, rows: Union[TableRow, List[TableRow]]):
+    def add_rows(self, rows: Union[TableRow, List[TableRow]]) -> None:
         self._data.setdefault("rows", [])
         if isinstance(rows, (list, set, tuple)):
             self._data["rows"].extend(self._get_items_list(rows))
         else:
             self._data["rows"].append(rows.as_data())
 
-    def set_horizontal_cell_content_alignment(self, alignment: HorizontalAlignment):
+    def set_horizontal_cell_content_alignment(self, alignment: HorizontalAlignment) -> None:
         self._data["horizontalCellContentAlignment"] = alignment
 
-    def set_vertical_cell_content_alignment(self, alignment: VerticalAlignment):
+    def set_vertical_cell_content_alignment(self, alignment: VerticalAlignment) -> None:
         self._data["verticalCellContentAlignment"] = alignment
 
-    def set_first_row_as_header(self, value: bool = True):
+    def set_first_row_as_header(self, value: bool = True) -> None:
         self._data["firstRowAsHeader"] = value
 
-    def set_show_grid_lines(self, value: bool = True):
+    def set_show_grid_lines(self, value: bool = True) -> None:
         self._data["showGridLines"] = value
 
-    def set_grid_style(self, style: Style = Style.DEFAULT):
+    def set_grid_style(self, style: Style = Style.DEFAULT) -> None:
         self._data["style"] = style

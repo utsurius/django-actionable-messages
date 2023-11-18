@@ -15,7 +15,7 @@ def import_from_string(value, name):
     try:
         return import_string(value)
     except ImportError:
-        raise ImportError("Could not import '{}' setting".format(name))
+        raise ImportError(f"Could not import '{name}' setting")
 
 
 def import_setting(value, name):
@@ -29,7 +29,7 @@ def import_setting(value, name):
 class CardSettings:
     def __getattr__(self, attr):
         if attr not in DEFAULTS:
-            raise AttributeError("Invalid setting: '{}'".format(attr))
+            raise AttributeError(f"Invalid setting: '{attr}'")
         try:
             value = self.user_settings[attr]
         except KeyError:
